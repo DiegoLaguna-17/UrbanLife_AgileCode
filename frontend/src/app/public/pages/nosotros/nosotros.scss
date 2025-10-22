@@ -1,0 +1,184 @@
+/* Colores base */
+$primary: #0a80fb;
+$ink-1: #1a2a3a;
+$ink-2: #3a4b5e;
+$line: #e8eef7;
+$surface: #ffffff;
+$bg: #f5f8ff;
+
+/* Hero */
+.hero {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  margin: 16px 0 20px;
+
+  img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    display: block;
+  }
+
+  h1 {
+    position: absolute;
+    left: 24px;
+    top: 24px;
+    margin: 0;
+    padding: 10px 16px;
+    background: rgba(0, 0, 0, 0.45);
+    color: #fff;
+    border-radius: 12px;
+    font-size: clamp(22px, 4vw, 36px);
+    font-weight: 800;
+    letter-spacing: 0.4px;
+  }
+}
+
+/* Disposición general */
+.layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  align-items: start;
+  margin-bottom: 24px;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.right {
+  .image-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      max-height: 420px;
+      border-radius: 12px;
+      object-fit: cover;
+      display: block;
+    }
+  }
+}
+
+/* Tarjetas generales */
+.card {
+  background: $surface;
+  border: 1px solid $line;
+  border-radius: 14px;
+  padding: 16px;
+}
+
+/* Título de sección */
+.section-title {
+  color: $primary;
+  font-size: 2.05rem;
+  margin: 0 0 10px;
+  font-weight: 800;
+}
+
+/* Textos */
+p {
+  color: $ink-2;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Listas */
+.bullets {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 8px;
+
+  li {
+    color: $ink-2;
+    line-height: 1.35;
+  }
+}
+
+/* Responsivo */
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .right img {
+    max-height: 280px;
+  }
+
+  .hero img {
+    height: 180px;
+  }
+}
+.mgmt {
+  display: grid;
+  gap: 30px;
+  background: linear-gradient(to right,#0a80fb,#84ff55);
+  align-items: center;
+  justify-items: center; /* centra horizontalmente los artículos */
+  padding: 30px 20px;   /* espacio interno */
+  text-align: center;   /* centra texto dentro de los manager__body */
+}
+.mgmt,.manager ,.manager_name, .manager_role{
+    font-size: 3vh;
+    color: #e8eef7;
+    
+}
+.manager p{
+    color: #fff;
+}
+.mgmt .section-title{
+    font-size: 3.5rem;
+    align-items:first baseline;
+}
+
+.manager {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 16px;
+  align-items: center;
+  justify-content: center; /* centra contenido dentro de cada fila */
+
+  &__body {
+    text-align: left; /* si quieres mantener texto alineado a la izquierda */
+    max-width: 500px; /* limita ancho para que se vea más centrado visualmente */
+    margin: 0 auto;   /* centra el bloque de texto horizontalmente */
+    
+    p { color: $ink-2; line-height: 1.45; margin: 0 0 6px; }
+  }
+}
+
+/* Variante reverse */
+.manager.manager--reverse {
+  grid-template-columns: 2fr 1fr;
+}
+
+.card.info:hover{
+    border-color: #84ff55;  
+  box-shadow: 0 0 15px rgba(132, 255, 85, 0.7);
+  transform: translateY(-4px);  
+}
+
+
+.card.p:hover{
+    border-color: #84ff55;  
+  box-shadow: 0 0 15px rgba(132, 255, 85, 0.7);
+  transform: translateY(-4px);  
+}
+
+.card.o:hover{
+    border-color: #84ff55;  
+  box-shadow: 0 0 15px rgba(132, 255, 85, 0.7);
+  transform: translateY(-4px);  
+}
+h1,h2,h3,p,li{
+    font-family: Arial, Helvetica, sans-serif;
+}
