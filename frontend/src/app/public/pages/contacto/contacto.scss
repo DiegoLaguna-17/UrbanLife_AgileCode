@@ -6,6 +6,10 @@ $ink-2: #3a4b5e;
 $line: #e8eef7;
 $surface: #ffffff;
 
+
+h2,span{
+    font-family: Arial, Helvetica, sans-serif;
+}
 /* Comunes */
 .card {
   background: $surface;
@@ -75,10 +79,12 @@ $surface: #ffffff;
     border-radius: 12px;
     padding: 10px 14px;
     font-weight: 800;
+    color: #fff;
     cursor: pointer;
     transition: transform .05s ease, filter .2s ease;
     &:hover{ filter: brightness(1.02); }
     &:active{ transform: translateY(1px); }
+    
   }
 }
 

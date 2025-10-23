@@ -1,12 +1,113 @@
-.nav{
-  height:15vh; display:flex; align-items:center; justify-content:space-between;
-  padding:0 16px; background:linear-gradient(90deg,#0a80fb,#0db2ff); color:#fff;
-  
+.nav {
+  height: 15vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: linear-gradient(90deg, #0a80fb, #0db2ff);
+  color: #fff;
+  position: relative;
+  z-index: 10;
 }
-.left{ display:flex; align-items:center; gap:10px; }
-.logo{ width:32px; height:32px; border-radius:6px; background:#fff; }
-.brand{ font-weight:700; letter-spacing:.3px; color:#fff; text-decoration:none; }
-.menu{ list-style:none; display:flex; gap:16px; margin:0; padding:0; }
-.menu a{ color:#eaf6ff; text-decoration:none; padding:8px 10px; border-radius:8px; }
-.menu a.active, .menu a:hover{ background:rgba(255,255,255,.15); color:#fff; }
-.login{ background:#5fff12; border:0; padding:8px 14px; border-radius:10px; cursor:pointer; }
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.brand {
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.1rem;
+}
+
+/* ====== MENÚ NORMAL ====== */
+.menu {
+  list-style: none;
+  display: flex;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+}
+
+.menu a {
+  color: #eaf6ff;
+  text-decoration: none;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-family: Arial, Helvetica, sans-serif;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.menu a.active,
+.menu a:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.login {
+  background: #5fff12;
+  border: 0;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* ====== BOTÓN HAMBURGUESA ====== */
+.hamb {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.hamb span {
+  width: 25px;
+  height: 3px;
+  background: white;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 768px) {
+  .menu {
+    position: absolute;
+    top: 15vh;
+    right: 0;
+    background: linear-gradient(90deg, #0a80fb, #0db2ff);
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 0;
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s ease;
+  }
+
+  .menu.open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .hamb {
+    display: flex;
+  }
+
+  .login {
+    margin-top: 8px;
+  }
+}

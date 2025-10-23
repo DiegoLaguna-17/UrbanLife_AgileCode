@@ -1,15 +1,29 @@
 <nav class="nav">
   <div class="left">
-    <img src="assets/img/urbanlogo.png"  alt="UrbanLife" class="logo" style="width: 10vh;height: 10vh;" />
+    <img
+      src="https://gdwdghbopwsxpnheabuy.supabase.co/storage/v1/object/sign/Frontend/urbanlogo.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV83ZDUzZDg3OS04ZmEyLTRiODItOTFkOS1jNmIyN2YwYTMzOGUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJGcm9udGVuZC91cmJhbmxvZ28ucG5nIiwiaWF0IjoxNzYxMjM0NTk2LCJleHAiOjE3OTI3NzA1OTZ9.VGLVAMk0G62pBZ0hgTgo3bD6RjkILk7ccPAPglAjjto"
+      alt="UrbanLife"
+      class="logo"
+      style="width: 10vh; height: 10vh;"
+    />
     <a class="brand" routerLink="/">URBANLIFE</a>
   </div>
 
-  <ul class="menu">
-    <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Inicio</a></li>
+  <!-- Botón hamburguesa -->
+  <div class="hamb" (click)="toggleMenu()">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <!-- Menú de enlaces -->
+  <ul class="menu" [class.open]="menuAbierto" (click)="cerrarMenu()">
+    <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Inicio</a></li>
     <li><a routerLink="/nosotros" routerLinkActive="active">Nosotros</a></li>
     <li><a routerLink="/servicios" routerLinkActive="active">Servicios</a></li>
     <li><a routerLink="/contacto" routerLinkActive="active">Contacto</a></li>
+    <li class="btn-mobile"><button class="login" [routerLink]="['/login']">Log In</button></li>
   </ul>
 
-  <button class="login" [routerLink]="['/login']">Log In</button>
+  <!-- Botón login en desktop -->
 </nav>

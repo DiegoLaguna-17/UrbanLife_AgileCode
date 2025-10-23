@@ -13,6 +13,5 @@ import { CommonModule } from '@angular/common';
 export class NovedadesCard {
     @Input() img = '';
   @Input() titulo = '';
-  @Input() desc = '';
   @Input() alt = '';
 }
