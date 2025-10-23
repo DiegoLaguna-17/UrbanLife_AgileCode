@@ -1,0 +1,20 @@
+.client-card{
+  display:grid; grid-template-rows: 2fr 1fr; align-items:center; gap:5vh;
+  background:#fff; border:1px solid #e8eef7; border-radius:14px; padding:16px;
+  border-color: #0a80fb;border-width: 0.3vh;
+  transition: all 0.3s;
+}
+.logo-wrap{ width:20vh; height:20vh; border-radius:16px; background:#f6f9ff; 
+    display:flex;align-items:center; justify-content:center; overflow:hidden;
+    border-color: #000000;border-width: 5vh;
+ }
+.logo-wrap img{ width:100%; height:100%; object-fit:contain; }
+figcaption{ font-size:1rem;  text-align:center; font-weight: bold; }
+figcaption{
+    font-family: Arial, Helvetica, sans-serif;
+}
+.client-card:hover{
+    border-color: #0a80fb;  
+    box-shadow: 0 0 20px rgba(10, 128, 251, 0.7); /* resplandor azul */
+    transform: translateY(-4px) scale(1.02);     
+}
