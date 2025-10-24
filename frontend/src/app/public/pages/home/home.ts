@@ -14,15 +14,14 @@ export class Home {
     {
       img:"https://assets.xomio.com/listings/images/rl-135855700__0__720.jpg",
       titulo:"Proyecto 1",
-      desc:"Nueva obra en desarrollo en Achumani"},
+    },
     {
       img:"https://cd1.eju.tv/wp-content/uploads/2015/11/565b07051a78e.jpg",
       titulo:"Proyecto 2",
-      desc:"Nueva obra en desarrollo en Miraflores"},
+    },
     {
       img:"https://cdn7.ultracasas.com/dyn/yastaimages/8c8e6168d2c0b4b9864fac99e4c3b6e48050b1",
       titulo:"Proyecto 3",
-      desc:"Nueva obra en desarrollo en Miraflores"
     }
   ];
 

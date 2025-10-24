@@ -23,6 +23,7 @@
   <div class="grid">
     <app-proveedores-card
     *ngFor="let proveedor of proveedores"
+    [logo]="proveedor.logo"
     [name]="proveedor.name"
     [link]="proveedor.link"
     ></app-proveedores-card>

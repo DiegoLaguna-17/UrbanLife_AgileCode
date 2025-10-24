@@ -155,3 +155,8 @@ h2,span{
   .map img { height: 200px; }
   .info { grid-template-columns: 1fr; }
 }
+
+.info-card:hover{
+   box-shadow: 0 0 15px rgba(10, 128, 251, 0.5);
+    transform: translateY(-3px) scale(1.03);
+}

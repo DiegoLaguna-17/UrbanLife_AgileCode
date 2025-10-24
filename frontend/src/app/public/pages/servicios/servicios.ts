@@ -21,10 +21,11 @@ export class Servicios {
     { title: 'Asesoramiento en selección de materiales y acabados de alto estándar',img:"assets/img/servicios/icon8.png"}
   ];
   proveedores = [
-    { name: 'Proveedor A' ,logo:"",link:"https://soboce.com/"},
-    { name: 'Proveedor B' ,logo:"",link:"https://soboce.com/"},
-    { name: 'Proveedor J' ,logo:"",link:"https://soboce.com/"},
-    { name: 'Proveedor D' ,logo:"",link:"https://soboce.com/"}
+    { name: 'SOBOCE' ,logo:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdJEFtuFI75IdvRKTNhPiZblpw0C0USWHm-g&s",link:"https://soboce.com/"},
+    { name: 'INCERPAZ' ,logo:"https://andabolivia.com/wp-content/uploads/2015/05/logo-incerpaz.png",link:"http://incerpaz.com"},
+    { name: 'COBOCE' ,logo:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRE8FRTfrbcYtebDzmAFaSj32JIIzFtGbov2g&s",link:"https://coboce.com"},
+    { name: 'ACEROS AREQUIPA' ,logo:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWXCmO2iUTOKTP2F0A2RZQeDIPJxqvvYULJA&s",link:"https://acerosarequipa.com/bo/es/"},
+    { name: 'GLADYMAR' ,logo:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgyRrVmMGQEAWZTFVLCnVF1ip5oDSY4w1RdA&s",link:"https://gladymar.com.bo "},
   ];
 
 }
