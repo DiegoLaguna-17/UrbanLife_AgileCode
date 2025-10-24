@@ -8,12 +8,14 @@
   color: #fff;
   position: relative;
   z-index: 10;
+  
 }
 
 .left {
   display: flex;
   align-items: center;
   gap: 10px;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .logo {
@@ -61,6 +63,7 @@
   padding: 8px 14px;
   border-radius: 10px;
   cursor: pointer;
+  width: 7.2rem;
 }
 
 /* ====== BOTÓN HAMBURGUESA ====== */

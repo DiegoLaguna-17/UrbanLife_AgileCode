@@ -1,26 +1,59 @@
 $primary: #0a80fb;
 $line: #cfe2ff;
 
-.tile{
-  width: 180px;
-  min-height: 200px;
-  border: 2px solid $primary;
-  background: #fff;
-  border-radius: 16px;
-  padding: 12px;
+.tile {
   display: grid;
-  grid-template-rows: 1fr auto;
-  gap: 8px;
-  transition: box-shadow .2s ease, transform .1s ease;
+  grid-template-rows: auto auto;
+  justify-items: center;
+  align-items: center;
+  gap: clamp(0.8rem, 2vh, 1.2rem);
+  background: #fff;
+  border: 2px solid $primary;
+  border-radius: 14px;
+  margin:10px auto;
+  text-align: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  box-sizing: border-box;
+  height: 100%;
+  max-width: 150px; // max-width fijo para uniformidad
+  cursor: pointer;
 
-  &:hover{ box-shadow: 0 6px 18px rgba(10,128,251,.15); transform: translateY(-2px); }
+  &:hover {
+    border-color: $primary;
+    box-shadow: 0 0 15px rgba(10, 128, 251, 0.5);
+    transform: translateY(-3px) scale(1.03);
+  }
 }
-.thumb{
-  display: grid; place-items: center;
-  background: #f5f9ff; border-radius: 12px; border: 1px solid $line;
-  aspect-ratio: 1/1; overflow: hidden;
+
+.thumb {
+  display: grid;
+  place-items: center;
+  background: #f5f9ff;
+  border-radius: 12px;
+  border: 1px solid $line;
+  aspect-ratio: 1/1;
+  overflow: hidden;
+  font-family: Arial, Helvetica, sans-serif;
+  width: clamp(80px, 20vw, 120px); // ancho responsive mínimo 80px, máximo 120px
+  height: clamp(80px, 20vw, 120px); // altura igual que el ancho
 }
-.thumb img{ width: 90%; height: 90%; object-fit: contain; display:block; }
-.title{
-  margin: 0; text-align: center; font-size: .92rem; font-weight: 700; color: #29405a;
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; // mantiene proporción
+  display: block;
+}
+
+.title {
+  margin: 0;
+  text-align: center;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #29405a;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  word-break: break-word;
+  font-family: Arial, Helvetica, sans-serif;
 }

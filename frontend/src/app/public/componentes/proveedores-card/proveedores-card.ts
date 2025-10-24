@@ -11,5 +11,6 @@ import { CommonModule } from '@angular/common';
 export class ProveedoresCard {
   @Input() name = 'Proveedor';
   @Input() logo = 'assets/placeholders/provider.png';
+  @Input() link='';
   @Input() alt = '';
 }

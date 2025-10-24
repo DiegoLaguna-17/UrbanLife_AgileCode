@@ -1,45 +1,76 @@
 $primary: #0a80fb;
 $line: #e8eef7;
-
+h1{
+  font-family: Arial, Helvetica, sans-serif;
+}
 /* Hero */
-.hero{
+.hero {
   position: relative;
   border-radius: 14px;
   overflow: hidden;
-  margin: 16px 0 20px;
+  margin: 16px 0;
+  max-height: 70vh;
+}
 
-  img{ width:100%; height:220px; object-fit:cover; display:block; border:2px solid #8ea8ff; }
-  h1{
-    position:absolute; left:24px; top:24px; margin:0;
-    padding:10px 16px; background:rgba(0,0,0,.45); color:#fff;
-    border-radius:12px; font-size:clamp(22px,4vw,36px); font-weight:800;
-  }
+.hero img {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: cover;
+  object-position: top;
+  filter: brightness(0.6);
+  display: block;
+}
+
+.hero h1 {
+  position: absolute;
+  margin: 0;
+  font-size: clamp(2rem, 6vw, 5rem);
+  color: #fff;
+  border-radius: 10px;
+  font-weight: 700;
+  text-align: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0.5em 1em;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 /* Título sección */
 .section-title{
-  color: $primary; font-weight: 800; font-size: 1.05rem; margin: 8px 0 14px;
+  color: $primary; font-weight: 800; font-size: 1.5rem; margin: 8px 0 14px;font-family: Arial, Helvetica, sans-serif;
 }
 
 /* Bloques y grillas */
 .block{ 
-    margin: 10px 0 26px; background:#fff; border:1px solid #e8eef7; border-radius:14px; 
-    padding:16px; margin:16px 0; align-items: center; flex-direction: column; display: flex;
+    margin: 16px 0 26px; background:#fff; border:1px solid #e8eef7; border-radius:14px; 
+    padding:46px; margin:16px 0; align-items: center; flex-direction: column; display: flex;
+    height: 50% auto;
   
 }
 .grid{
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* columnas flexibles */
-  gap: 24px 32px; /* espacio vertical y horizontal entre tarjetas */
+  gap: 52px 52px; /* espacio vertical y horizontal entre tarjetas */
   width: 100%;
   max-width: 1100px;
 }
 
 /* Responsivo */
-@media (max-width: 900px){
+@media (max-width: 1024px){
   .hero img{ height: 180px; }
   .grid{ grid-template-columns: repeat(2, minmax(150px, 1fr)); }
 }
 @media (max-width: 560px){
   .grid{ grid-template-columns: 1fr; }
 }
+.grid-2{
+  display: grid;
+  grid-template-rows: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+  justify-items: center;
+  align-items: stretch; 
+}
+
+

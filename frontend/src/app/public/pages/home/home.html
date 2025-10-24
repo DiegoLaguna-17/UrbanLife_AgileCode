@@ -1,51 +1,59 @@
 <!-- Hero -->
 <section class="hero">
-  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQBCCtYlTpoB2Kcsol6pYL5WqB7rADj3OZIQ&s" alt="Construcción" />
-  <h1>Bienvenido a UrbanLife</h1>
+  <img
+    src="assets/img/home/banner_h.jpg"
+    alt="Construcción"
+    loading="eager"
+    width="1600" height="600"
+  />
+  <h1>UrbanLife:<br>Construyendo el futuro juntos</h1>
 </section>
 
-<div class="grid-2">
-  <!-- Acerca -->
-   <div class="grid-3">
-    <section class="card">
+<div class="page-wrap">
+  <div class="grid-2">
+    <!-- Columna izquierda -->
+    <div class="grid-3">
+      <!-- Acerca -->
+      <section class="card">
         <h2>Acerca de Nosotros</h2>
         <div class="about">
-            <img src="https://previews.123rf.com/images/photolight2/photolight22001/photolight2200100402/136939757-woman-engineer-and-man-builder-at-construction-site-building-development-teamwork-and-people.jpg" alt="Equipo de trabajo" />
-            <p>
-                Somos una empresa constructora comprometida con el desarrollo sostenible,
-                la innovación en infraestructura y el bienestar de las comunidades.
-                Nuestro objetivo es transformar espacios en lugares donde la vida y la
-                arquitectura se unen en armonía.
-            </p>
+          <img
+            src="assets/img/home/home_2.jpg"
+            alt="Equipo de trabajo"
+            loading="lazy"
+            width="1000" height="750"
+          />
+          <p>
+            Somos una empresa constructora comprometida con el desarrollo sostenible,
+            la innovación en infraestructura y el bienestar de las comunidades.
+            Nuestro objetivo es transformar espacios en lugares donde la vida y la
+            arquitectura se unen en armonía.
+          </p>
         </div>
-    </section>
-    <section class="card">
+      </section>
+      <!-- Clientes -->
+      <section class="card">
         <h2>Nuestros Clientes</h2>
         <div class="clients">
-            <app-clientes-card 
+          <app-clientes-card
             *ngFor="let cliente of clientes"
             [logo]="cliente.logo"
-            [name]="cliente.name"
-            ></app-clientes-card>
+            [name]="cliente.name">
+          </app-clientes-card>
         </div>
-    </section>
-
-   </div>
- 
-
-  <!-- Novedades -->
-  <section class="card">
-    <h2>Novedades</h2>
-    <div class="news-list">
-      <app-novedades-card
-      *ngFor="let novedad of novedades"
-        [img]="novedad.img"
-        [titulo]="novedad.titulo"
-      ></app-novedades-card>
-
-      
+      </section>
     </div>
-  </section>
-</div>
 
-<!-- Clientes -->
+    <!-- Columna derecha: Novedades -->
+    <section class="card">
+      <h2>Novedades</h2>
+      <div class="news-list">
+        <app-novedades-card
+          *ngFor="let novedad of novedades"
+          [img]="novedad.img"
+          [titulo]="novedad.titulo">
+        </app-novedades-card>
+      </div>
+    </section>
+  </div>
+</div>

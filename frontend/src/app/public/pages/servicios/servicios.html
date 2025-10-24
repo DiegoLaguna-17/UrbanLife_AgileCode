@@ -1,6 +1,6 @@
 <!-- Hero -->
 <section class="hero">
-  <img src="https://www.walmartmexico.com/content/dam/walmart-mexico/images/article/proveedores-de-construccion/istock-6675793-large.jpg" alt="Servicios" />
+  <img src="assets/img/servicios/banner_s.jpg" alt="Servicios" />
   <h1>Servicios y Proveedores</h1>
 </section>
 
@@ -8,10 +8,12 @@
 <section class="block">
   <h2 class="section-title">Servicios Ofrecidos</h2>
   <div class="grid">
-    <app-servicios-card
-    *ngFor="let servicio of servicios"
-    [title]="servicio.title">
-</app-servicios-card>
+      <app-servicios-card
+      *ngFor="let servicio of servicios"
+      [title]="servicio.title"
+      [img]="servicio.img">
+      
+      </app-servicios-card>
   </div>
 </section>
 
@@ -22,6 +24,7 @@
     <app-proveedores-card
     *ngFor="let proveedor of proveedores"
     [name]="proveedor.name"
+    [link]="proveedor.link"
     ></app-proveedores-card>
   </div>
 </section>

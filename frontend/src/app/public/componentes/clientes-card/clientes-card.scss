@@ -1,20 +1,92 @@
-.client-card{
-  display:grid; grid-template-rows: 2fr 1fr; align-items:center; gap:5vh;
-  background:#fff; border:1px solid #e8eef7; border-radius:14px; padding:16px;
-  border-color: #0a80fb;border-width: 0.3vh;
-  transition: all 0.3s;
+.client-card {
+  display: grid;
+  grid-template-rows: auto auto;
+  justify-items: center;
+  align-items: center;
+  gap: clamp(0.8rem, 2vh, 1.2rem);
+  background: #fff;
+  border: 2px solid #0a80fb;
+  border-radius: 14px;
+  padding: clamp(0.8rem, 2vw, 1.4rem);
+  text-align: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  box-sizing: border-box;
+  height:100%;
+  max-width: 120px auto;
+  cursor: pointer;
+
+  &:hover {
+    border-color: #0a80fb;
+    box-shadow: 0 0 15px rgba(10, 128, 251, 0.5);
+    transform: translateY(-3px) scale(1.03);
+  }
 }
-.logo-wrap{ width:20vh; height:20vh; border-radius:16px; background:#f6f9ff; 
-    display:flex;align-items:center; justify-content:center; overflow:hidden;
-    border-color: #000000;border-width: 5vh;
- }
-.logo-wrap img{ width:100%; height:100%; object-fit:contain; }
-figcaption{ font-size:1rem;  text-align:center; font-weight: bold; }
-figcaption{
-    font-family: Arial, Helvetica, sans-serif;
+
+/* 🔹 Contenedor del logo */
+.logo-wrap {
+  width: 100%;
+  aspect-ratio: 1 / 1; /* Cuadro perfecto */
+  border-radius: 16px;
+  background: #f6f9ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 2px solid #dbe4f4;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.08);
 }
-.client-card:hover{
-    border-color: #0a80fb;  
-    box-shadow: 0 0 20px rgba(10, 128, 251, 0.7); /* resplandor azul */
-    transform: translateY(-4px) scale(1.02);     
+
+.logo-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  transition: transform 0.3s ease;
+}
+
+/* Efecto suave de zoom en hover */
+.client-card:hover .logo-wrap img {
+  transform: scale(1.05);
+  border-color: #0a80fb;  
+    box-shadow: 0 0 20px rgba(10, 128, 251, 0.7); 
+}
+
+/* 🔹 Texto debajo */
+figcaption {
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  font-size: clamp(0.9rem, 1.8vw, 1.05rem);
+  font-weight: 600;
+  color: #0a0a0a;
+  text-wrap: balance;
+  line-height: 1.3;
+}
+/* Responsivo ya mejorado */
+@media (max-width: 768px) {
+  .client-card {
+    padding: 0.8rem;
+    gap: 0.5rem;
+  }
+
+  .logo-wrap {
+    width: 70px;
+  }
+
+  figcaption {
+    font-size: clamp(0.8rem, 2vw, 0.95rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .client-card {
+    padding: 0.6rem;
+    gap: 0.4rem;
+  }
+
+  .logo-wrap {
+    width: 60px;
+  }
+
+  figcaption {
+    font-size: 0.8rem;
+  }
 }

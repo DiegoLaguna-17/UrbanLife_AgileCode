@@ -1,9 +1,15 @@
-<article class="news-card">   
-    <div class="img-wrap">
-        <img [src]="img" [alt]="alt || titulo" loading="lazy" />
-    </div>
-    
-    <div class="body">
-        <strong>{{ titulo }}:</strong>
-    </div>
+<article class="news-card">
+  <div class="img-wrap">
+    <img
+      [src]="img"
+      [alt]="alt || titulo"
+      loading="lazy"
+      width="640"
+      height="360"
+    />
+  </div>
+
+  <div class="body">
+    <strong>{{ titulo }}</strong>
+  </div>
 </article>

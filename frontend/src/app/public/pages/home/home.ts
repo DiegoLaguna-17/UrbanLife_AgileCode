@@ -28,19 +28,19 @@ export class Home {
 
   clientes=[
     {
-      logo:"https://lpz.ucb.edu.bo/wp-content/uploads/2024/05/UCB-Ereccion-Canonica_Escudo-01.png",
+      logo:"assets/img/home/cliente1.png",
       name:"Universidad Católica Boliviana"
     },
     {
-      logo:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBj8nUKmU_esHfXuD5qxlGx-xzKU4LmWNMdA&s",
+      logo:"assets/img/home/cliente2.png",
       name:"Pollos Copacabana"
     },
     {
-      logo:"https://www.dismac.com.bo/media/default/default/Logo_Dismac_SEO.png",
+      logo:"assets/img/home/cliente3.webp",
       name:"Dismac"
     },
     {
-      logo:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDKAcl7tvA6N12d4rLyYnH_nhoaYKncJd0nA&s",
+      logo:"assets/img/home/cliente4.jpeg",
       name:"Breick"
     }
   ];
