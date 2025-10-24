@@ -1,46 +1,199 @@
-h1,h2,p{
-    font-family: Arial, Helvetica, sans-serif;
+/* Tipografía */ 
+h1, h2, p {
+  font-family: Arial, Helvetica, sans-serif;
 }
-h2{
-    font-size: 4vh;
+
+h2 {
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
 }
-.hero{
-  position:relative; border-radius:14px; overflow:hidden; margin:16px 0;
-  max-height: 70vh
+
+/* Hero */
+.hero {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  margin: 16px 0;
+  max-height: 70vh;
 }
-.hero img{ width:100%; height:280px; object-fit:cover; display:block; 
-    filter:brightness(0.6); object-fit: cover;object-position: top;
+
+.hero img {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: cover;
+  object-position: top;
+  filter: brightness(0.6);
+  display: block;
 }
-.hero h1{
-  position:absolute;  margin:0; font-size:8vh;
-  color:#fff; border-radius:10px; font-weight:700;
-  align-content: center;
+
+.hero h1 {
+  position: absolute;
+  margin: 0;
+  font-size: clamp(2rem, 6vw, 5rem);
+  color: #fff;
+  border-radius: 10px;
+  font-weight: 700;
+  text-align: center;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); /* centra en ambas direcciones */
+  transform: translate(-50%, -50%);
+  padding: 0.5em 1em;
 }
-.card{ 
-    background:#fff; border:1px solid #e8eef7; border-radius:14px; 
-    padding:16px; margin:16px 0; 
-    transition: all 0.3s ease; 
-}
-.card h2{
-    color: #0a80fb;
-}
-.grid-2{ display:grid; grid-template-columns:2fr 1fr; gap:16px; }
-.grid-3{ display:grid; grid-template-rows:1fr 1fr; }
-.about{ display:grid; grid-template-columns:1fr 2fr; gap:5vh   ; align-items:start;margin-top: 10vh; }
-.about img{ width:100%; height:80%; object-fit:cover; border-radius:10px; }
-.about p{margin-top: 10vh;font-size: large;text-align: justify;}
 
-.news-list{ display:flex; flex-direction:column; gap:5vh; }
-.clients{ display:grid; grid-template-columns:repeat(4, 1fr); gap:1px; }
-@media (max-width: 900px){
-  .grid-2{ grid-template-columns:1fr; }
-  .clients{ grid-template-columns:repeat(2, 1fr); }
+/* Tarjetas */
+.card {
+  background: #fff;
+  border: 1px solid #e8eef7;
+  border-radius: 14px;
+  padding: 16px;
+  margin: 16px 0;
+  transition: all 0.3s ease;
+  max-height: fit-content;
 }
+
+.card h2 {
+  color: #0a80fb;
+  margin-bottom: 12px;
+}
+
+/* Grid principal */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+}
+
+/* Subgrid de izquierda */
+.grid-3 {
+  display: grid;
+  grid-template-rows: auto auto;
+}
+
+/* Sección Acerca */
+.about {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.about img {
+  width: 100%;
+  height: auto;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.about p {
+  font-size: 1rem;
+  text-align: justify;
+}
+
+/* Novedades */
+.news-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Clientes */
+.clients {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding-bottom: 2vh;
+}
+
+
+/* Hover */
 .card:hover {
-  border-color: #84ff55;  
+  border-color: #84ff55;
   box-shadow: 0 0 15px rgba(132, 255, 85, 0.7);
-  transform: translateY(-4px);   
+  transform: translateY(-4px);
+}
+
+/* RESPONSIVO */
+
+/* Tablets / pantallas medianas */
+@media (max-width: 1024px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-3 {
+    grid-template-rows: auto auto;
+  }
+
+  .about {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .clients {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hero img {
+    max-height: 250px;
+  }
+
+  .hero h1 {
+    font-size: clamp(1.5rem, 6vw, 3rem);
+    padding: 0.3em 0.6em;
+  }
+}
+
+/* Móviles / pantallas pequeñas */
+@media (max-width: 768px) {
+  .clients {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .news-list {
+    gap: 1rem;
+  }
+
+  .about img {
+    max-height: 220px;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .about p {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about img {
+    max-height: 200px;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+  }
+
+  .about p {
+    font-size: 0.9rem;
+  }
+
+  .news-list {
+    gap: 0.8rem;
+  }
+
+  .hero img {
+    max-height: 200px;
+  }
+
+  .hero h1 {
+    font-size: clamp(1.2rem, 5vw, 2.5rem);
+    padding: 0.2em 0.5em;
+  }
 }

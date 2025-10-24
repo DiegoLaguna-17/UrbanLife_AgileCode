@@ -1,25 +1,106 @@
-.news-card{
-  background:#fff; border-radius:12px; padding:12px; border:1px solid #e8eef7;
-  box-shadow: 0 1px 3px rgba(0,0,0,.04);
-  max-height: 25vh;
-  display: grid;grid-template-rows: 4fr 1fr;gap: 2vh;
-  border-color: #0a80fb;border-width: 0.3vh;
-  align-items: center ;
-  max-width:45vh ;
-  transition: all 0.3s;
-}
-.img-wrap{ width:90%; height:100%; border-radius:1vh; overflow:hidden; display: block;}
-.img-wrap img{ width:100%; height:100%; object-fit:cover; display:block; }
-.body{ display:flex; flex-direction:column; gap:6px; font-size:.92rem;}
-strong{ color:#283d55; }
-span{ color:#4a5b6d; line-height:1.25;     font-family: Arial, Helvetica, sans-serif;
-}
-strong{
-    font-family: Arial, Helvetica, sans-serif;
+.news-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 2px solid #0a80fb;
+  padding: clamp(0.6rem, 1.6vw, 1rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.6rem, 1.2vw, 0.9rem);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  max-width: clamp(240px, 40vw, 360px);
+  cursor: pointer;
+  overflow: hidden;
+  box-sizing: border-box;
 
+  &:hover {
+    border-color: #0a80fb;
+    box-shadow: 0 0 15px rgba(10, 128, 251, 0.5);
+    transform: translateY(-3px) scale(1.02);
+  }
 }
-.news-card:hover{
-    border-color: #0a80fb;  
-    box-shadow: 0 0 20px rgba(10, 128, 251, 0.7); /* resplandor azul */
-    transform: translateY(-4px) scale(1.02);     
+
+/* 🔹 Imagen */
+.img-wrap {
+  width: 100%;
+  aspect-ratio: 16 / 9; /* mantiene proporción perfecta */
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f4f7fb;
+  display: block;
+  position: relative;
+}
+
+.img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+/* Efecto suave al pasar el mouse */
+.news-card:hover .img-wrap img {
+  transform: scale(1.05);
+}
+
+/* 🔹 Cuerpo */
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: clamp(0.9rem, 1.6vw, 1rem);
+  line-height: 1.4;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+strong {
+  color: #283d55;
+  font-weight: 700;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(1rem, 1.8vw, 1.1rem);
+}
+
+span {
+  color: #4a5b6d;
+  line-height: 1.35;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+}
+
+/* 🔹 Responsivo */
+@media (max-width: 1024px) {
+  .news-card {
+    max-width: 100%;
+  }
+
+  .img-wrap {
+    aspect-ratio: 16 / 10;
+  }
+}
+
+@media (max-width: 600px) {
+  .news-card {
+    flex-direction: column;
+    gap: 0.7rem;
+    padding: 0.8rem;
+  }
+
+  .img-wrap {
+    border-radius: 8px;
+    aspect-ratio: 4 / 3;
+  }
+
+  .body {
+    font-size: 0.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .news-card,
+  .news-card img {
+    transition: none !important;
+  }
 }

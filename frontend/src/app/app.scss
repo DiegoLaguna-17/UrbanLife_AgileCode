@@ -1,0 +1,24 @@
+/* 🔹 Elimina márgenes y scrolls innecesarios */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+  background: #fff; /* o el color de fondo general que uses */
+}
+
+/* 🔹 Asegura que Angular no deje margen en el root */
+app-root {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* 🔹 El main (si lo usas como contenedor general) */
+main, .page {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}

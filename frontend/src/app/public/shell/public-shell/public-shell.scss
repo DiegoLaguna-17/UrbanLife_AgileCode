@@ -1,4 +1,19 @@
-.contenido {
-  opacity: 1;
-  transition: opacity 0.5s ease;
+/* 🔹 Elimina márgenes y scrolls innecesarios */
+
+
+/* 🔹 Asegura que Angular no deje margen en el root */
+app-root {
+  display: block;
+  width: 100%;
+  margin: 10px;
+  padding: 10px;
+  
 }
+
+main, .page {
+  width: auto;        // o no definir width
+  max-width: 1200px;  // opcional, para limitar ancho
+  margin: 10px auto;  // auto centra horizontalmente
+  padding: 10px;
+}
+
