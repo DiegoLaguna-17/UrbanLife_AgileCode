@@ -6,7 +6,7 @@
       class="logo"
       style="width: 10vh; height: 10vh;"
     />
-    <a class="brand" routerLink="/">URBANLIFE</a>
+    <a class="brand" >URBANLIFE</a>
   </div>
 
   <!-- Botón hamburguesa -->
@@ -18,11 +18,11 @@
 
   <!-- Menú de enlaces -->
   <ul class="menu" [class.open]="menuAbierto" (click)="cerrarMenu()">
-    <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Inicio</a></li>
-    <li><a routerLink="/nosotros" routerLinkActive="active">Nosotros</a></li>
-    <li><a routerLink="/servicios" routerLinkActive="active">Servicios</a></li>
-    <li><a routerLink="/contacto" routerLinkActive="active">Contacto</a></li>
-    <li class="btn-mobile"><button class="login" [routerLink]="['/login']">Log In</button></li>
+    <li><a routerLink="/inicio/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Inicio</a></li>
+    <li><a routerLink="/inicio/nosotros" routerLinkActive="active">Nosotros</a></li>
+    <li><a routerLink="/inicio/servicios" routerLinkActive="active">Servicios</a></li>
+    <li><a routerLink="/inicio/contacto" routerLinkActive="active">Contacto</a></li>
+    <li class="btn-mobile"><button class="login" [routerLink]="['/auth/login']">Log In</button></li>
   </ul>
 
   <!-- Botón login en desktop -->

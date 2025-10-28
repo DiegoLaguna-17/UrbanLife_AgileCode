@@ -1,0 +1,37 @@
+<div class="login-page">
+  <!-- Panel izquierdo -->
+  <section class="left-panel">
+    <div class="overlay"></div>
+    <div class="brand">
+      <img class="brand__logo" src="assets/img/urbanlogo.png" alt="UrbanLife" />
+      <h1 class="brand__name">URBANLIFE</h1>
+    </div>
+  </section>
+
+  <!-- Panel derecho -->
+  <section class="right-panel">
+    <button class="back-home-btn" (click)="volverAlLogin()">Volver al login</button>
+
+    <div class="recuperar-card">
+      <h2>Recuperar contraseña</h2>
+
+      <p *ngIf="!enviado">
+        Ingresa tu correo electrónico y te enviaremos instrucciones para restablecer tu contraseña.
+      </p>
+
+      <div *ngIf="!enviado" class="form-container">
+        <input 
+          type="email" 
+          [(ngModel)]="email" 
+          placeholder="Correo electrónico" 
+          class="input-field" />
+        <button (click)="onEnviar()" class="login-button">Enviar instrucciones</button>
+      </div>
+
+      <div *ngIf="enviado" class="mensaje-confirmacion">
+        <p>📩 Te hemos enviado un correo con las instrucciones para recuperar tu contraseña.</p>
+        <button (click)="volverAlLogin()" class="login-button">Volver al login</button>
+      </div>
+    </div>
+  </section>
+</div>

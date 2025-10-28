@@ -1,0 +1,142 @@
+@use '../login/login' as *; // si usas el mismo estilo base (opcional)
+
+$primary: #0a80fb;
+$accent: #5fff12;
+$ink-1: #102437;
+$glass: rgba(0, 0, 0, .35);
+
+.login-page {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100dvh;
+
+  @media (max-width: 980px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Panel izquierdo */
+.left-panel {
+  position: relative;
+  background: url('/assets/img/login/construccion.webp') center/cover no-repeat;
+
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: $glass;
+  }
+
+  .brand {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    display: grid;
+    place-content: center;
+    text-align: center;
+    color: #fff;
+
+    &__logo {
+      width: clamp(120px, 30vw, 180px);
+      margin-inline: auto;
+      border-radius: 16px;
+    }
+
+    &__name {
+      margin-top: 1rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+    }
+  }
+
+  @media (max-width: 980px) {
+    display: none;
+  }
+}
+
+/* Panel derecho */
+.right-panel {
+  position: relative;
+  display: grid;
+  place-content: center;
+  padding: clamp(1.5rem, 5vw, 3rem);
+  background: linear-gradient(180deg, $primary 0%, $accent 100%);
+  color: #fff;
+
+  .back-home-btn {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-radius: 30px;
+    padding: 8px 18px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    transition: all .25s ease;
+    backdrop-filter: blur(6px);
+
+    &:hover {
+      background: linear-gradient(90deg, lighten($primary,10%), $accent);
+      border-color: transparent;
+      transform: translateY(-1px);
+    }
+  }
+
+  .recuperar-card {
+    background: #dff8d7;
+    color: $ink-1;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 40px rgba(0,0,0,.25);
+    width: min(420px, 86vw);
+    text-align: center;
+
+    h2 {
+      margin-bottom: 10px;
+      font-weight: 800;
+    }
+
+    p {
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .form-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .input-field {
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      box-shadow: inset 0 0 0 1px #ccc;
+    }
+
+    .login-button {
+      border: none;
+      border-radius: 30px;
+      background: linear-gradient(90deg, $primary, $accent);
+      color: #fff;
+      font-weight: 700;
+      padding: 12px;
+      cursor: pointer;
+      transition: transform .15s ease;
+
+      &:hover { transform: translateY(-1px); }
+    }
+
+    .mensaje-confirmacion {
+      p {
+        color: #333;
+        font-size: 1rem;
+        margin-bottom: 15px;
+      }
+    }
+  }
+}

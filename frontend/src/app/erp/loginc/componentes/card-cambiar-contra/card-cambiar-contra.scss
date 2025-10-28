@@ -1,0 +1,83 @@
+.forgot-card {
+  background: linear-gradient(180deg, #d4f4a6 0%, #c8e89f 100%);
+  border-radius: 30px;
+  padding: 40px 30px 50px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: center;
+  margin: auto;
+
+  h2 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .input-field {
+    width: 100%;
+    padding: 12px 20px;
+    border-radius: 25px;
+    border: none;
+    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    outline: none;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 15px;
+    border-radius: 30px;
+    background: linear-gradient(90deg, #00e5cc 0%, #7ed321 100%);
+    color: #333;
+    font-weight: bold;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0,229,204,0.4);
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(0,229,204,0.5);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+  }
+
+  .password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .toggle-password {
+    position: absolute;
+    right: 10px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+  .error-msg {
+    color: red;
+    font-weight: bold;
+    margin-top: 5px;
+  }
+
+  .success-msg {
+    color: green;
+    font-weight: bold;
+    margin-top: 5px;
+  }
+}
