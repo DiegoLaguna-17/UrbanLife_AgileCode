@@ -1,0 +1,13 @@
+$primary: #0a80fb;
+$accent: #5fff12;
+$ink-1: #102437;
+$glass: rgba(0, 0, 0, .35);
+.cambiar-page {
+  display: flex;               // Para centrar contenido
+  flex-direction: column;      // Si quieres que apilen verticalmente
+  justify-content: center;     // Centra verticalmente
+  align-items: center;         // Centra horizontalmente
+  min-height: 100vh;           // Asegura que siempre ocupe toda la pantalla
+  background: linear-gradient(180deg, $primary 0%, $accent 100%);
+  width: 100%;                 // Asegura que ocupe todo el ancho
+}

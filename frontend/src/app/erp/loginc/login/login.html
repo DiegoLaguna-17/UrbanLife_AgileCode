@@ -1,0 +1,26 @@
+<div class="login-page">
+  <!-- Panel izquierdo -->
+  <section class="left-panel">
+    <div class="overlay"></div>
+    <div class="brand">
+      <img class="brand__logo" src="assets/img/urbanlogo.png" alt="UrbanLife" />
+      <h1 class="brand__name">URBANLIFE</h1>
+    </div>
+  </section>
+
+  <!-- Panel derecho -->
+  <section class="right-panel">
+    <!-- 🔹 Botón arriba a la derecha -->
+    <button class="back-home-btn" (click)="onBackHome()">Volver al inicio</button>
+
+    <h2 class="welcome">¡BIENVENIDO!</h2>
+
+    <app-login-card 
+      [(username)]="username"
+      [(password)]="password"
+      [showErrors]="showErrors"
+      (loginClicked)="onLogin()"
+      (forgotClicked)="onForgotPassword()">
+    </app-login-card>
+  </section>
+</div>

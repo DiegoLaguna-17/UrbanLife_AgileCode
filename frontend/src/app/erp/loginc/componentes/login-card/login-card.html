@@ -1,0 +1,45 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="avatar-container">
+      <img src="assets/img/login/usuario.png" alt="User Avatar" class="avatar">
+    </div>
+
+    <div class="form-container">
+      <div class="input-group" [class.invalid]="isInvalid(username,password)">
+        <label for="username">Correo Electrónico</label>
+        <input
+          id="username"
+          type="text"
+          class="input-field"
+          placeholder="Ingrese su correo"
+          [class.placeholder-error]="isInvalid(username,password)"
+          [ngModel]="username"
+          (ngModelChange)="onUsernameInput($event)"
+        />
+      </div>
+
+      <div class="input-group" [class.invalid]="isInvalid(username,password)">
+  <label for="password">Contraseña</label>
+  <div class="password-wrapper">
+    <input
+      id="password"
+      [type]="showPassword ? 'text' : 'password'"
+      class="input-field"
+      placeholder="Ingrese su contraseña"
+      [class.placeholder-error]="isInvalid(username,password)"
+      [ngModel]="password"
+      (ngModelChange)="onPasswordInput($event)"
+    />
+    <button type="button" class="toggle-password" (click)="togglePassword()">
+      {{ showPassword ? '🙈' : '👁️' }}
+    </button>
+  </div>
+</div>
+
+
+      <a  class="forgot-password" (click)="emitForgot()">Olvidé mi contraseña</a>
+      <button class="login-button" (click)="emitLogin()">Log In</button>
+    </div>
+        <small *ngIf="isInvalid(username, password)" class="error-msg">Ingrese credenciales validas</small>
+  </div>
+</div>

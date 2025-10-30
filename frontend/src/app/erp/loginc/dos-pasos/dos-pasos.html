@@ -1,0 +1,21 @@
+ <div class="login-page">
+  <!-- Panel izquierdo -->
+  <section class="left-panel">
+    <div class="overlay"></div>
+    <div class="brand">
+      <img class="brand__logo" src="assets/img/urbanlogo.png" alt="UrbanLife" />
+      <h1 class="brand__name">URBANLIFE</h1>
+    </div>
+  </section>
+
+  <!-- Panel derecho -->
+  <section class="right-panel">
+ <div class="verificacion-container">
+      <h2>Verificación en dos pasos</h2>
+      <p>Introduce el código que enviamos a tu correo o teléfono:</p>
+
+      <input type="text" [(ngModel)]="codigo" maxlength="6" placeholder="Código de verificación" />
+      <button (click)="verificar()">Verificar</button>
+    </div> 
+  </section>
+</div>
