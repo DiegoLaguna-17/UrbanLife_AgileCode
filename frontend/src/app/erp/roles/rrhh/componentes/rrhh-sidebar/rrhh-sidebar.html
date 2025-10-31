@@ -1,0 +1,41 @@
+ <aside class="sidebar">
+    <div class="top">
+      <div class="avatar"><img src="../../../../../../assets/img/urbanlogo.png" alt="logo UrbanLife"></div>
+      <div class="contain_name">
+        <h2 class="name">Recursos Humanos</h2>
+      </div>
+    </div>
+
+    <nav class="menu">
+        <!-- opcion de registro de empleados y trabajadores -->
+        <a class="item" routerLink="./registrar" routerLinkActive="active">
+            <span class="icon">
+                <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z"/></svg>
+            </span>
+            <span>Registrar</span>
+        </a>
+
+        <!-- opcion de Administrar empleados de la empresa -->
+        <a class="item" routerLink="./registros" routerLinkActive="active">
+            <span class="icon">
+            <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z"/></svg>
+            </span>
+            <span>Administrar Empleados</span>
+        </a>
+
+        <!-- opcion de Administrar Trabajadores -->
+        <a class="item" routerLink="./registros" routerLinkActive="active">
+            <span class="icon">
+            <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z"/></svg>
+            </span>
+            <span>Administrar trabajadores</span>
+        </a>
+    </nav>
+
+    <button class="logout" type="button" (click)="logout.emit()">
+      <span class="logout-icon">
+        <svg viewBox="0 0 24 24"><path d="M10 3h7a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-7v-2h6V5h-6ZM4 12l4-4v3h7v2H8v3Z"/></svg>
+      </span>
+      Cerrar Sesión
+    </button>
+  </aside>

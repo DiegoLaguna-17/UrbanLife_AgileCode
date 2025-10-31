@@ -43,6 +43,47 @@ export const routes: Routes = [
       { path: 'contacto', component: Contacto, title: 'UrbanLife - Contacto' }
     ]
   },
+  {
+    path:'administrador', loadComponent: ()=>import('./erp/roles/administrador/administrador-shell/administrador-shell').then(m=>m.AdministradorShell),
+    children:[
+      {
+        path:'', pathMatch:'full', redirectTo:'crear-proyectos'
+      },
+      {
+        path:'crear-proyectos', loadComponent: ()=>import('./erp/roles/administrador/paginas/crear-proyectos/crear-proyectos').then(m=>m.CrearProyectos)
+      }
+    ]
+  },
+  {
+    path:'contador', loadComponent: ()=>import('./erp/roles/contador/contdor-shell/contdor-shell').then(m=>m.ContdorShell),
+    children:[
+      {
+        path:'', pathMatch:'full', redirectTo:'detalles'
+      },
+      {
+        path:'detalles', loadComponent: ()=>import('./erp/roles/contador/contdor-shell/contdor-shell').then(m=>m.ContdorShell)
+      }
+    ]
+  },
+  {
+    path:'jefeobra', loadComponent: ()=>import('./erp/roles/jefeobra/jefeobra-shell/jefeobra-shell'). then(m=>m.JefeobraShell),
+    children:[
+      {
+        path:'', pathMatch:'full', redirectTo:'ver-proyectos'
+      },
+      {
+        path:'ver-proyectos', loadComponent: ()=>import('./erp/roles/jefeobra/jefeobra-shell/jefeobra-shell').then(m=>m.JefeobraShell)
+      }
+    ]
+  },
+  {
+    path:'rrhh', loadComponent:()=>import('./erp/roles/rrhh/rrhh-shell/rrhh-shell'). then(m=>m.RrhhShell),
+    children:[
+      {
+        path:'registrar', loadComponent: ()=>import('./erp/roles/rrhh/rrhh-shell/rrhh-shell').then(m=>m.RrhhShell)
+      }
+    ]
+  },
 
   // 🚀 Redirección principal al cargar la app
   { path: '', redirectTo: 'inicio/home', pathMatch: 'full' },
