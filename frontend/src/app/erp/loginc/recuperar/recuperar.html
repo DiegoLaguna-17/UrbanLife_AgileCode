@@ -1,6 +1,6 @@
 <div class="login-page">
   <!-- Panel izquierdo -->
-  <section class="left-panel">
+  <section class="left-panel" aria-hidden="true">
     <div class="overlay"></div>
     <div class="brand">
       <img class="brand__logo" src="assets/img/urbanlogo.png" alt="UrbanLife" />
@@ -20,16 +20,25 @@
       </p>
 
       <div *ngIf="!enviado" class="form-container">
-        <input 
-          type="email" 
-          [(ngModel)]="email" 
-          placeholder="Correo electrónico" 
-          class="input-field" />
-        <button (click)="onEnviar()" class="login-button">Enviar instrucciones</button>
-      </div>
+        <label class="visually-hidden" for="email">Correo electrónico</label>
+        <input
+  id="email"
+  type="email"
+  [(ngModel)]="email"
+  placeholder="Correo electrónico"
+  class="input-field"
+  aria-label="Correo electrónico"
+  inputmode="email"
+  autocomplete="email" />
+<br>
+<button (click)="onEnviar()" class="login-button">Enviar instrucciones</button>
 
+<p *ngIf="emailError" class="error-msg">{{ emailError }}</p>
+      </div>
+      
       <div *ngIf="enviado" class="mensaje-confirmacion">
         <p>📩 Te hemos enviado un correo con las instrucciones para recuperar tu contraseña.</p>
+        <br>
         <button (click)="volverAlLogin()" class="login-button">Volver al login</button>
       </div>
     </div>

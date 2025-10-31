@@ -8,7 +8,26 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './dos-pasos.scss'
 })
 export class DosPasos {
-  codigo = '';
+  ngOnInit(){
+    const email=sessionStorage.getItem('email');
+    console.log(email)
+  }
+  codigo: string = '';
+
+soloNumeros(event: KeyboardEvent): void {
+  const char = event.key;
+  // Bloquear todo lo que no sea un número
+  if (!/^[0-9]$/.test(char)) {
+    event.preventDefault();
+  }
+}
+
+limitarCodigo(): void {
+  // Asegura que el valor no supere los 6 caracteres
+  if (this.codigo.length > 6) {
+    this.codigo = this.codigo.slice(0, 6);
+  }
+}
 
   verificar() {
     if (this.codigo === '123456') {

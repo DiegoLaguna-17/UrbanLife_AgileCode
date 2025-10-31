@@ -10,10 +10,16 @@
 
   <!-- Panel derecho -->
   <section class="right-panel">
-    <!-- 🔹 Botón arriba a la derecha -->
-    <button class="back-home-btn" (click)="onBackHome()">Volver al inicio</button>
+    <!-- Logo visible en móvil -->
+  <div class="mobile-brand">
+    <img class="mobile-brand__logo" src="assets/img/urbanlogo.png" alt="UrbanLife" />
+    <span class="mobile-brand__name">URBANLIFE</span>
+  </div>
 
-    <h2 class="welcome">¡BIENVENIDO!</h2>
+  <!-- 🔹 Botón arriba a la derecha -->
+  <button class="back-home-btn" (click)="onBackHome()">Volver al inicio</button>
+
+  <h2 class="welcome">¡BIENVENIDO!</h2>
 
     <app-login-card 
       [(username)]="username"
@@ -23,4 +29,13 @@
       (forgotClicked)="onForgotPassword()">
     </app-login-card>
   </section>
+  <!-- 🔹 Modal genérico -->
+<div class="modal-overlay" *ngIf="modalVisible">
+  <div class="modal">
+    <h3>{{ modalTitle }}</h3>
+    <p>{{ modalMessage }}</p>
+    <button class="modal-btn" (click)="cerrarModal()">Cerrar</button>
+  </div>
+</div>
+
 </div>

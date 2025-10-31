@@ -1,6 +1,6 @@
 <!-- Hero -->
 <section class="hero">
-  <img src="assets/img/servicios/banner_s.jpg" alt="Servicios" />
+  <img src="assets/img/servicios/gif3.gif" alt="Servicios" />
   <h1>Servicios y Proveedores</h1>
 </section>
 
@@ -11,7 +11,9 @@
       <app-servicios-card
       *ngFor="let servicio of servicios"
       [title]="servicio.title"
-      [img]="servicio.img">
+      [img]="servicio.img"
+      [descripcion]="servicio.descricion">
+      
       
       </app-servicios-card>
   </div>
@@ -24,8 +26,8 @@
     <app-proveedores-card
     *ngFor="let proveedor of proveedores"
     [logo]="proveedor.logo"
-    [name]="proveedor.name"
-    [link]="proveedor.link"
+    [name]="proveedor.nombre"
+    [link]="proveedor.web"
     ></app-proveedores-card>
   </div>
 </section>

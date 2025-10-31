@@ -2,12 +2,76 @@ $primary: #0a80fb;
 $accent: #5fff12;
 $ink-1: #102437;
 $glass: rgba(0, 0, 0, .35);
+
 .cambiar-page {
-  display: flex;               // Para centrar contenido
-  flex-direction: column;      // Si quieres que apilen verticalmente
-  justify-content: center;     // Centra verticalmente
-  align-items: center;         // Centra horizontalmente
-  min-height: 100vh;           // Asegura que siempre ocupe toda la pantalla
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* centra vertical */
+  align-items: center;       /* centra horizontal */
+  min-height: 100svh;        /* usa svh para que no salte en mobile al abrir teclado */
+  width: 100%;
+  padding: clamp(1rem, 4vw, 2rem); /* margen interno adaptable */
   background: linear-gradient(180deg, $primary 0%, $accent 100%);
-  width: 100%;                 // Asegura que ocupe todo el ancho
+  background-attachment: fixed; /* opcional: efecto suave de fondo fijo */
+  box-sizing: border-box;
+
+  /* Evita que el contenido quede pegado a los bordes */
+  > * {
+    max-width: min(480px, 94vw);
+    width: 100%;
+  }
+
+  /* 💡 Ajuste para pantallas muy pequeñas */
+  @media (max-width: 480px) {
+    padding: 1.2rem;
+  }
+
+  /* 💡 Safe area support para iPhone notch y similares */
+  @supports (padding: max(0px)) {
+    padding-top: max(1.2rem, env(safe-area-inset-top));
+    padding-bottom: max(1.2rem, env(safe-area-inset-bottom));
+  }
+
+  /* 💡 Fondo difuminado opcional para contraste */
+  &::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: $glass;
+    backdrop-filter: blur(4px);
+    z-index: 0;
+  }
+
+  app-card-cambiar-contra {
+    position: relative;
+    z-index: 1; /* encima del overlay */
+  }
+}
+/* === Fix centrado del card en mobile === */
+.cambiar-page {
+  display: grid;                 /* grid centra más fiable que flex en este caso */
+  place-items: center;           /* centra X y Y */
+  padding-inline: clamp(16px, 4vw, 24px);
+}
+
+/* Fuerza al componente a centrarse y a no pegarse a un borde */
+.cambiar-page > app-card-cambiar-contra {
+  margin: 0 auto !important;     /* centra horizontal */
+  justify-self: center !important;
+  align-self: center !important;
+  max-width: min(520px, 92vw);   /* deja respiración a ambos lados */
+  width: 100%;
+  position: relative;            /* evita offsets raros */
+  left: auto; right: auto;       /* por si estaba desplazado */
+  float: none;                   /* por si algún estilo lo flotó */
+  text-align: initial;
+}
+
+/* Por si el card interno tiene un contenedor que empuja a la derecha */
+.cambiar-page > app-card-cambiar-contra *[class*="card"],
+.cambiar-page > app-card-cambiar-contra .forgot-card {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  max-width: min(520px, 92vw);
+  width: 100%;
 }

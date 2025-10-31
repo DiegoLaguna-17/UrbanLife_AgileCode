@@ -9,47 +9,48 @@
 <!-- Formulario + Imagen lateral -->
 <section class="form-wrap card">
     <form #form="ngForm" class="form" (ngSubmit)="enviarFormulario(form)">
-  <label class="field">
-    <span>Nombre Completo</span>
-    <input type="text" placeholder="Nombre Completo" [(ngModel)]="nombre" name="nombre" required #nombreCtrl="ngModel" />
-    <div class="error" *ngIf="nombreCtrl.touched && nombreCtrl.invalid">
-      El nombre es obligatorio.
+      <label class="field">
+        <span>Nombre Completo</span>
+        <input type="text" placeholder="Nombre Completo" name="nombre" required ngModel #nombreCtrl="ngModel" />
+        <div class="error" *ngIf="nombreCtrl.touched && nombreCtrl.invalid">
+          El nombre es obligatorio.
+        </div>
+      </label>
+
+      <label class="field">
+        <span>Correo Electrónico</span>
+        <input type="email"
+              placeholder="Correo Electrónico"
+              name="correo"
+              required
+              ngModel
+              #correoCtrl="ngModel"
+              (blur)="validarCorreo(form.value.correo)">
+      </label>
+      <div class="error" *ngIf="(correoCtrl.touched && correoCtrl.invalid) || !correoValido">
+        <span *ngIf="correoCtrl.errors?.['required']">El correo es obligatorio.</span>
+        <span *ngIf="!correoValido">El correo no es válido.</span>
+      </div>
+
+
+      <label class="field">
+        <span>Detalle</span>
+        <textarea rows="5" placeholder="Cuéntanos tu proyecto" name="detalle" 
+        required ngModel #detalleCtrl="ngModel"></textarea>
+        <div class="error" *ngIf="detalleCtrl.touched && detalleCtrl.invalid">
+          El detalle es obligatorio.
+        </div>
+      </label>
+      <button class="btn" type="submit">Enviar</button>
+    </form>
+
+    <div class="side-img">
+      <img
+        src="assets/img/contacto/Contacto+empresa+ti.webp"
+        alt="Canales de comunicación"
+        loading="lazy"
+      />
     </div>
-  </label>
-
-  <label class="field">
-    <span>Correo Electrónico</span>
-    <input type="email" 
-       placeholder="Correo Electrónico" 
-       [(ngModel)]="correo" 
-       name="correo"
-       required 
-       email
-       #correoCtrl="ngModel">
-<div *ngIf="correoCtrl.touched && correoCtrl.invalid" class="error">
-  <span *ngIf="correoCtrl.errors?.['required']">El correo es obligatorio.</span>
-  <span *ngIf="correoCtrl.errors?.['email']">El correo no es válido.</span>
-</div>
-  </label>
-
-  <label class="field">
-    <span>Detalle</span>
-    <textarea rows="5" placeholder="Cuéntanos tu proyecto" [(ngModel)]="detalle" name="detalle" required #detalleCtrl="ngModel"></textarea>
-    <div class="error" *ngIf="detalleCtrl.touched && detalleCtrl.invalid">
-      El detalle es obligatorio.
-    </div>
-  </label>
-
-  <button class="btn" type="submit">Enviar</button>
-</form>
-
-  <div class="side-img">
-    <img
-      src="assets/img/contacto/Contacto+empresa+ti.webp"
-      alt="Canales de comunicación"
-      loading="lazy"
-    />
-  </div>
 </section>
 
 <!-- Mapa -->
