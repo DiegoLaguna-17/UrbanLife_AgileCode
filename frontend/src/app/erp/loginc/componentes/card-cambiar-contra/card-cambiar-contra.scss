@@ -1,83 +1,141 @@
+/* Tipos y tokens */
+h2, label { font-family: Arial, Helvetica, sans-serif; }
+
+:root{
+  --gap-1: clamp(10px, 2.5vw, 16px);
+  --gap-2: clamp(14px, 3vw, 22px);
+  --rad-lg: 30px;
+  --rad-sm: 14px;
+}
+
+/* Card responsive */
 .forgot-card {
+  
   background: linear-gradient(180deg, #d4f4a6 0%, #c8e89f 100%);
-  border-radius: 30px;
-  padding: 40px 30px 50px;
-  width: 100%;
-  max-width: 400px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  text-align: center;
+  border-radius: var(--rad-lg);
+  padding: clamp(20px, 5vw, 40px) clamp(16px, 4vw, 30px) clamp(28px, 6vw, 50px);
+  width: min(480px, 94vw);            /* 🔑 nunca se pega al borde en mobile */
+  max-width: 100%;
   margin: auto;
-
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  display: grid;
+  gap: var(--gap-2);
+  text-align: center;
+  container-type: inline-size;        /* 🔑 habilita container queries dentro */
+  border-radius: 5vh;
   h2 {
-    font-size: 1.8rem;
-    font-weight: bold;
+    font-size: clamp(1.25rem, 3.5vw, 1.8rem);
+    font-weight: 800;
     color: #333;
+    margin: 0;
   }
 
-  .input-field {
-    width: 100%;
-    padding: 12px 20px;
-    border-radius: 25px;
-    border: none;
-    font-size: 14px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    outline: none;
-    box-sizing: border-box;
-    margin-bottom: 12px;
-  }
+  /* Paso / layout interno */
+  .step{
+    display: grid;
+    gap: var(--gap-1);
+    text-align: left;
 
-  .btn {
-    width: 100%;
-    padding: 15px;
-    border-radius: 30px;
-    background: linear-gradient(90deg, #00e5cc 0%, #7ed321 100%);
-    color: #333;
-    font-weight: bold;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 8px 20px rgba(0,229,204,0.4);
-    transition: all 0.3s ease;
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 25px rgba(0,229,204,0.5);
-    }
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      box-shadow: none;
+    /* Dos columnas solo si hay ancho suficiente del propio card */
+    @container (min-width: 420px){
+      grid-template-columns: 1fr;
     }
   }
 
-  .password-wrapper {
+  label{
+    font-size: clamp(0.9rem, 2.6vw, 1rem);
+    font-weight: 600;
+    color: #24323f;
+  }
+
+  .password-wrapper{
     position: relative;
-    display: flex;
+    display: grid;
     align-items: center;
   }
 
-  .toggle-password {
+  .input-field{
+    width: 100%;
+    padding: 12px clamp(16px, 4vw, 20px);
+    padding-right: 56px;              /* 🔑 espacio para el botón ojo */
+    border-radius: 25px;
+    border: none;
+    font-size: clamp(14px, 2.6vw, 16px);
+    box-shadow: inset 0 0 0 1px #cbd5e1, 0 2px 8px rgba(0,0,0,.08);
+    outline: none;
+    box-sizing: border-box;
+    margin-bottom: 6px;
+    background: #fff;
+    color: #0b1320;
+    transition: box-shadow .15s ease;
+
+    &:focus-visible{
+      box-shadow: inset 0 0 0 2px #0a80fb, 0 0 0 3px rgba(10,128,251,.18);
+    }
+  }
+
+  .toggle-password{
     position: absolute;
-    right: 10px;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    min-width: 40px;                  /* 🔑 target cómodo en táctil */
+    min-height: 40px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
     background: transparent;
     border: none;
     cursor: pointer;
-    font-size: 18px;
+    font-size: clamp(18px, 5vw, 20px);
+    line-height: 1;
+    color: #2a3a48;
+    transition: background .15s ease;
+
+    &:hover { background: rgba(0,0,0,.06); }
+    &:focus-visible {
+      outline: 3px solid rgba(10,128,251,.35);
+      outline-offset: 2px;
+    }
   }
 
-  .error-msg {
-    color: red;
-    font-weight: bold;
-    margin-top: 5px;
+  .btn{
+    width: 100%;
+    padding: clamp(12px, 3.5vw, 15px);
+    border-radius: 30px;
+    background: linear-gradient(90deg, #00e5cc 0%, #7ed321 100%);
+    color: #333;
+    font-weight: 800;
+    font-size: clamp(15px, 3.4vw, 16px);
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0,229,204,.4);
+    transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+
+    &:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(0,229,204,.5); }
+    &:active { transform: translateY(0); filter: brightness(.98); }
+    &:disabled { opacity: .6; cursor: not-allowed; box-shadow: none; }
   }
 
-  .success-msg {
-    color: green;
-    font-weight: bold;
-    margin-top: 5px;
+  .error-msg,
+  .success-msg{
+    font-weight: 700;
+    margin-top: 4px;
+    font-size: clamp(0.9rem, 2.6vw, 1rem);
+    text-align: left;
+    word-wrap: break-word;
   }
+
+  .error-msg{ color: #d32f2f; }
+  .success-msg{ color: #1b8a3b; }
+}
+
+/* Respeta zonas seguras (iPhone notch) si el card queda pegado arriba */
+@supports (padding: max(0px)) {
+  .forgot-card { padding-top: max(20px, env(safe-area-inset-top)); }
+}
+
+/* Accesibilidad: reduce motion */
+@media (prefers-reduced-motion: reduce){
+  * { transition: none !important; animation: none !important; }
 }

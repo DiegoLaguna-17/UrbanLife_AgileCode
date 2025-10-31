@@ -2,21 +2,46 @@ $primary: #0a80fb;
 $line: #cfe2ff;
 
 .tile {
+  perspective: 1000px;
+  width: clamp(200px, 20vw, 260px);  // tamaño responsivo
+  height: clamp(260px, 30vh, 350px); // altura mayor para contenido
+  margin: 15px auto;
+  cursor: pointer;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.tile:hover .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 2px solid $primary;
+  border-radius: 16px;
+  backface-visibility: hidden;
   display: grid;
-  grid-template-rows: auto auto;
   justify-items: center;
   align-items: center;
-  gap: clamp(0.8rem, 2vh, 1.2rem);
   background: #fff;
-  border: 2px solid $primary;
-  border-radius: 14px;
-  margin:10px auto;
-  text-align: center;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
   box-sizing: border-box;
-  height: 100%;
-  max-width: 150px; // max-width fijo para uniformidad
-  cursor: pointer;
+}
+
+/* Frente */
+.card-front {
+  gap: clamp(1rem, 2.5vh, 1.5rem);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+   font-family: Arial, Helvetica, sans-serif;
 
   &:hover {
     border-color: $primary;
@@ -33,27 +58,44 @@ $line: #cfe2ff;
   border: 1px solid $line;
   aspect-ratio: 1/1;
   overflow: hidden;
-  font-family: Arial, Helvetica, sans-serif;
-  width: clamp(80px, 20vw, 120px); // ancho responsive mínimo 80px, máximo 120px
-  height: clamp(80px, 20vw, 120px); // altura igual que el ancho
-}
+  width: clamp(100px, 25vw, 150px);
+  height: clamp(100px, 25vw, 150px);
 
-.thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain; // mantiene proporción
-  display: block;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
 }
 
 .title {
   margin: 0;
-  text-align: center;
-  font-size: 0.92rem;
+  font-size: clamp(1rem, 2vw, 1.2rem);
   font-weight: 700;
   color: #29405a;
-  white-space: normal;
-  overflow: visible;
-  text-overflow: unset;
-  word-break: break-word;
-  font-family: Arial, Helvetica, sans-serif;
+  padding: 0 0.3rem;
+  text-align: center;
+}
+
+/* Reverso */
+.card-back {
+  transform: rotateY(180deg);
+  padding: 1.2rem;
+  background: #f0f7ff;
+  border: 2px solid lighten($primary, 10%);
+  color: #0a355e;
+  font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+  line-height: 1.4;
+  overflow-y: auto;  // permite scroll si el contenido es muy largo
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .desc {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.4;
+    text-align: center;
+  }
 }

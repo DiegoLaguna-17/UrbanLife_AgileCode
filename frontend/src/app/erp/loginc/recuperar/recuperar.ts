@@ -13,13 +13,25 @@ import { Router } from '@angular/router';
 export class RecuperarComponent {
   email = '';
   enviado = false;
-
+emailError: string = '';
   constructor(private router: Router) {}
 
   onEnviar() {
-    if (!this.email.trim()) return;
-    this.enviado = true;
-    console.log('🔹 Se enviaron las instrucciones a:', this.email);
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  if (!this.email) {
+    this.emailError = 'El correo es obligatorio.';
+    return;
+  }
+
+  if (!emailPattern.test(this.email)) {
+    this.emailError = 'Debe ingresar un correo válido (ej. usuario@dominio.com).';
+    return;
+  }
+
+  this.emailError = '';
+  // ✅ Si pasa la validación, continúa con tu lógica
+  this.enviado = true;
   }
 
   volverAlLogin() {

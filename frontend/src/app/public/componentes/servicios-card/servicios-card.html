@@ -1,6 +1,16 @@
 <article class="tile">
-  <div class="thumb">
-    <img [src]="img" [alt]="alt || title" loading="lazy" />
+  <div class="card-inner">
+    <!-- Cara frontal -->
+    <div class="card-front">
+      <div class="thumb">
+        <img [src]="img" [alt]="alt || title" loading="lazy" />
+      </div>
+      <h4 class="title">{{ title }}</h4>
+    </div>
+
+    <!-- Cara trasera -->
+    <div class="card-back">
+      <p class="desc">{{ descripcion }}</p>
+    </div>
   </div>
-  <h4 class="title">{{ title }}</h4>
 </article>

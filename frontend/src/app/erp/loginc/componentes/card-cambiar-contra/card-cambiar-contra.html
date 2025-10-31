@@ -1,9 +1,5 @@
 <div class="forgot-card">
   <h2>Recuperar contraseña</h2>
-
-
-
-
   <!-- Paso 3: Nueva contraseña -->
   <div  class="step">
     <label for="new-password">Nueva contraseña</label>
@@ -21,19 +17,18 @@
     </div>
 
     <label for="confirm-password">Confirmar contraseña</label>
-<div class="password-wrapper">
-    <input
-  id="confirm-password"
-  [type]="showPassword2 ? 'text' : 'password'"
-  class="input-field"
-  placeholder="Confirmar contraseña"
-  [(ngModel)]="confirmPassword"
-/>
-<button type="button" class="toggle-password" (click)="togglePassword2()">
-    {{ showPassword2 ? '🙈' : '👁️' }}
-</button>
-      </div>
-
+    <div class="password-wrapper">
+      <input
+        id="confirm-password"
+        [type]="showPassword2 ? 'text' : 'password'"
+        class="input-field"
+        placeholder="Confirmar contraseña"
+        [(ngModel)]="confirmPassword"
+      />
+      <button type="button" class="toggle-password" (click)="togglePassword2()">
+          {{ showPassword2 ? '🙈' : '👁️' }}
+      </button>
+    </div>
     <button class="btn" (click)="changePassword()" [disabled]="!canChangePassword()">
       Cambiar contraseña
     </button>

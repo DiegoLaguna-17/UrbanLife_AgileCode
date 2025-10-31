@@ -14,7 +14,15 @@
       <h2>Verificación en dos pasos</h2>
       <p>Introduce el código que enviamos a tu correo o teléfono:</p>
 
-      <input type="text" [(ngModel)]="codigo" maxlength="6" placeholder="Código de verificación" />
+      <input type="text"
+       [(ngModel)]="codigo"
+       placeholder="Código de verificación"
+       maxlength="6"
+       (keypress)="soloNumeros($event)"
+       (input)="limitarCodigo()"  />
+<div *ngIf="codigo.length > 6" class="error">
+  Solo se permiten 6 dígitos.
+</div>
       <button (click)="verificar()">Verificar</button>
     </div> 
   </section>
