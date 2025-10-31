@@ -44,7 +44,7 @@ export const routes: Routes = [
     ]
   },
 
-  // 🚀 Redirección principal al cargar la app
+  //Redirección principal al cargar la app
   { path: '', redirectTo: 'inicio/home', pathMatch: 'full' },
 
   // 🚫 Captura solo rutas realmente inválidas

@@ -30,32 +30,38 @@ export class Login {
 
     // Llamada al endpoint de login
     const loginData = {
-      username: this.username,
-      password: this.password
+      correo: this.username,
+      contrasenia: this.password
     };
     console.log(loginData);
-    sessionStorage.setItem('email',loginData.username);
-    /*
-    this.http.post('https://tu-api.com/login', loginData, { observe: 'response' })
+    sessionStorage.setItem('email',loginData.correo);
+    
+    this.http.post('http://127.0.0.1:8000/api/login', loginData, { observe: 'response' })
       .subscribe({
-        next: response => {
-          // Aquí revisamos el status del servidor
-          if (response.status === 200) {
-            this.mostrarModal('Credenciales válidas', '');
-            sessionStorage.setItem('email',loginData.username);
-            setTimeout(() => {
-              this.cerrarModal();
-              this.router.navigate(['/auth/verificacion']);
-            }, 1500);
+        next: (res: any) => {
+          // Guardamos el correo en sessionStorage
+          sessionStorage.setItem('email', loginData.correo);
+          console.log(sessionStorage.getItem('email'))
+          const user = res.body?.user;
+          if (user) {
+            sessionStorage.setItem('id_usuario', user.id_usuario.toString());
+            sessionStorage.setItem('id_rol', user.rol_id_rol.toString());
+            console.log(user.rol_id_rol.toString())
           }
+
+          this.mostrarModal('Código enviado', 'Revisa tu correo para ingresar el código de verificación.');
+          setTimeout(() => {
+            this.cerrarModal();
+            this.router.navigate(['/auth/verificacion']); // Ruta de verificación 2FA
+          }, 1500);
         },
         error: (error: HttpErrorResponse) => {
           // Manejo de errores según el código HTTP
           switch (error.status) {
-            case 400:
+            case 401:
               this.mostrarModal('Credenciales inválidas', 'Usuario o contraseña incorrectos.');
               break;
-            case 403:
+            case 429:
               this.mostrarModal('Usuario bloqueado', 'Has excedido el número de intentos permitidos.');
               break;
             case 500:
@@ -66,8 +72,7 @@ export class Login {
               break;
           }
         }
-      });*/
-      this.router.navigate(['/auth/verificacion'])
+      });
       
   }
 
