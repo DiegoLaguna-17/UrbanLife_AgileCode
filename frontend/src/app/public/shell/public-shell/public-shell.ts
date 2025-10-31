@@ -10,4 +10,8 @@ import { Footer } from '../../componentes/footer/footer';
   templateUrl: './public-shell.html',
   styleUrl: './public-shell.scss'
 })
-export class PublicShell{}
+export class PublicShell{
+  ngOnInit(){
+    sessionStorage.clear();
+  }
+}

@@ -10,20 +10,40 @@
 
   <!-- Panel derecho -->
   <section class="right-panel">
- <div class="verificacion-container">
-      <h2>Verificación en dos pasos</h2>
-      <p>Introduce el código que enviamos a tu correo o teléfono:</p>
+  <div class="verificacion-container">
+  <h2>Verificación en dos pasos</h2>
+  <p>Introduce el código que enviamos a tu correo o teléfono:</p>
 
-      <input type="text"
-       [(ngModel)]="codigo"
-       placeholder="Código de verificación"
-       maxlength="6"
-       (keypress)="soloNumeros($event)"
-       (input)="limitarCodigo()"  />
-<div *ngIf="codigo.length > 6" class="error">
-  Solo se permiten 6 dígitos.
+  <input
+    type="text"
+    [(ngModel)]="codigo"
+    placeholder="Código de verificación"
+    maxlength="6"
+    (keypress)="soloNumeros($event)"
+    (input)="limitarCodigo()" />
+
+  <div *ngIf="codigo.length > 6" class="error">
+    Solo se permiten 6 dígitos.
+  </div>
+
+  <button (click)="verificar()">Verificar</button>
+
+  <!-- ✅ Modal -->
+  <div class="modal-overlay" *ngIf="modalVisible">
+    <div class="modal">
+      <h3>{{ modalTitle }}</h3>
+      <p>{{ modalMessage }}</p>
+      <button (click)="verificar()" [disabled]="isLoading">
+      <ng-container *ngIf="!isLoading; else loadingSpinner">
+        Verificar
+      </ng-container>
+      <ng-template #loadingSpinner>
+        <div class="spinner"></div>
+      </ng-template>
+      </button>
+    </div>
+  </div>
 </div>
-      <button (click)="verificar()">Verificar</button>
-    </div> 
+ 
   </section>
 </div>

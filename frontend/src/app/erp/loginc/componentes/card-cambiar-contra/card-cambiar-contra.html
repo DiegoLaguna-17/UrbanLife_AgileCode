@@ -34,6 +34,12 @@
     </button>
   </div>
 
-  <small class="error-msg" *ngIf="error">{{ error }}</small>
-  <small class="success-msg" *ngIf="success">{{ success }}</small>
+  
+  <div class="modal-overlay" *ngIf="modalVisible">
+  <div class="modal">
+    <h3>{{ modalTitle }}</h3>
+    <p>{{ modalMessage }}</p>
+    <button class="modal-btn" (click)="cerrarModal()">Cerrar</button>
+  </div>
+</div>
 </div>

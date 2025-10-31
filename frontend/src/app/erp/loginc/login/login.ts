@@ -21,13 +21,15 @@ export class Login {
   modalVisible = false;
   modalTitle = '';
   modalMessage = '';
+  isLoading = false;
+
   constructor(private router: Router, private http: HttpClient) {}
   onLogin() {
    if (!this.username.trim() || !this.password.trim()) {
       this.mostrarModal('Campos vacíos', 'Por favor completa todos los campos.');
       return;
     }
-
+      this.isLoading = true; 
     // Llamada al endpoint de login
     const loginData = {
       correo: this.username,
@@ -53,9 +55,10 @@ export class Login {
           setTimeout(() => {
             this.cerrarModal();
             this.router.navigate(['/auth/verificacion']); // Ruta de verificación 2FA
-          }, 1500);
+          }, 2000);
         },
         error: (error: HttpErrorResponse) => {
+          
           // Manejo de errores según el código HTTP
           switch (error.status) {
             case 401:
@@ -73,6 +76,7 @@ export class Login {
           }
         }
       });
+      this.isLoading=false;
       
   }
 
@@ -90,6 +94,9 @@ export class Login {
 
   cerrarModal() {
     this.modalVisible = false;
+  }
+  ngOnInit(){
+    sessionStorage.clear();
   }
  
 }
