@@ -13,7 +13,10 @@ import { Router } from '@angular/router';
 export class DosPasos {
   codigo: string = '';
   email: string | null = '';
-
+  modalVisible = false;
+modalTitle = '';
+modalMessage = '';
+isLoading=false;
   constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit() {
@@ -35,6 +38,7 @@ export class DosPasos {
   }
 
   verificar() {
+    if (this.isLoading) return;
     if (!this.email) {
       alert('No se encontró el correo en sesión');
       return;
@@ -44,40 +48,50 @@ export class DosPasos {
       alert('El código debe tener 6 dígitos');
       return;
     }
-
+    this.isLoading = true; 
     const payload = {
       correo: this.email,
       codigo: this.codigo
     };
  
-
+    console.log('rol: ',sessionStorage.getItem('id_rol')  )
     this.http.post('http://127.0.0.1:8000/api/verify-2fa', payload)
       .subscribe({
         next: (res: any) => {
+          this.isLoading = false; 
           console.log('Respuesta del servidor:', res);
           if (res.access_token) {
             sessionStorage.setItem('acces_token',res.access_token);
-            alert('✅ Verificación correcta');
+            this.modalTitle = '✅ Verificación exitosa';
+            this.modalMessage = 'Tu cuenta ha sido verificada correctamente.';
+             this.modalVisible = true;
             // Guardar datos si es necesario
-            switch(sessionStorage.getItem('id_rol')){
-              case '3':
-                this.router.navigate(['/administrador'])
+            setTimeout(()=>{
+              switch(sessionStorage.getItem('id_rol')){
+                case '3':
+                  this.router.navigate(['/administrador'])
+                  break;
+                case '4':
+                  this.router.navigate(['/contador'])
+                  break;
+                case '5':
+                  this.router.navigate(['/rrhh'])
+                  break;
+                case '6':
+                  this.router.navigate(['/jefeobra'])
                 break;
-              case '4':
-                this.router.navigate(['/contador'])
-                break;
-              case '5':
-                this.router.navigate(['/rrhh'])
-                break;
-              case '6':
-                this.router.navigate(['/jefeobra'])
-              break;
-            }
+              }
+            },2000);
           } else {
-            alert('Código incorrecto o expirado');
+             this.isLoading = false; 
+            this.modalTitle = '❌ Código incorrecto o expirado';
+            this.modalMessage = 'El código ingresado no es válido.';
+             this.modalVisible = true;
           }
+           
         },
         error: (error: HttpErrorResponse) => {
+           this.isLoading = false; 
           console.error('Error al verificar 2FA:', error);
           switch (error.status) {
             case 400:
@@ -96,4 +110,7 @@ export class DosPasos {
       });
       
   }
+  cerrarModal() {
+  this.modalVisible = false;
+}
 }

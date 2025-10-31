@@ -1,33 +1,46 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpClientModule, HttpErrorResponse } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-card-cambiar-contra',
-  imports: [CommonModule, FormsModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './card-cambiar-contra.html',
   styleUrl: './card-cambiar-contra.scss'
 })
-export class CardCambiarContra {
+export class CardCambiarContra implements OnInit {
   newPassword = '';
   confirmPassword = '';
   showPassword = false;
   showPassword2 = false;
   error = '';
-  success = '';
+  modalVisible:boolean=false;
+
+  token = '';
+  email = '';
+   modalTitle = '';
+  modalMessage = '';
 
   @Output() passwordChanged = new EventEmitter<void>();
+
+  constructor(private http: HttpClient, private route: ActivatedRoute) {}
+
+  ngOnInit() {
+    this.modalVisible=false;
+    // Capturar token y email desde la URL
+    this.route.queryParams.subscribe(params => {
+      this.token = params['token'];
+      this.email = params['email'];
+      console.log('Token:', this.token, 'Email:', this.email);
+    });
+  }
 
   togglePassword() { this.showPassword = !this.showPassword; }
   togglePassword2() { this.showPassword2 = !this.showPassword2; }
 
-  /**
-   * Requisitos:
-   * - Mínimo 8 caracteres
-   * - Al menos una mayúscula
-   * - Al menos una minúscula
-   * - Al menos un número o símbolo
-   */
   private isPasswordStrong(password: string): boolean {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\d\W]).{8,}$/;
     return regex.test(password);
@@ -43,28 +56,50 @@ export class CardCambiarContra {
   changePassword() {
     if (!this.newPassword || !this.confirmPassword) {
       this.error = 'Por favor, completa ambos campos.';
-      this.success = '';
       return;
     }
 
     if (!this.isPasswordStrong(this.newPassword)) {
       this.error =
         'La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas y un número o símbolo.';
-      this.success = '';
       return;
     }
 
     if (this.newPassword !== this.confirmPassword) {
       this.error = 'Las contraseñas no coinciden.';
-      this.success = '';
       return;
     }
 
-    // ✅ Si todo va bien
-    this.error = '';
-    this.success = '¡Contraseña cambiada correctamente!';
-    this.passwordChanged.emit();
+    // ✅ Consumir el endpoint de reset password
+    const payload = {
+      correo: this.email,
+      token: this.token,
+      nueva_contrasenia: this.newPassword,
+      nueva_contrasenia_confirmation: this.confirmPassword // si tu backend usa 'confirmed'
+    };
 
-    // Aquí puedes llamar a tu backend para actualizar la contraseña
+    this.http.post('http://127.0.0.1:8000/api/reset-password', payload)
+      .subscribe({
+        next: (res: any) => {
+          this.error = '';
+          this.passwordChanged.emit();
+          this.mostrarModal('Cambio de contraseña exitoso','Ya puedes cerrar esta pestaña');
+
+        },
+        error: (err: HttpErrorResponse) => {
+          console.error('Error al cambiar contraseña:', err);
+          this.error = err.error?.error || 'Ocurrió un error al cambiar la contraseña.';
+          this.mostrarModal('Error al cambiar contraseña','Comunicarse con soporte técnico')
+        }
+      });
+  }
+
+   mostrarModal(titulo: string, mensaje: string) {
+    this.modalTitle = titulo;
+    this.modalMessage = mensaje;
+    this.modalVisible = true;
+  }
+  cerrarModal() {
+    this.modalVisible = false;
   }
 }

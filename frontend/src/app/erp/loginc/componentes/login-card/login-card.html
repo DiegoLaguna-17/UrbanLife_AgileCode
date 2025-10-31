@@ -38,7 +38,14 @@
 
 
       <a  class="forgot-password" (click)="emitForgot()">Olvidé mi contraseña</a>
-      <button class="login-button" (click)="emitLogin()">Log In</button>
+      <button class="login-button" (click)="emitLogin()" [disabled]="isLoading">
+  <ng-container *ngIf="!isLoading; else loadingSpinner">
+    Log In
+  </ng-container>
+  <ng-template #loadingSpinner>
+    <div class="spinner"></div>
+  </ng-template>
+</button>
     </div>
         <small *ngIf="isInvalid(username, password)" class="error-msg">Ingrese credenciales validas</small>
   </div>

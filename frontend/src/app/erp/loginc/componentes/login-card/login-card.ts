@@ -14,6 +14,8 @@ export class LoginCardComponent {
   @Input() username = '';
   @Input() password = '';
   @Input() showErrors = false;
+   @Input() isLoading = false;
+  
 
   // Requeridos para [(username)] y [(password)]
   @Output() usernameChange = new EventEmitter<string>();
@@ -27,13 +29,22 @@ export class LoginCardComponent {
   onUsernameInput(val: string) { this.usernameChange.emit(val); }
   onPasswordInput(val: string) { this.passwordChange.emit(val); }
 
-  emitLogin() { this.loginClicked.emit(); }
+  emitLogin() { 
+    if (!this.isLoading) {
+      this.isLoading = true; // activa el spinner
+      this.loginClicked.emit();
+    }
+   }
+   stopLoading() {
+    this.isLoading = false; // para apagar el spinner después
+  }
   emitForgot() { this.forgotClicked.emit(); }
 
   // Helpers visuales (usados en la vista del hijo)
-isInvalid(user: string, pass: string) {
-  return this.showErrors && (!user.trim() || !pass.trim());
-}
+
+  isInvalid(user: string, pass: string) {
+    return this.showErrors && (!user.trim() || !pass.trim());
+  }
 showPassword = false;
 
 togglePassword() {
