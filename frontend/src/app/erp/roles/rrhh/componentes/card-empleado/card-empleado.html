@@ -1,0 +1,16 @@
+<div class="empleado-card">
+  <div class="card-content">
+    <!-- Imagen a la izquierda -->
+    <div class="empleado-imagen">
+      <img src="../../../../../../assets/img/logos/logo-trabajador.png" alt="logo UrbanLife" class="imagen">
+    </div>
+    
+    <!-- Información a la derecha -->
+    <div class="empleado-info">
+      <h3 class="empleado-nombre">{{ empleado.nombre }}</h3>
+      <p class="empleado-puesto">{{ empleado.puesto }}</p>
+      <!-- QUITA el routerLink y deja solo el (click) -->
+      <button class="btn-ver" (click)="onVerClick()">VER</button>
+    </div>
+  </div>
+</div>

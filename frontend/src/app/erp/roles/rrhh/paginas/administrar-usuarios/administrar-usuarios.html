@@ -1,0 +1,72 @@
+<div class="main-container">
+  <div class="administrar-container">
+    <h1 class="titulo-principal">Búsqueda de Usuarios</h1>
+    
+    <div class="search-section">
+      <div class="search-container">
+        <input 
+          type="text" 
+          class="search-input"
+          placeholder="Ingresa el nombre del usuario"
+          [(ngModel)]="terminoBusqueda"
+          (input)="onBuscar()"
+        >
+      </div>
+    </div>
+
+    <!-- Filtros por rol -->
+    <div class="filtros-section">
+      <h3 class="filtros-titulo">Filtrar por Rol:</h3>
+      <div class="filtros-container">
+        <label class="filtro-checkbox">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="filtros.administrador"
+            (change)="aplicarFiltros()"
+          >
+          Administrador
+        </label>
+        
+        <label class="filtro-checkbox">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="filtros.contador"
+            (change)="aplicarFiltros()"
+          >
+          Contador
+        </label>
+        
+        <label class="filtro-checkbox">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="filtros.jefeObra"
+            (change)="aplicarFiltros()"
+          >
+          Jefe de Obra
+        </label>
+        
+        <label class="filtro-checkbox">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="filtros.recursosHumanos"
+            (change)="aplicarFiltros()"
+          >
+          Recursos Humanos
+        </label>
+      </div>
+    </div>
+
+    <!-- Grid de 3 cards por fila -->
+    <div class="usuarios-grid">
+      <app-card-usuario 
+        *ngFor="let usuario of usuariosFiltrados"
+        [usuario]="usuario"
+      >
+      </app-card-usuario>
+    </div>
+
+    <div *ngIf="usuariosFiltrados.length === 0" class="no-resultados">
+      <p>No se encontraron usuarios</p>
+    </div>
+  </div>
+</div>

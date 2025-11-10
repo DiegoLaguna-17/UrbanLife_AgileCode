@@ -1,0 +1,158 @@
+<div class="main-container">
+  <div class="registro-container">
+    <!-- Contenedor izquierdo (30%) -->
+    <div class="left-panel">
+      <!-- Foto del empleado (modo normal) -->
+      <div *ngIf="!mostrarFormularioUsuario" class="foto-container">
+        <img src="../../../../../../assets/img/logos/logo-trabajador.png" alt="logo UrbanLife" class="imagen">
+      </div>
+
+      <!-- Formulario de usuario (cuando se presiona DAR USUARIO) -->
+      <div *ngIf="mostrarFormularioUsuario" class="formulario-usuario">
+        <img src="../../../../../../assets/img/logos/logo-trabajador.png" alt="logo empleado" class="imagen-usuario">
+        <form class="usuario-form" [formGroup]="usuarioForm" (ngSubmit)="onRegistrarUsuario()">
+          <div class="form-group">
+            <label class="form-label">Rol para el empleado</label>
+            <select class="form-input" formControlName="rol">
+              <option value="">Seleccione un rol</option>
+              <option value="administrador">Administrador</option>
+              <option value="contador">Contador</option>
+              <option value="RRHH">Recursos Humanos</option>
+              <option value="Jefe de obra">Jefe de Obra</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Correo</label>
+            <input 
+              type="email" 
+              class="form-input"
+              formControlName="correo"
+              placeholder="Ingrese el correo"
+            >
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Contraseña</label>
+            <input 
+              type="password" 
+              class="form-input"
+              formControlName="contrasena"
+              placeholder="Ingrese la contraseña"
+            >
+          </div>
+
+          <button type="submit" class="btn-registrar-usuario" [disabled]="usuarioForm.invalid">
+            REGISTRAR USUARIO
+          </button>
+
+          <button type="button" class="btn-cancelar" (click)="mostrarFormularioUsuario = false">
+            CANCELAR
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Contenedor derecho (70%) -->
+    <div class="right-panel">
+      <div class="form-container">
+        <h1 class="titulo-principal">Detalle del Empleado</h1>
+        
+        
+        <form class="registro-form" [formGroup]="registroForm" (ngSubmit)="onSubmit()">
+          
+          <!-- Campo Nombre Completo -->
+          <div class="form-group">
+            <label class="form-label">Nombre Completo</label>
+            <input 
+              type="text" 
+              class="form-input"
+              formControlName="nombre"
+              [class.readonly]="!modoEdicion"
+            >
+          </div>
+
+          <!-- Campo Puesto de Trabajo -->
+          <div class="form-group">
+            <label class="form-label">Puesto de Trabajo</label>
+            <input 
+              type="text" 
+              class="form-input"
+              formControlName="puesto"
+              [class.readonly]="!modoEdicion"
+            >
+          </div>
+
+          <!-- Campo Contrato (PDF) -->
+          <div class="form-group">
+            <label class="form-label">Contrato</label>
+            <div class="file-upload-container">
+              <input 
+                type="file" 
+                class="file-input"
+                formControlName="contrato"
+                (change)="onFileSelected($event)"
+                accept=".pdf"
+                #fileInput
+                [disabled]="!modoEdicion"
+              >
+              <div class="file-upload-area" (click)="modoEdicion && fileInput.click()" [class.disabled]="!modoEdicion">
+                <span class="file-icon">📄</span>
+                <span class="file-text">
+                  {{ contratoArchivo ? contratoArchivo.name : (empleadoData?.contrato || 'Seleccione documento PDF') }}
+                </span>
+                <button type="button" class="btn-browse" [disabled]="!modoEdicion">Examinar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Botones -->
+          <div class="botones-container">
+            <button 
+              type="button"
+              class="btn-dar-usuario"
+              (click)="onDarUsuario()"
+            >
+              DAR USUARIO
+            </button>
+            <button 
+              type="button"
+              class="btn-actualizar"
+              (click)="onToggleEdicion()"
+            >
+              {{ modoEdicion ? 'GUARDAR' : 'ACTUALIZAR' }}
+            </button>
+            <button 
+              type="button"
+              class="btn-eliminar"
+              (click)="onEliminar()"
+            >
+              ELIMINAR
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de éxito -->
+<div *ngIf="mostrarModalExito" class="modal-overlay">
+  <div class="modal-content">
+    <h3>¡Éxito!</h3>
+    <p>Los datos del empleado han sido actualizados correctamente.</p>
+    <button class="btn-modal" (click)="mostrarModalExito = false">ACEPTAR</button>
+  </div>
+</div>
+
+<!-- Modal de confirmación eliminar -->
+<div *ngIf="mostrarModalEliminar" class="modal-overlay">
+  <div class="modal-content">
+    <h3>Confirmar Eliminación</h3>
+    <p>¿Estás seguro de que deseas eliminar a {{ empleadoData?.nombre}}?</p>
+    <div class="modal-buttons">
+      <button class="btn-confirmar" (click)="confirmarEliminar()">ELIMINAR</button>
+      <button class="btn-cancelar" (click)="mostrarModalEliminar = false">CANCELAR</button>
+    </div>
+  </div>
+</div>
