@@ -1,1 +1,84 @@
-<p>registrar works!</p>
+<div class="main-container">
+  <div class="registro-container">
+    <!-- Contenedor izquierdo (30%) -->
+    <div class="left-panel">
+      <img src="../../../../../../assets/img/logos/logo-trabajador.png" alt="logo UrbanLife" class="imagen">
+    </div>
+
+    <!-- Contenedor derecho (70%) -->
+    <div class="right-panel">
+      <div class="form-container">
+        <h1 class="titulo-principal">Registro de Empleados</h1>
+        <form class="registro-form" [formGroup]="registroForm" (ngSubmit)="onSubmit()">
+          
+          <!-- Campo Nombre Completo -->
+          <div class="form-group">
+            <label class="form-label">Nombre Completo</label>
+            <input 
+              type="text" 
+              class="form-input"
+              formControlName="nombre"
+              placeholder="Ingrese el nombre completo"
+            >
+            <div class="error-message" *ngIf="nombre?.invalid && nombre?.touched">
+              <span *ngIf="nombre?.errors?.['required']">El nombre es requerido</span>
+              <span *ngIf="nombre?.errors?.['minlength']">Mínimo 3 caracteres</span>
+            </div>
+          </div>
+
+          <!-- Campo Puesto de Trabajo -->
+          <div class="form-group">
+            <label class="form-label">Puesto de Trabajo</label>
+            <input 
+              type="text" 
+              class="form-input"
+              formControlName="puesto"
+              placeholder="Ingrese el puesto de trabajo"
+            >
+            <div class="error-message" *ngIf="puesto?.invalid && puesto?.touched">
+              <span *ngIf="puesto?.errors?.['required']">El puesto es requerido</span>
+              <span *ngIf="puesto?.errors?.['minlength']">Mínimo 3 caracteres</span>
+            </div>
+          </div>
+
+          <!-- Campo Contrato (PDF) -->
+          <div class="form-group">
+            <label class="form-label">Contrato</label>
+            <div class="file-upload-container">
+              <input 
+                type="file" 
+                class="file-input"
+                formControlName="contrato"
+                (change)="onFileSelected($event)"
+                accept=".pdf"
+                #fileInput
+              >
+              <div class="file-upload-area" (click)="fileInput.click()">
+                <span class="file-icon">📄</span>
+                <span class="file-text">
+                  {{ contratoArchivo ? contratoArchivo.name : 'Seleccione documento PDF' }}
+                </span>
+                <button type="button" class="btn-browse">Examinar</button>
+              </div>
+            </div>
+            <div class="error-message" *ngIf="contrato?.invalid && contrato?.touched">
+              <span *ngIf="contrato?.errors?.['required']">El contrato es requerido</span>
+            </div>
+          </div>
+
+          <!-- Línea divisoria -->
+          <div class="divider"></div>
+
+          <!-- Botón Registrar -->
+          <button 
+            type="submit" 
+            class="btn-registrar"
+            [disabled]="registroForm.invalid"
+          >
+            REGISTRAR
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

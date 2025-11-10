@@ -80,7 +80,22 @@ export const routes: Routes = [
     path:'rrhh', loadComponent:()=>import('./erp/roles/rrhh/rrhh-shell/rrhh-shell'). then(m=>m.RrhhShell),
     children:[
       {
-        path:'registrar', loadComponent: ()=>import('./erp/roles/rrhh/rrhh-shell/rrhh-shell').then(m=>m.RrhhShell)
+        path:'', pathMatch:'full', redirectTo:'registrar'
+      },
+      {
+        path:'registrar', loadComponent: ()=>import('./erp/roles/rrhh/paginas/registrar/registrar').then(m=>m.Registrar)
+      },
+      {
+        path:'administrar-empleados', loadComponent: ()=>import('./erp/roles/rrhh/paginas/administrar-empleados/administrar-empleados').then(m=>m.AdministrarEmpleadosComponent)
+      },
+      {
+        path:'ver-empleado/:id', loadComponent: ()=>import('./erp/roles/rrhh/paginas/ver-empleado/ver-empleado').then(m=>m.VerEmpleado)
+      },
+      {
+        path:'administrar-usuarios', loadComponent: ()=>import('./erp/roles/rrhh/paginas/administrar-usuarios/administrar-usuarios').then(m=>m.AdministrarUsuarios)
+      },
+      {
+        path:'ver-usuario/:id', loadComponent: ()=>import('./erp/roles/rrhh/paginas/ver-usuario/ver-usuario').then(m=>m.VerUsuario)
       }
     ]
   },

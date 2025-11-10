@@ -1,0 +1,31 @@
+<div class="main-container">
+  <div class="administrar-container">
+    <h1 class="titulo-principal">Búsqueda de Empleados</h1>
+    
+    <div class="search-section">
+      <div class="search-container">
+        <input 
+          type="text" 
+          class="search-input"
+          placeholder="Ingresa el nombre del empleado"
+          [(ngModel)]="terminoBusqueda"
+          (input)="onBuscar()"
+        >
+      </div>
+    </div>
+
+    <!-- Grid de 3 cards por fila -->
+    <div class="empleados-grid">
+      <app-card-empleado 
+        *ngFor="let empleado of empleadosFiltrados"
+        [empleado]="empleado"
+        
+      >
+      </app-card-empleado>
+    </div>
+
+    <div *ngIf="empleadosFiltrados.length === 0" class="no-resultados">
+      <p>No se encontraron empleados</p>
+    </div>
+  </div>
+</div>

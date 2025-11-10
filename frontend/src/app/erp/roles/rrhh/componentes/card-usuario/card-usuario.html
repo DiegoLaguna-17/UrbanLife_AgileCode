@@ -1,0 +1,15 @@
+<div class="usuario-card">
+  <div class="card-content">
+    <!-- Imagen a la izquierda -->
+    <div class="usuario-imagen">
+      <img src="../../../../../../assets/img/logos/logo-usuario.png" alt="logo UrbanLife" class="imagen">
+    </div>
+    
+    <!-- Información a la derecha -->
+    <div class="usuario-info">
+      <h3 class="usuario-nombre">{{ usuario.nombre }}</h3>
+      <p class="usuario-rol">{{ usuario.rol }}</p>
+      <button class="btn-ver" (click)="onVerClick()">VER</button>
+    </div>
+  </div>
+</div>

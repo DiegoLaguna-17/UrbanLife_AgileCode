@@ -1,0 +1,125 @@
+<div class="main-container">
+  <div class="registro-container">
+    <!-- Contenedor izquierdo (30%) -->
+    <div class="left-panel">
+      <div class="foto-container">
+        <img src="../../../../../../assets/img/logos/logo-usuario.png" alt="logo UrbanLife" class="imagen">
+        <div class="estado-usuario" [class.activo]="usuarioData?.activo" [class.inactivo]="!usuarioData?.activo">
+          {{ usuarioData?.activo ? 'ACTIVO' : 'INACTIVO' }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenedor derecho (70%) -->
+    <div class="right-panel">
+      <div class="form-container">
+        <h1 class="titulo-principal">Detalle del Usuario</h1>
+
+
+        <form class="registro-form" [formGroup]="usuarioForm" (ngSubmit)="onSubmit()">
+          
+          <!-- Campo Nombre Completo -->
+          <div class="form-group">
+            <label class="form-label">Nombre Completo</label>
+            <input 
+                type="text" 
+                class="form-input readonly"
+                formControlName="nombre"
+            >
+          </div>
+
+          <!-- Campo Rol -->
+          <div class="form-group">
+            <label class="form-label">Rol</label>
+            <select 
+              class="form-input"
+              formControlName="rol"
+              [disabled]="!modoEdicion"
+            >
+              <option value="">Seleccione un rol</option>
+              <option value="Administrador">Administrador</option>
+              <option value="Contador">Contador</option>
+              <option value="Jefe de Obra">Jefe de Obra</option>
+              <option value="Recursos Humanos">Recursos Humanos</option>
+            </select>
+          </div>
+
+          <!-- Campo Correo -->
+          <div class="form-group">
+            <label class="form-label">Correo Electrónico</label>
+            <input 
+              type="email" 
+              class="form-input"
+              formControlName="correo"
+              [class.readonly]="!modoEdicion"
+            >
+          </div>
+
+          <!-- Campo Contraseña -->
+          <div class="form-group">
+            <label class="form-label">Contraseña</label>
+            <div class="password-container">
+              <input 
+                [type]="mostrarContrasena ? 'text' : 'password'" 
+                class="form-input"
+                formControlName="contrasena"
+                [class.readonly]="!modoEdicion"
+              >
+              <button 
+                type="button" 
+                class="btn-mostrar-contrasena"
+                (click)="toggleMostrarContrasena()"
+                [disabled]="!modoEdicion"
+              >
+                {{ mostrarContrasena ? '👁️' : '👁️‍🗨️' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Botones -->
+          <div class="botones-container-vertical">
+            <button 
+              type="button"
+              class="btn-actualizar"
+              (click)="onToggleEdicion()"
+            >
+              {{ modoEdicion ? 'GUARDAR CAMBIOS' : 'ACTUALIZAR USUARIO' }}
+            </button>
+            <button 
+              type="button"
+              class="btn-eliminar"
+              (click)="onEliminar()"
+            >
+              {{ usuarioData?.activo ? 'DESACTIVAR USUARIO' : 'ACTIVAR USUARIO' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de éxito -->
+<div *ngIf="mostrarModalExito" class="modal-overlay">
+  <div class="modal-content">
+    <h3>¡Éxito!</h3>
+    <p>Los datos del usuario han sido actualizados correctamente.</p>
+    <button class="btn-modal" (click)="mostrarModalExito = false">ACEPTAR</button>
+  </div>
+</div>
+
+<!-- Modal de confirmación eliminar/activar -->
+<div *ngIf="mostrarModalConfirmacion" class="modal-overlay">
+  <div class="modal-content">
+    <h3>Confirmar Acción</h3>
+    <p>{{ usuarioData?.activo 
+      ? '¿Estás seguro de que deseas desactivar al usuario ' + usuarioData?.nombre + '?' 
+      : '¿Estás seguro de que deseas activar al usuario ' + usuarioData?.nombre + '?' }}</p>
+    <div class="modal-buttons">
+      <button class="btn-confirmar" (click)="confirmarAccion()">
+        {{ usuarioData?.activo ? 'DESACTIVAR' : 'ACTIVAR' }}
+      </button>
+      <button class="btn-cancelar" (click)="mostrarModalConfirmacion = false">CANCELAR</button>
+    </div>
+  </div>
+</div>
