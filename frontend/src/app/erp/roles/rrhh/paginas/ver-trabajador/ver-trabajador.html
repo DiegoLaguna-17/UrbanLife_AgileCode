@@ -1,0 +1,95 @@
+<div class="main-container">
+  <div class="registro-container">
+    <div class="left-panel">
+      <!-- Botón Volver en la esquina superior izquierda -->
+      <button class="btn-volver" (click)="volver()">← Volver</button>
+      
+      <img src="../../../../../../assets/img/logos/logo-trabajador.png" alt="logo UrbanLife" class="imagen">
+    </div>
+    <div class="right-panel">
+      <div class="form-container" *ngIf="trabajador">
+        <h1 class="titulo-principal">Detalles del Trabajador</h1>
+        <div class="detalles-container">
+          <form class="registro-form" [formGroup]="trabajadorForm">
+            <div class="form-group">
+              <label class="form-label">Nombre:</label>
+              <input 
+                type="text" 
+                class="form-input" 
+                formControlName="nombre"
+                [readonly]="!modoEdicion">
+              <div class="error-message" *ngIf="nombre?.invalid && nombre?.touched">
+                <span *ngIf="nombre?.errors?.['required']">El nombre es requerido</span>
+                <span *ngIf="nombre?.errors?.['minlength']">Mínimo 3 caracteres</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Fecha de Nacimiento:</label>
+              <input 
+                type="date" 
+                class="form-input" 
+                formControlName="fecha_nac"
+                [readonly]="!modoEdicion"
+                [max]="fechaMaxima">
+              <div class="error-message" *ngIf="fecha_nac?.invalid && fecha_nac?.touched">
+                <span *ngIf="fecha_nac?.errors?.['required']">La fecha de nacimiento es requerida</span>
+                <span *ngIf="fecha_nac?.errors?.['menorEdad']">El trabajador debe ser mayor de edad (18 años)</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Experiencia:</label>
+              <textarea 
+                class="form-textarea"
+                formControlName="experiencia"
+                [readonly]="!modoEdicion"
+                rows="4"></textarea>
+              <div class="error-message" *ngIf="experiencia?.invalid && experiencia?.touched">
+                <span *ngIf="experiencia?.errors?.['required']">La experiencia es requerida</span>
+                <span *ngIf="experiencia?.errors?.['minlength']">Mínimo 10 caracteres</span>
+                <span *ngIf="experiencia?.errors?.['maxlength']">Máximo 100 caracteres</span>
+              </div>
+              <div class="char-counter" *ngIf="experiencia?.value">
+                {{ experiencia?.value?.length || 0 }}/100 caracteres
+              </div>
+            </div>
+
+            <!-- Línea divisoria -->
+            <div class="divider"></div>
+
+            <!-- Botones de acción -->
+            <div class="botones-container">
+              <button type="button" class="btn-asignar" (click)="asignarObra()">
+                Asignar Obra
+              </button>
+              
+              <button type="button" 
+                      class="btn-actualizar" 
+                      [class.btn-cancelar]="modoEdicion && !formularioModificado"
+                      [class.btn-guardar]="modoEdicion && formularioModificado"
+                      (click)="manejarActualizacion()">
+                {{ obtenerTextoBoton() }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Modal de actualización exitosa -->
+      <div class="modal-overlay" *ngIf="mostrarModal">
+        <div class="modal">
+          <div class="modal-content">
+            <h3>¡Actualización Exitosa!</h3>
+            <p>Los datos del trabajador se han actualizado correctamente.</p>
+            <button class="btn-modal" (click)="cerrarModal()">Aceptar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="error" *ngIf="!trabajador">
+        No se encontró la información del trabajador
+      </div>
+    </div>
+  </div>
+</div>

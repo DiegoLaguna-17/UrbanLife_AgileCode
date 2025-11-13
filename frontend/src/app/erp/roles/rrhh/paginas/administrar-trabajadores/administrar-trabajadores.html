@@ -1,0 +1,62 @@
+<div class="main-container">
+  <div class="administrar-container">
+    <h1 class="titulo-principal">Administrar Trabajadores</h1>
+
+    <div class="search-section">
+      <div class="search-container">
+        <input 
+          class="search-input" 
+          type="search" 
+          placeholder="Buscar trabajador por nombre..." 
+          [value]="q()" 
+          (input)="q.set($any($event.target).value)" />
+      </div>
+    </div>
+
+    <!-- Sección de filtros y botón registrar -->
+    <div class="filtros-section">
+      <div class="filtros-container">
+        <div class="filtros-right">
+          <button class="btn-registrar" (click)="irARegistrar()">
+            REGISTRAR NUEVO TRABAJADOR
+          </button>
+        </div>
+        <div class="filtros-left">
+          <span class="filtros-label">Filtra por:</span>
+          <div class="filtros-checkboxes">
+            <label class="checkbox-label">
+              <input type="checkbox" class="checkbox-input" checked>
+              <span class="checkbox-custom"></span>
+              <span class="checkbox-text">Registrados</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" class="checkbox-input">
+              <span class="checkbox-custom"></span>
+              <span class="checkbox-text">En Obra</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="loading" *ngIf="loading()">
+      Cargando trabajadores...
+    </div>
+
+    <div class="error" *ngIf="error()">
+      {{ error() }}
+    </div>
+
+    <div class="empleados-grid" *ngIf="!loading() && !error()">
+      <app-card-trabajador
+        *ngFor="let trabajador of trabajadoresFiltrados()"
+        [trabajador]="trabajador"
+        (ver)="verTrabajador(trabajador)">
+      </app-card-trabajador>
+    </div>
+
+    <div class="no-results" *ngIf="!loading() && !error() && trabajadoresFiltrados().length === 0">
+      No se encontraron trabajadores
+    </div>
+  </div>
+</div>
