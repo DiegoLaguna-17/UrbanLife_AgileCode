@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Trabajador } from '../../componentes/card-trabajador/card-trabajador';
-
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 // Validador personalizado para mayor de edad (COPIADO DE REGISTRAR-TRABAJADORES)
 export function mayorDeEdadValidator(control: AbstractControl): ValidationErrors | null {
   if (!control.value) {
@@ -32,14 +32,15 @@ export function mayorDeEdadValidator(control: AbstractControl): ValidationErrors
 
 @Component({
   selector: 'app-ver-trabajador',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule,HttpClientModule],
   templateUrl: './ver-trabajador.html',
   styleUrl: './ver-trabajador.scss'
 })
 export class VerTrabajador implements OnInit {
   private router = inject(Router);
   private fb = inject(FormBuilder);
-  
+    private http = inject(HttpClient);
+
   trabajador: Trabajador | null = null;
   trabajadorForm!: FormGroup;
   modoEdicion: boolean = false;
@@ -49,6 +50,8 @@ export class VerTrabajador implements OnInit {
   
   // NUEVO: Fecha máxima para el date picker (hoy - 18 años)
   fechaMaxima: string;
+  loading: boolean = false;
+error: string = '';
 
   constructor() {
     // Calcular fecha máxima (hace 18 años desde hoy)
@@ -154,20 +157,23 @@ export class VerTrabajador implements OnInit {
       console.log('Datos a actualizar:', this.trabajadorForm.value);
       
       // Simular actualización exitosa
-      this.mostrarModal = true;
+      
       this.modoEdicion = false;
+
       this.formularioModificado = false;
       
       // Actualizar datos originales con los nuevos valores
       this.datosOriginales = this.trabajadorForm.value;
       
       // Actualizar también el objeto trabajador
+
       if (this.trabajador) {
         this.trabajador = {
           ...this.trabajador,
           ...this.trabajadorForm.value
         };
       }
+      this.actualizarTrabajador();
     } else {
       // Marcar todos los campos como touched para mostrar errores
       Object.keys(this.trabajadorForm.controls).forEach(key => {
@@ -175,7 +181,7 @@ export class VerTrabajador implements OnInit {
       });
     }
   }
-
+  
   // Obtener el texto del botón según el estado
   obtenerTextoBoton(): string {
     if (!this.modoEdicion) {
@@ -196,11 +202,49 @@ export class VerTrabajador implements OnInit {
   // Cerrar modal
   cerrarModal() {
     this.mostrarModal = false;
+    this.router.navigate(['/rrhh/administrar-trabajadores']);
   }
 
   volver() {
     this.router.navigate(['/rrhh/administrar-trabajadores']);
   }
+
+
+  actualizarTrabajador() {
+  this.loading = true;
+  this.error = '';
+
+  const data: any = {};
+
+  // Solo agregamos los campos que tengan valor
+
+
+  this.http.put(`http://127.0.0.1:8000/api/update_trabajador/${this.trabajador?.id_trabajador}`, this.trabajadorForm.value)
+    .subscribe({
+      next: (respuesta) => {
+        console.log("Actualizado correctamente:", respuesta);
+        this.loading = false;
+        this.mostrarModal = true;
+        
+      },
+      error: (err) => {
+        this.loading = false;
+
+        if (err.status === 422) {
+          this.error = "Datos inválidos";
+          console.log("Errores 422:", err.error);
+          alert("Error de validación: " + JSON.stringify(err.error));
+        } else if (err.status === 404) {
+          this.error = "Trabajador no encontrado";
+          alert("Trabajador no encontrado");
+        } else {
+          this.error = "Error al actualizar trabajador";
+          console.log(err);
+          alert("Ocurrió un error al actualizar el trabajador");
+        }
+      }
+    });
+}
 
   // Getters para fácil acceso a los controles del formulario
   get nombre() { return this.trabajadorForm.get('nombre'); }
