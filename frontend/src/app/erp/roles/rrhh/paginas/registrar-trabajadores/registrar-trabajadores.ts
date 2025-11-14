@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
-
+import { HttpClient,HttpClientModule } from '@angular/common/http';
 // Validador personalizado para mayor de edad (SE MANTIENE IGUAL)
 export function mayorDeEdadValidator(control: AbstractControl): ValidationErrors | null {
   if (!control.value) {
@@ -32,13 +32,16 @@ export function mayorDeEdadValidator(control: AbstractControl): ValidationErrors
 @Component({
   selector: 'app-registrar-trabajadores',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule,HttpClientModule],
   templateUrl: './registrar-trabajadores.html',
   styleUrl: './registrar-trabajadores.scss'
 })
 export class RegistrarTrabajadores {
   registroForm: FormGroup;
   private router = inject(Router);
+    private http = inject(HttpClient);
+  private loading:Boolean=false;
+  private error:String='';
   
   // Fecha máxima para el date picker (hoy - 18 años) - SE MANTIENE IGUAL
   fechaMaxima: string;
@@ -85,15 +88,19 @@ export class RegistrarTrabajadores {
       console.log('Experiencia:', trabajadorData.experiencia);
       
       this.registroForm.reset();
-      
+      const trabajador={
+        nombre:trabajadorData.nombreCompleto,
+        fecha_nac:trabajadorData.fechaNacimiento,
+        experiencia:trabajadorData.experiencia
+      }
+      this.registrarTrabajador(trabajador);
       // CAMBIO: En lugar de alert, mostramos modal de éxito
-      this.mostrarModalExito = true;
+      
       
     } else {
       this.marcarCamposComoTouched();
       
       // CAMBIO: En lugar de alert, mostramos modal de error
-      this.mostrarModalError = true;
     }
   }
 
@@ -115,6 +122,31 @@ export class RegistrarTrabajadores {
   private marcarCamposComoTouched(): void {
     Object.keys(this.registroForm.controls).forEach(key => {
       this.registroForm.get(key)?.markAsTouched();
+    });
+  }
+  registrarTrabajador(trabajadorData:any,){
+    this.loading = true;
+  this.error = '';
+  this.http.post("http://127.0.0.1:8000/api/registrar_trabajador", trabajadorData)
+    .subscribe({
+      next: (respuesta) => {
+        console.log("Registrado correctamente:", respuesta);
+        this.loading = false;
+        this.mostrarModalExito = true;
+        
+      },
+      error: (err) => {
+        this.loading = false;
+
+        if (err.status === 422) {
+          this.error = "Datos inválidos";
+          console.log("Errores 422:", err.error);
+        } else {
+          this.error = "Error al registrar trabajador";
+          console.log(err);
+        }
+        this.mostrarModalError = true;
+      }
     });
   }
 
