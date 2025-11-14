@@ -1,0 +1,11 @@
+<article class="empleado-card" style="cursor: pointer;">
+  <div class="card-content">
+    <div class="empleado-imagen">
+      <img src="../../../../../../assets/img/logos/logo-trabajador.png" alt="Trabajador" class="imagen">
+    </div>
+    <div class="empleado-info">
+      <header class="empleado-nombre">{{ trabajador?.nombre }}</header>
+      <button class="btn-ver" type="button" (click)="ver.emit(trabajador)">Ver</button>
+    </div>
+  </div>
+</article>

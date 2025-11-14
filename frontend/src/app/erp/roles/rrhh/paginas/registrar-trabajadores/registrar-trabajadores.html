@@ -1,0 +1,105 @@
+<div class="main-container">
+  <div class="registro-container">
+    <!-- Contenedor izquierdo (30%) -->
+    <div class="left-panel">
+      <!-- Botón Volver en la esquina superior izquierda -->
+      <button class="btn-volver" (click)="volver()">← Volver</button>
+      
+      <img src="../../../../../../assets/img/logos/logo-trabajador.png" alt="logo UrbanLife" class="imagen">
+    </div>
+
+    <!-- Contenedor derecho (70%) -->
+    <div class="right-panel">
+      <div class="form-container">
+        <h1 class="titulo-principal">Registro de Trabajadores</h1>
+        <form class="registro-form" [formGroup]="registroForm" (ngSubmit)="onSubmit()">
+          
+          <!-- Campo Nombre Completo -->
+          <div class="form-group">
+            <label class="form-label">Nombre Completo</label>
+            <input 
+              type="text" 
+              class="form-input"
+              formControlName="nombreCompleto"
+              placeholder="Ingrese el nombre completo"
+            >
+            <div class="error-message" *ngIf="nombreCompleto?.invalid && nombreCompleto?.touched">
+              <span *ngIf="nombreCompleto?.errors?.['required']">El nombre completo es requerido</span>
+              <span *ngIf="nombreCompleto?.errors?.['minlength']">Mínimo 3 caracteres</span>
+            </div>
+          </div>
+
+          <!-- Campo Fecha de Nacimiento -->
+          <div class="form-group">
+            <label class="form-label">Fecha de Nacimiento</label>
+            <input 
+              type="date" 
+              class="form-input"
+              formControlName="fechaNacimiento"
+              [max]="fechaMaxima"
+            >
+            <div class="error-message" *ngIf="fechaNacimiento?.invalid && fechaNacimiento?.touched">
+              <span *ngIf="fechaNacimiento?.errors?.['required']">La fecha de nacimiento es requerida</span>
+              <span *ngIf="fechaNacimiento?.errors?.['menorEdad']">El trabajador debe ser mayor de edad (18 años)</span>
+            </div>
+          </div>
+
+          <!-- Campo Experiencia -->
+          <div class="form-group">
+            <label class="form-label">Experiencia</label>
+            <textarea 
+              class="form-textarea"
+              formControlName="experiencia"
+              placeholder="Describa la experiencia del trabajador..."
+              rows="4"
+            ></textarea>
+            <div class="error-message" *ngIf="experiencia?.invalid && experiencia?.touched">
+              <span *ngIf="experiencia?.errors?.['required']">La experiencia es requerida</span>
+              <span *ngIf="experiencia?.errors?.['minlength']">Mínimo 10 caracteres</span>
+              <span *ngIf="experiencia?.errors?.['maxlength']">Máximo 100 caracteres</span>
+            </div>
+            <div class="char-counter" *ngIf="experiencia?.value">
+              {{ experiencia?.value?.length || 0 }}/100 caracteres
+            </div>
+          </div>
+
+          <!-- Línea divisoria -->
+          <div class="divider"></div>
+
+          <!-- Botón Registrar -->
+          <button 
+            type="submit" 
+            class="btn-registrar"
+            [disabled]="registroForm.invalid"
+          >
+            REGISTRAR
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de éxito -->
+<div class="modal-overlay" *ngIf="mostrarModalExito">
+  <div class="modal">
+    <div class="modal-content">
+      <div class="modal-icon">✅</div>
+      <h3 class="modal-title">¡Registro Exitoso!</h3>
+      <p class="modal-message">El trabajador ha sido registrado correctamente en el sistema.</p>
+      <button class="btn-modal" (click)="cerrarModalExito()">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de error -->
+<div class="modal-overlay" *ngIf="mostrarModalError">
+  <div class="modal">
+    <div class="modal-content">
+      <div class="modal-icon">⚠️</div>
+      <h3 class="modal-title">Error en el Formulario</h3>
+      <p class="modal-message">Por favor, complete todos los campos correctamente antes de registrar.</p>
+      <button class="btn-modal" (click)="cerrarModalError()">Entendido</button>
+    </div>
+  </div>
+</div>

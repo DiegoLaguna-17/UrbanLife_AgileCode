@@ -96,6 +96,15 @@ export const routes: Routes = [
       },
       {
         path:'ver-usuario/:id', loadComponent: ()=>import('./erp/roles/rrhh/paginas/ver-usuario/ver-usuario').then(m=>m.VerUsuario)
+      },
+      {
+        path:'administrar-trabajadores', loadComponent: ()=>import('./erp/roles/rrhh/paginas/administrar-trabajadores/administrar-trabajadores').then(m=>m.AdministrarTrabajadores)
+      },
+      {
+        path:'ver-trabajador', loadComponent: ()=>import('./erp/roles/rrhh/paginas/ver-trabajador/ver-trabajador').then(m=>m.VerTrabajador)
+      },
+      {
+        path:'registrar-trabajadores', loadComponent:()=>import('./erp/roles/rrhh/paginas/registrar-trabajadores/registrar-trabajadores').then(m=>m.RegistrarTrabajadores)
       }
     ]
   },
