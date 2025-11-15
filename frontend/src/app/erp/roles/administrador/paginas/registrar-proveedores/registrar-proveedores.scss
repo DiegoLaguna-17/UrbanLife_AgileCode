@@ -1,0 +1,538 @@
+*{
+    --AzulOscuro:#094c6d;
+    --VerdeOscuro:#096d0a;
+    --Verde:#7ed957;
+    --VeredePastel:#8ceb8c;
+    --Celeste:#98ffe6;
+    --VerdeClaro:#b8ffb8;
+    --Blanco:#ffffff;
+    --Negro:#000000;
+}.main-container {
+  height: 125vh;
+  padding: 30px; /* Separación de 30px en todos los lados */
+  background: linear-gradient(135deg, var(--Celeste) 0%, var(--Verde) 100%); /* Degradado verde a azul */
+}
+
+.registro-container {
+  display: flex;
+  height: 100%;
+  border-radius: 15px;
+  overflow: hidden;
+  height: 90%;
+  margin-left: 19%;
+}
+
+/* Panel izquierdo (30%) */
+.left-panel {
+  flex: 0 0 28%;
+  background: linear-gradient(135deg, var(--Verde) 0%, var(--VeredePastel) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.titulo-principal {
+  color: var(--Blanco);
+  font-size: 45px;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  line-height: 1.3;
+  margin-bottom: -3%;
+}
+
+.imagen{
+  width: 120%;
+  height: 50%;
+}
+/* Panel derecho (70%) */
+.right-panel {
+  flex: 0 0 61%;
+  background: var(--AzulOscuro);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-radius: 0 150px 150px 0;
+}
+
+.form-container {
+  border-radius: 15px;
+  padding: 10px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.registro-form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  color: var(--Blanco);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.form-input, 
+.form-textarea {
+  padding: 12px 15px;
+  border: 2px solid var(--AzulOscuro);
+  border-radius: 30px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background-color: var(--Blanco);
+  
+  &:focus {
+    outline: none;
+    border-color: var(--Verde);
+    box-shadow: 0 0 0 3px rgba(126, 217, 87, 0.2);
+  }
+  
+  &::placeholder {
+    color: #999;
+  }
+}
+
+.char-counter{
+    color: var(--Blanco);
+}
+
+/* Estilos para subida de archivos */
+.file-upload-container {
+  position: relative;
+}
+
+.file-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.file-upload-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  border: 2px dashed var(--AzulOscuro);
+  border-radius: 20px;
+  background-color: var(--Blanco);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    border-color: var(--Verde);
+    color: var(--Blanco);
+    background-color: rgba(126, 217, 87, 0.1);
+  }
+}
+
+.file-icon {
+  font-size: 20px;
+}
+
+.file-text {
+  flex: 1;
+  color: var(--AzulOscuro);
+  font-size: 14px;
+  
+  &.has-file {
+    font-weight: 600;
+    color: var(--VerdeOscuro);
+  }
+  &:hover{
+    color: var(--Blanco);
+  }
+}
+
+.btn-browse {
+  background: var(--AzulOscuro);
+  color: var(--Blanco);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: var(--VerdeOscuro);
+  }
+}
+
+/* Línea divisoria */
+.divider {
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--Verde) 50%, transparent 100%);
+}
+
+/* Botón Registrar */
+.btn-registrar {
+  background: linear-gradient(135deg, var(--Verde) 0%, var(--Celeste) 100%);
+  color: var(--AzulOscuro);
+  border: none;
+  padding: 15px 30px;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  width: 100%;
+  margin-bottom: 20px;
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(9, 109, 10, 0.3);
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+  
+  &:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 5px;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main-container {
+    padding: 15px;
+  }
+  
+  .registro-container {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .left-panel,
+  .right-panel {
+    flex: none;
+    width: 100%;
+  }
+  
+  .left-panel {
+    padding: 20px;
+  }
+  
+  .titulo-principal {
+    font-size: 24px;
+  }
+  
+  .form-container {
+    margin: 20px;
+    padding: 30px 20px;
+  }
+}
+
+/* Botón Volver - Agrega esto en tu SCSS existente */
+.btn-volver {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: var(--AzulOscuro);
+  color: var(--Blanco);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+  &:hover {
+    background: var(--VerdeOscuro);
+    transform: translateX(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  &:active {
+    transform: translateX(-1px);
+  }
+}
+
+/* Ajuste para el left-panel con el botón */
+.left-panel {
+  flex: 0 0 28%;
+  background: linear-gradient(135deg, var(--Verde) 0%, var(--VeredePastel) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  position: relative; /* ¡IMPORTANTE! Para que el botón se posicione correctamente */
+}
+
+/* Responsive para el botón */
+@media (max-width: 768px) {
+  .btn-volver {
+    top: 15px;
+    left: 15px;
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+  
+  .left-panel {
+    padding: 60px 20px 20px 20px; /* Más padding arriba para el botón */
+  }
+}
+
+/* Estilos para modales */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(9, 76, 109, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: linear-gradient(135deg, var(--Blanco) 0%, var(--Celeste) 100%);
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  border: 3px solid var(--Verde);
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.modal-icon {
+  font-size: 50px;
+  margin-bottom: 10px;
+}
+
+.modal-title {
+  color: var(--VerdeOscuro);
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.modal-message {
+  color: var(--AzulOscuro);
+  margin: 0;
+  line-height: 1.5;
+  font-size: 16px;
+  text-align: center;
+}
+
+.btn-modal {
+  background: linear-gradient(135deg, var(--Verde) 0%, var(--Celeste) 100%);
+  color: var(--AzulOscuro);
+  border: none;
+  padding: 12px 30px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 10px;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(9, 109, 10, 0.3);
+  }
+}
+
+/* Responsive para modales */
+@media (max-width: 768px) {
+  .modal {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+
+  .modal-icon {
+    font-size: 40px;
+  }
+
+  .modal-title {
+    font-size: 1.3rem;
+  }
+
+  .modal-message {
+    font-size: 14px;
+  }
+}
+
+/* Estilos específicos para registrar-proveedores */
+
+/* Barra de progreso */
+.progress-bar-container {
+  margin-bottom: 30px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--AzulOscuro);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(135deg, var(--Blanco) 0%, var(--Celeste) 100%);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+  border: 1px solid var(--Negro);
+}
+
+.progress-text {
+  text-align: center;
+  color: var(--Blanco);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Secciones del formulario */
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section-title {
+  color: var(--Celeste);
+  font-size: 35px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 5px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Select personalizado */
+select.form-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='%23094c6d' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 12px;
+  padding-right: 40px;
+}
+
+/* Botones de navegación */
+.botones-navegacion {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-siguiente{
+    margin-bottom: 20px;
+}
+
+.btn-siguiente,
+.btn-anterior {
+  background: linear-gradient(135deg, var(--Verde) 0%, var(--Celeste) 100%);
+  color: var(--AzulOscuro);
+  border: none;
+  padding: 12px 25px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 120px;
+  
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(9, 109, 10, 0.3);
+  }
+
+  &:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.btn-anterior {
+  background: linear-gradient(135deg, var(--Celeste) 0%, var(--Verde) 100%);
+}
+
+/* Indicador de campos obligatorios */
+.form-label {
+  position: relative;
+  
+  &::after {
+    content: '*';
+    color: #e74c3c;
+    margin-left: 4px;
+    font-weight: bold;
+  }
+}
+
+/* Para campos no obligatorios */
+.form-group:has(.form-input:not([required])) .form-label::after {
+  content: '';
+}
+
+/* Hint para archivos */
+.file-hint {
+  color: var(--Blanco);
+  font-size: 11px;
+  margin-top: 5px;
+  opacity: 0.8;
+}
+
+/* Responsive específico */
+@media (max-width: 768px) {
+  .botones-navegacion {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .btn-siguiente,
+  .btn-anterior,
+  .btn-registrar {
+    width: 100%;
+    max-width: 200px;
+  }
+  
+  .section-title {
+    font-size: 20px;
+  }
+}

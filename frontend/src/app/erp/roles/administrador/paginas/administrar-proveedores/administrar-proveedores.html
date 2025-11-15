@@ -1,0 +1,45 @@
+<div class="main-container">
+  <div class="administrar-container">
+    <h1 class="titulo-principal">Administrar Proveedores</h1>
+
+    <div class="search-section">
+      <div class="search-container">
+        <input 
+          class="search-input" 
+          type="search" 
+          placeholder="Buscar proveedor por nombre..." 
+          [value]="q()" 
+          (input)="q.set($any($event.target).value)" />
+      </div>
+    </div>
+
+    <!-- Sección del botón registrar centrado -->
+    <div class="registro-section">
+      <div class="registro-container">
+        <button class="btn-registrar" (click)="irARegistrar()">
+          REGISTRAR NUEVO PROVEEDOR
+        </button>
+      </div>
+    </div>
+
+    <div class="loading" *ngIf="loading()">
+      Cargando proveedores...
+    </div>
+
+    <div class="error" *ngIf="error()">
+      {{ error() }}
+    </div>
+
+    <div class="grid" *ngIf="!loading() && !error()">
+      <app-card-proveedor
+        *ngFor="let proveedor of proveedoresFiltrados()"
+        [proveedor]="proveedor"
+        (ver)="verProveedor(proveedor)">
+      </app-card-proveedor>
+    </div>
+
+    <div class="no-results" *ngIf="!loading() && !error() && proveedoresFiltrados().length === 0">
+      No se encontraron proveedores
+    </div>
+  </div>
+</div>
