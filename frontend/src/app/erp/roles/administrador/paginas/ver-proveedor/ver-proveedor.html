@@ -1,0 +1,207 @@
+<div class="main-container">
+  <div class="registro-container">
+    <!-- Contenedor izquierdo (30%) -->
+    <div class="left-panel">
+      <!-- Botón Volver en la esquina superior izquierda -->
+      <button class="btn-volver" (click)="volver()">← Volver</button>
+      
+      <img src="../../../../../../assets/img/logos/logo-proveedor.png" alt="logo UrbanLife" class="imagen">
+      
+      <!-- Botones de acción debajo de la imagen -->
+      <div class="botones-accion">
+        <button type="button" class="btn-material" (click)="anadirMaterial()">
+          Añadir Material
+        </button>
+        
+        <button type="button" class="btn-material" (click)="verMaterial()">
+          Ver Material
+        </button>
+        
+        <button type="button" 
+                class="btn-actualizar" 
+                [class.btn-cancelar]="modoEdicion && !formularioModificado"
+                [class.btn-guardar]="modoEdicion && formularioModificado"
+                (click)="manejarActualizacion()">
+          {{ obtenerTextoBoton() }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Contenedor derecho (70%) -->
+    <div class="right-panel">
+      <div class="form-container" *ngIf="proveedor">
+        <h1 class="titulo-principal">Detalles del Proveedor</h1>
+        
+        <form class="registro-form" [formGroup]="proveedorForm">
+          
+          <!-- PRIMERA PARTE: Datos del Proveedor -->
+          <div class="form-section" *ngIf="pasoActual === 1">
+            <h2 class="section-title">Datos del Proveedor</h2>
+            
+            <!-- Campo Nombre del Proveedor -->
+            <div class="form-group">
+              <label class="form-label">Nombre del Proveedor *</label>
+              <input 
+                type="text" 
+                class="form-input"
+                formControlName="nombre"
+                placeholder="Ingrese el nombre del proveedor"
+              >
+              <div class="error-message" *ngIf="nombre?.invalid && nombre?.touched">
+                <span *ngIf="nombre?.errors?.['required']">El nombre del proveedor es requerido</span>
+                <span *ngIf="nombre?.errors?.['minlength']">Mínimo 3 caracteres</span>
+              </div>
+            </div>
+
+            <!-- Campo Visibilidad -->
+            <div class="form-group">
+              <label class="form-label">Visibilidad *</label>
+              <select 
+                class="form-input"
+                formControlName="visibilidad"
+              >
+                <option value="true">Sí</option>
+                <option value="false">No</option>
+              </select>
+              <div class="error-message" *ngIf="visibilidad?.invalid && visibilidad?.touched">
+                <span *ngIf="visibilidad?.errors?.['required']">La visibilidad es requerida</span>
+              </div>
+            </div>
+
+            <!-- Campo Sitio Web -->
+            <div class="form-group">
+              <label class="form-label">Sitio Web</label>
+              <input 
+                type="url" 
+                class="form-input"
+                formControlName="web"
+                placeholder="https://www.ejemplo.com"
+              >
+              <div class="error-message" *ngIf="web?.invalid && web?.touched">
+                <span *ngIf="web?.errors?.['pattern']">Ingrese una URL válida</span>
+              </div>
+            </div>
+
+            <!-- Campo Logo (solo visualización) -->
+            <div class="form-group">
+              <label class="form-label">Logo del Proveedor</label>
+              <div class="logo-preview" *ngIf="proveedor.logo">
+                <img [src]="proveedor.logo" alt="Logo del proveedor" class="logo-image">
+                <div class="logo-text">Logo actual del proveedor</div>
+              </div>
+              <div class="logo-preview" *ngIf="!proveedor.logo">
+                <div class="logo-placeholder">No hay logo cargado</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SEGUNDA PARTE: Datos de Contacto -->
+          <div class="form-section" *ngIf="pasoActual === 2">
+            <h2 class="section-title">Datos de Contacto</h2>
+            
+            <!-- Campo Nombre de Contacto -->
+            <div class="form-group">
+              <label class="form-label">Nombre de la Persona Contacto *</label>
+              <input 
+                type="text" 
+                class="form-input"
+                formControlName="contacto"
+                placeholder="Ingrese el nombre del contacto"
+              >
+              <div class="error-message" *ngIf="contacto?.invalid && contacto?.touched">
+                <span *ngIf="contacto?.errors?.['required']">El nombre de contacto es requerido</span>
+                <span *ngIf="contacto?.errors?.['minlength']">Mínimo 3 caracteres</span>
+              </div>
+            </div>
+
+            <!-- Campo Teléfono -->
+            <div class="form-group">
+              <label class="form-label">Teléfono de Contacto</label>
+              <input 
+                type="tel" 
+                class="form-input"
+                formControlName="telefono"
+                placeholder="Ingrese el teléfono"
+              >
+            </div>
+
+            <!-- Campo Correo -->
+            <div class="form-group">
+              <label class="form-label">Correo de Contacto *</label>
+              <input 
+                type="email" 
+                class="form-input"
+                formControlName="correo"
+                placeholder="correo@ejemplo.com"
+              >
+              <div class="error-message" *ngIf="correo?.invalid && correo?.touched">
+                <span *ngIf="correo?.errors?.['required']">El correo es requerido</span>
+                <span *ngIf="correo?.errors?.['email']">Ingrese un correo válido</span>
+              </div>
+            </div>
+
+            <!-- Campo Dirección -->
+            <div class="form-group">
+              <label class="form-label">Dirección Física *</label>
+              <textarea 
+                class="form-textarea"
+                formControlName="direccion"
+                placeholder="Ingrese la dirección física completa"
+                rows="3"
+              ></textarea>
+              <div class="error-message" *ngIf="direccion?.invalid && direccion?.touched">
+                <span *ngIf="direccion?.errors?.['required']">La dirección es requerida</span>
+                <span *ngIf="direccion?.errors?.['minlength']">Mínimo 10 caracteres</span>
+              </div>
+            </div>
+          </div>
+          <!-- Botones de navegación -->
+          <!-- Botones de navegación -->
+            <div class="botones-navegacion">
+            <button 
+                type="button" 
+                class="btn-siguiente"
+                *ngIf="pasoActual === 1"
+                (click)="siguientePaso()"
+            >
+                Siguiente →
+            </button>
+            
+            <button 
+                type="button" 
+                class="btn-anterior"
+                *ngIf="pasoActual === 2"
+                (click)="anteriorPaso()"
+            >
+                ← Anterior
+            </button>
+            </div>
+        </form>
+        <!-- Barra de progreso -->
+        <div class="progress-bar-container">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="pasoActual === 1 ? 50 : 100"></div>
+          </div>
+          <div class="progress-text">
+            Paso {{ pasoActual }} de 2 - {{ pasoActual === 1 ? '50%' : '100%' }} completado
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal de actualización exitosa -->
+      <div class="modal-overlay" *ngIf="mostrarModal">
+        <div class="modal">
+          <div class="modal-content">
+            <h3>¡Actualización Exitosa!</h3>
+            <p>Los datos del proveedor se han actualizado correctamente.</p>
+            <button class="btn-modal" (click)="cerrarModal()">Aceptar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="error" *ngIf="!proveedor">
+        No se encontró la información del proveedor
+      </div>
+    </div>
+  </div>
+</div>

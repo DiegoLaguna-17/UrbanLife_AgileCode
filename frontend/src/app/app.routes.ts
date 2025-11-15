@@ -51,6 +51,15 @@ export const routes: Routes = [
       },
       {
         path:'crear-proyectos', loadComponent: ()=>import('./erp/roles/administrador/paginas/crear-proyectos/crear-proyectos').then(m=>m.CrearProyectos)
+      },
+      {
+        path:'administrar-proveedores', loadComponent: ()=>import('./erp/roles/administrador/paginas/administrar-proveedores/administrar-proveedores').then(m=>m.AdministrarProveedores)
+      },
+      {
+        path:'registrar-proveedores', loadComponent: ()=>import('./erp/roles/administrador/paginas/registrar-proveedores/registrar-proveedores').then(m=>m.RegistrarProveedores)
+      },
+      {
+        path:'ver-proveedor', loadComponent: ()=>import('./erp/roles/administrador/paginas/ver-proveedor/ver-proveedor').then(m=>m.VerProveedor)
       }
     ]
   },
