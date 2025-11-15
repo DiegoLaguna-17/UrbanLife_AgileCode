@@ -6,9 +6,6 @@ export interface Empleado {
   id: number;
   nombre: string;
   puesto: string;
-  departamento?: string;
-  fechaIngreso?: string;
-  estado?: string;
   contrato?: string;
 }
 

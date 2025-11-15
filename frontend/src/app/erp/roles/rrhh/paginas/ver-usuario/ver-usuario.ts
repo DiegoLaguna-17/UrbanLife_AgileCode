@@ -48,21 +48,34 @@ export class VerUsuario implements OnInit {
     this.usuarioForm.get('rol')?.disable();
     this.usuarioForm.get('correo')?.disable();
     this.usuarioForm.get('contrasena')?.disable();
-    
     this.obtenerDatosUsuario();
   }
+  obtenerDatosUsuario(): void {
+  const state = history.state;
 
+  if (state && state.usuario) {
+    this.usuarioData = state.usuario;
+    console.log('✅ Usuario recibido desde state:', this.usuarioData);
+    this.cargarDatosUsuario();
+  } else {
+    console.log('⚠️ No se encontró usuario en el state');
+  }
+}
+
+/*
   obtenerDatosUsuario(): void {
     const navigation = this.router.getCurrentNavigation();
     if (navigation?.extras?.state?.['usuario']) {
       this.usuarioData = navigation.extras.state['usuario'];
       console.log('Datos obtenidos del state:', this.usuarioData);
       this.cargarDatosUsuario();
+      console.log(this.usuarioData)
       return;
     }
 
     const usuarioId = this.route.snapshot.paramMap.get('id');
     console.log('ID del usuario desde ruta:', usuarioId);
+    console.log(this.usuarioData)
 
     if (usuarioId) {
       this.buscarUsuarioPorId(parseInt(usuarioId));
@@ -70,6 +83,7 @@ export class VerUsuario implements OnInit {
       console.error('No se encontró ID de usuario');
       this.router.navigate(['/rrhh/administrar-usuarios']);
     }
+      
   }
 
   buscarUsuarioPorId(id: number): void {
@@ -121,7 +135,7 @@ export class VerUsuario implements OnInit {
       this.router.navigate(['/rrhh/administrar-usuarios']);
     }
   }
-
+*/
   cargarDatosUsuario(): void {
     if (this.usuarioData) {
       console.log('Cargando datos del usuario:', this.usuarioData);
@@ -180,9 +194,11 @@ export class VerUsuario implements OnInit {
     this.mostrarModalConfirmacion = false;
     
     // Recargar los datos para reflejar el cambio
+    /*
     if (this.usuarioData) {
       this.buscarUsuarioPorId(this.usuarioData.id);
     }
+      */
   }
 
   toggleMostrarContrasena(): void {

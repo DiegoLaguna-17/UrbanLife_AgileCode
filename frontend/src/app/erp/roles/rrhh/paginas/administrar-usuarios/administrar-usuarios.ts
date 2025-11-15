@@ -1,26 +1,48 @@
-import { Component } from '@angular/core';
+import { Component,Injectable } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CardUsuario, Usuario } from '../../componentes/card-usuario/card-usuario';
-
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { map,Observable } from 'rxjs';
 @Component({
   selector: 'app-administrar-usuarios',
   standalone: true,
-  imports: [CommonModule, FormsModule, CardUsuario],
+  imports: [CommonModule, FormsModule, CardUsuario,HttpClientModule],
   templateUrl: './administrar-usuarios.html',
   styleUrl: './administrar-usuarios.scss'
 })
 export class AdministrarUsuarios {
   terminoBusqueda: string = '';
-  
+  constructor( private http: HttpClient) {}
   filtros = {
     administrador: false,
     contador: false,
     jefeObra: false,
     recursosHumanos: false
   };
+
+  obtenerUsuarios(): Observable<Usuario[]> {
+    return this.http.get<any>("http://127.0.0.1:8000/api/get_all_usuarios").pipe(
+      map(response => {
+        if (response.success && Array.isArray(response.data)) {
+          return response.data.map((item: any) => ({
+            id: item.id_usuario,
+            nombre: item.nombre,
+            rol: item.rol,
+            correo: item.correo,
+            contrasena: '', // No viene en la respuesta, lo dejamos vacío
+            activo: true,   // Puedes cambiar esto según tu lógica
+            empleadoId: item.empleado?.id_empleado
+          } as Usuario));
+        }
+        return [];
+      })
+    );
+  }
   
-  usuarios: Usuario[] = [
+  
+  usuarios: Usuario[] = [];
+    /*
     {
       id: 1,
       nombre: 'Juan Pérez',
@@ -76,7 +98,7 @@ export class AdministrarUsuarios {
       empleadoId: 6
     }
   ];
-
+*/
   usuariosFiltrados: Usuario[] = [...this.usuarios];
 
   onBuscar(): void {
@@ -106,7 +128,7 @@ export class AdministrarUsuarios {
           (this.filtros.administrador && rol.includes('administrador')) ||
           (this.filtros.contador && rol.includes('contador')) ||
           (this.filtros.jefeObra && rol.includes('jefe de obra')) ||
-          (this.filtros.recursosHumanos && rol.includes('recursos humanos'))
+          (this.filtros.recursosHumanos && rol.includes('rrhh'))
         );
       });
     }
@@ -122,5 +144,19 @@ export class AdministrarUsuarios {
       recursosHumanos: false
     };
     this.aplicarFiltros();
+  }
+
+    ngOnInit(): void {
+    // ✅ Suscribirse al observable para obtener los datos
+    this.obtenerUsuarios().subscribe({
+      next: (usuarios) => {
+        this.usuarios = usuarios;
+        this.usuariosFiltrados = [...usuarios]; // para los filtros
+        console.log(this.usuarios)
+      },
+      error: (error) => {
+        console.error('Error al obtener usuarios:', error);
+      }
+    });
   }
 }

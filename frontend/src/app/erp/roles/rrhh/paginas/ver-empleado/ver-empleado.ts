@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 interface Empleado {
   id: number;
@@ -16,7 +17,7 @@ interface Empleado {
 @Component({
   selector: 'app-ver-empleado',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule,HttpClientModule],
   templateUrl: './ver-empleado.html',
   styleUrls: ['./ver-empleado.scss']
 })
@@ -35,7 +36,8 @@ export class VerEmpleado implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private http: HttpClient   
   ) {
     // Formulario principal - SIN disabled inicial
     this.registroForm = this.fb.group({
@@ -59,76 +61,18 @@ export class VerEmpleado implements OnInit {
 
   obtenerDatosEmpleado(): void {
     // PRIMERO: Intentar obtener datos del state
-    const navigation = this.router.getCurrentNavigation();
-    if (navigation?.extras?.state?.['empleado']) {
-      this.empleadoData = navigation.extras.state['empleado'];
-      console.log('Datos obtenidos del state:', this.empleadoData);
-      this.cargarDatosEmpleado();
-      return;
-    }
+    const state = history.state;
 
-    // SEGUNDO: Si no hay state, obtener de la ruta
-    const empleadoId = this.route.snapshot.paramMap.get('id');
-    console.log('ID del empleado desde ruta:', empleadoId);
-
-    if (empleadoId) {
-      this.buscarEmpleadoPorId(parseInt(empleadoId));
-    } else {
-      console.error('No se encontró ID de empleado');
-      this.router.navigate(['/rrhh/administrar-empleados']);
-    }
+  if (state && state.empleado) {
+    this.empleadoData = state.empleado;
+    console.log('✅ Usuario recibido desde state:', this.empleadoData);
+    this.cargarDatosEmpleado();
+  } else {
+    console.log('⚠️ No se encontró usuario en el state');
+  }  
   }
 
-  buscarEmpleadoPorId(id: number): void {
-    // Datos de ejemplo - en una app real esto vendría de un servicio
-    const empleadosEjemplo: Empleado[] = [
-      {
-        id: 1,
-        nombre: 'Juan Pérez',
-        puesto: 'Albañil',
-        departamento: 'Construcción',
-        fechaIngreso: '2023-01-15',
-        estado: 'Activo',
-        contrato: 'contrato_albanyl_001.pdf'
-      },
-      {
-        id: 2,
-        nombre: 'María García',
-        puesto: 'Albañil',
-        departamento: 'Construcción',
-        fechaIngreso: '2023-02-20',
-        estado: 'Activo',
-        contrato: 'contrato_albanyl_002.pdf'
-      },
-      {
-        id: 3,
-        nombre: 'Carlos López',
-        puesto: 'Maestro de obra',
-        departamento: 'Construcción',
-        fechaIngreso: '2022-11-10',
-        estado: 'Activo',
-        contrato: 'contrato_maestro_001.pdf'
-      },
-      {
-        id: 4,
-        nombre: 'Ana Martínez',
-        puesto: 'Escultor',
-        departamento: 'Diseño',
-        fechaIngreso: '2023-03-05',
-        estado: 'Activo',
-        contrato: 'contrato_escultor_001.pdf'
-      }
-    ];
-
-    this.empleadoData = empleadosEjemplo.find(emp => emp.id === id) || null;
-    
-    if (this.empleadoData) {
-      this.cargarDatosEmpleado();
-    } else {
-      console.error('Empleado no encontrado con ID:', id);
-      this.router.navigate(['/rrhh/administrar-empleados']);
-    }
-  }
+  
 
   cargarDatosEmpleado(): void {
     if (this.empleadoData) {
@@ -157,7 +101,30 @@ export class VerEmpleado implements OnInit {
           ...this.registroForm.value
         };
         
-        console.log('Empleado actualizado:', this.empleadoData);
+          const data={
+            nombre:this.empleadoData?.nombre,
+            puesto:this.empleadoData?.puesto,
+            contrato:this.empleadoData?.contrato
+          }
+
+           const url = `http://127.0.0.1:8000/api/update_empleado/${this.empleadoData?.id}`;
+
+      this.http.put(url, data).subscribe({
+        next: (resp) => {
+
+          this.mostrarModalExito = true;
+          this.modoEdicion = false;
+          this.registroForm.disable();
+
+          
+        },
+        error: (err) => {
+          console.error("❌ Error al actualizar empleado", err);
+          alert("Error al actualizar el empleado");
+        }
+      });
+
+
       }
     } else {
       // Activar edición
@@ -190,13 +157,25 @@ export class VerEmpleado implements OnInit {
   }
 
   confirmarEliminar(): void {
-    if (this.empleadoData) {
-      console.log('Empleado eliminado:', this.empleadoData.id);
-      // Aquí llamarías a un servicio para eliminar el empleado
-    }
-    
-    this.mostrarModalEliminar = false;
-    this.router.navigate(['/rrhh/administrar-empleados']);
+     if (!this.empleadoData) return;
+
+  const url = `http://127.0.0.1:8000/api/eliminar_empleado/${this.empleadoData.id}`;
+
+  this.http.put(url, {})  // No requiere body
+    .subscribe({
+      next: (resp) => {
+        console.log('✔️ Empleado desactivado:', resp);
+
+        this.mostrarModalEliminar = false;
+
+        // Redirigir al listado
+        this.router.navigate(['/rrhh/administrar-empleados']);
+      },
+      error: (err) => {
+        console.error('❌ Error al desactivar empleado:', err);
+        alert('Error al desactivar el empleado');
+      }
+    });
   }
 
   onFileSelected(event: any): void {

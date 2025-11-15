@@ -1,58 +1,53 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CardEmpleadoComponent, Empleado } from '../../componentes/card-empleado/card-empleado';
 
 @Component({
   selector: 'app-administrar-empleados',
   standalone: true,
-  imports: [CommonModule, FormsModule, CardEmpleadoComponent],
+  imports: [CommonModule, FormsModule, HttpClientModule, CardEmpleadoComponent],
   templateUrl: './administrar-empleados.html',
   styleUrl: './administrar-empleados.scss'
 })
-export class AdministrarEmpleadosComponent {
+export class AdministrarEmpleadosComponent implements OnInit {
   terminoBusqueda: string = '';
-  
-  empleados: Empleado[] = [
-    {
-      id: 1,
-      nombre: 'Juan Pérez',
-      puesto: 'Albañil',
-      departamento: 'Construcción',
-      fechaIngreso: '2023-01-15',
-      estado: 'Activo',
-      contrato: 'contrato_albanyl_001.pdf'
-    },
-    {
-      id: 2,
-      nombre: 'María García',
-      puesto: 'Albañil',
-      departamento: 'Construcción',
-      fechaIngreso: '2023-02-20',
-      estado: 'Activo',
-      contrato: 'contrato_albanyl_002.pdf'
-    },
-    {
-      id: 3,
-      nombre: 'Carlos López',
-      puesto: 'Maestro de obra',
-      departamento: 'Construcción',
-      fechaIngreso: '2022-11-10',
-      estado: 'Activo',
-      contrato: 'contrato_maestro_001.pdf'
-    },
-    {
-      id: 4,
-      nombre: 'Ana Martínez',
-      puesto: 'Escultor',
-      departamento: 'Diseño',
-      fechaIngreso: '2023-03-05',
-      estado: 'Activo',
-      contrato: 'contrato_escultor_001.pdf'
-    }
-  ];
 
-  empleadosFiltrados: Empleado[] = [...this.empleados];
+  // Ahora empiezan vacíos, se llenan desde el backend
+  empleados: Empleado[] = [];
+  empleadosFiltrados: Empleado[] = [];
+
+  private apiUrl = 'http://127.0.0.1:8000/api/get_all_empleados';
+
+  constructor(private http: HttpClient) {}
+
+  ngOnInit(): void {
+    this.cargarEmpleados();
+  }
+
+  cargarEmpleados(): void {
+    this.http.get<{ success: boolean; data: any[] }>(this.apiUrl).subscribe({
+      next: (resp) => {
+        if (resp.success && Array.isArray(resp.data)) {
+          // Mapeamos los campos del backend a tu interfaz Empleado
+          this.empleados = resp.data.map((e) => ({
+            id: e.id_empleado,
+            nombre: e.nombre ?? '',
+            puesto: e.puesto ?? '',
+            contrato: e.contrato ?? ''
+          })) as Empleado[];
+
+          this.empleadosFiltrados = [...this.empleados];
+        } else {
+          console.error('Respuesta inesperada del backend', resp);
+        }
+      },
+      error: (err) => {
+        console.error('Error al cargar empleados:', err);
+      }
+    });
+  }
 
   onBuscar(): void {
     if (!this.terminoBusqueda.trim()) {
@@ -61,7 +56,7 @@ export class AdministrarEmpleadosComponent {
     }
 
     const termino = this.terminoBusqueda.toLowerCase().trim();
-    this.empleadosFiltrados = this.empleados.filter(empleado =>
+    this.empleadosFiltrados = this.empleados.filter((empleado) =>
       empleado.nombre.toLowerCase().includes(termino) ||
       empleado.puesto.toLowerCase().includes(termino)
     );
