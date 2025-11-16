@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -24,7 +24,7 @@ interface Empleado {
 export class VerEmpleado implements OnInit {
   registroForm: FormGroup;
   usuarioForm: FormGroup;
-
+  datosOriginales:any
   modoEdicion: boolean = false;
   mostrarFormularioUsuario: boolean = false;
   mostrarModalExito: boolean = false;
@@ -37,7 +37,8 @@ export class VerEmpleado implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
-    private http: HttpClient   
+    private http: HttpClient   ,
+     private cd: ChangeDetectorRef   
   ) {
     // Formulario principal - SIN disabled inicial
     this.registroForm = this.fb.group({
@@ -47,9 +48,9 @@ export class VerEmpleado implements OnInit {
     });
 
     this.usuarioForm = this.fb.group({
-      rol: ['', Validators.required],
+      rol_id_rol: ['', Validators.required],
       correo: ['', [Validators.required, Validators.email]],
-      contrasena: ['', [Validators.required, Validators.minLength(6)]]
+      contrasenia: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
@@ -78,60 +79,78 @@ export class VerEmpleado implements OnInit {
     if (this.empleadoData) {
       console.log('Cargando datos del empleado:', this.empleadoData);
       this.registroForm.patchValue({
-        nombre: this.empleadoData.nombre,
-        puesto: this.empleadoData.puesto,
-        contrato: this.empleadoData.contrato || ''
-      });
+  nombre: this.empleadoData.nombre,
+  puesto: this.empleadoData.puesto,
+  contrato: this.empleadoData.contrato || ''
+});
+
+// Guardar datos originales para detectar cambios
+this.datosOriginales = this.registroForm.getRawValue();
+
     } else {
       console.error('No hay datos de empleado para cargar');
     }
   }
 
   onToggleEdicion(): void {
-    if (this.modoEdicion) {
-      // Guardar cambios
-      if (this.registroForm.valid && this.empleadoData) {
-        this.mostrarModalExito = true;
-        this.modoEdicion = false;
-        this.registroForm.disable(); // Deshabilitamos después de guardar
-        
-        // Actualizar datos locales
-        this.empleadoData = {
-          ...this.empleadoData,
-          ...this.registroForm.value
-        };
-        
-          const data={
-            nombre:this.empleadoData?.nombre,
-            puesto:this.empleadoData?.puesto,
-            contrato:this.empleadoData?.contrato
-          }
-
-           const url = `http://127.0.0.1:8000/api/update_empleado/${this.empleadoData?.id}`;
-
-      this.http.put(url, data).subscribe({
-        next: (resp) => {
-
-          this.mostrarModalExito = true;
-          this.modoEdicion = false;
-          this.registroForm.disable();
-
-          
-        },
-        error: (err) => {
-          console.error("❌ Error al actualizar empleado", err);
-          alert("Error al actualizar el empleado");
-        }
-      });
-
-
-      }
-    } else {
-      // Activar edición
-      this.modoEdicion = true;
-      this.registroForm.enable(); // Habilitamos para editar
-    }
+  if (!this.modoEdicion) {
+    // ACTIVAR EDICIÓN
+    this.modoEdicion = true;
+    this.registroForm.enable();
+    return;
   }
+
+  // --- SI YA ESTÁ EN MODO EDICIÓN ----
+
+  const valoresActuales = this.registroForm.getRawValue();
+
+  // 1️⃣ Verificar si hubo cambios reales
+  const sinCambios =
+    JSON.stringify(valoresActuales) === JSON.stringify(this.datosOriginales);
+
+  if (sinCambios) {
+    console.log("⚠️ No hubo cambios, no se enviará al backend.");
+    this.modoEdicion = false;
+    this.registroForm.disable();
+    return;
+  }
+
+  // 2️⃣ Verificar que el formulario sea válido
+  if (!this.registroForm.valid || !this.empleadoData) {
+    alert("Complete los campos correctamente.");
+    return;
+  }
+
+  // 3️⃣ ENVIAR AL BACKEND SOLO SI CAMBIÓ ALGO
+  const data = {
+    nombre: valoresActuales.nombre,
+    puesto: valoresActuales.puesto,
+    contrato: valoresActuales.contrato
+  };
+
+  const url = `http://127.0.0.1:8000/api/update_empleado/${this.empleadoData.id}`;
+
+  this.http.put(url, data).subscribe({
+    next: (resp) => {
+       console.log("✔️ Empleado actualizado:", resp);
+
+  this.mostrarModalExito = true;
+
+  // Forzar renderizado del modal
+  this.cd.detectChanges();
+
+  this.datosOriginales = valoresActuales;
+
+  this.modoEdicion = false;
+  this.registroForm.disable();
+    },
+    error: (err) => {
+      console.error("❌ Error al actualizar empleado", err);
+      alert("Error al actualizar el empleado");
+    }
+  });
+}
+
 
   onDarUsuario(): void {
     this.mostrarFormularioUsuario = true;
@@ -141,14 +160,18 @@ export class VerEmpleado implements OnInit {
     if (this.usuarioForm.valid && this.empleadoData) {
       const usuarioData = {
         ...this.usuarioForm.value,
-        empleadoId: this.empleadoData.id,
-        empleadoNombre: this.empleadoData.nombre
+        empleado_id_empleado: this.empleadoData.id,
       };
+      console.log(usuarioData)
+      const url=`http://127.0.0.1:8000/api/asignar_usuario`;
+      this.http.post(url,usuarioData).subscribe({
+          next:(respuesta)=>{
+            alert("Usuario creado correctamente para "+this.empleadoData?.nombre)
+          },error:(err)=>{
+            alert("Error al asignar usuario a " + this.empleadoData?.nombre)
+          }
+      });
       
-      console.log('Usuario creado:', usuarioData);
-      alert('Usuario creado exitosamente!');
-      this.mostrarFormularioUsuario = false;
-      this.usuarioForm.reset();
     }
   }
 
@@ -200,7 +223,7 @@ export class VerEmpleado implements OnInit {
   get contrato() { return this.registroForm.get('contrato'); }
 
   // Getters para formulario de usuario
-  get rol() { return this.usuarioForm.get('rol'); }
+  get rol_id_ril() { return this.usuarioForm.get('rol_id_rol'); }
   get correo() { return this.usuarioForm.get('correo'); }
-  get contrasena() { return this.usuarioForm.get('contrasena'); }
+  get contrasenia() { return this.usuarioForm.get('contrasenia'); }
 }

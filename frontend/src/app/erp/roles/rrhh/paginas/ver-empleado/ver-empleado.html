@@ -13,12 +13,12 @@
         <form class="usuario-form" [formGroup]="usuarioForm" (ngSubmit)="onRegistrarUsuario()">
           <div class="form-group">
             <label class="form-label">Rol para el empleado</label>
-            <select class="form-input" formControlName="rol">
+            <select class="form-input" formControlName="rol_id_rol">
               <option value="">Seleccione un rol</option>
-              <option value="administrador">Administrador</option>
-              <option value="contador">Contador</option>
-              <option value="RRHH">Recursos Humanos</option>
-              <option value="Jefe de obra">Jefe de Obra</option>
+              <option value="3">Administrador</option>
+              <option value="4">Contador</option>
+              <option value="5">Recursos Humanos</option>
+              <option value="6">Jefe de Obra</option>
             </select>
           </div>
 
@@ -37,7 +37,7 @@
             <input 
               type="password" 
               class="form-input"
-              formControlName="contrasena"
+              formControlName="contrasenia"
               placeholder="Ingrese la contraseña"
             >
           </div>
