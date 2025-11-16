@@ -21,7 +21,7 @@ export class AdministrarProveedores implements OnInit {
   error = signal<string>('');
   q = signal<string>(''); // Término de búsqueda
 
-  // Computed para filtrar automáticamente
+  // para filtrar automáticamente
   proveedoresFiltrados = computed(() => {
     const termino = this.q().toLowerCase().trim();
     if (!termino) return this.proveedores();
@@ -30,73 +30,40 @@ export class AdministrarProveedores implements OnInit {
     );
   });
 
-  // DATOS DE PRUEBA - Simulan la respuesta de la API
+  // DATOS DE PRUEBA
   private datosDePrueba: Proveedor[] = [
     {
       id_proveedor: 1,
-      nombre: "Materiales Constructivos S.A.",
+      nombre: "Cemento Viacha",
       contacto: "Juan Pérez",
-      telefono: "555-1234",
-      correo: "ventas@materialesconstructivos.com",
-      direccion: "Av. Principal #123, Ciudad",
+      telefono: "7876554",
+      correo: "cementoviacha@cementoviacha.com",
+      direccion: "Av. Principal #123",
       visibilidad: true,
       logo: "logo1.png",
-      web: "www.materialesconstructivos.com"
+      web: "www.cementoviacha.com"
     },
     {
       id_proveedor: 2,
-      nombre: "Herramientas Profesionales Ltda.",
+      nombre: "Aceros Aruquipa",
       contacto: "María García",
-      telefono: "555-5678",
-      correo: "contacto@herramientaspro.com",
-      direccion: "Calle Secundaria #456, Ciudad",
+      telefono: "67112332",
+      correo: "servicioaceros@acerosaruquipa.com",
+      direccion: "Calle 2 de obrajes #456",
       visibilidad: true,
       logo: "logo2.png",
-      web: "www.herramientaspro.com"
+      web: "www.acerosaruquipa.com"
     },
     {
       id_proveedor: 3,
-      nombre: "Equipos Pesados Internacional",
+      nombre: "Soboce",
       contacto: "Carlos Rodríguez",
-      telefono: "555-9012",
-      correo: "info@equipospesados.com",
-      direccion: "Zona Industrial #789, Ciudad",
+      telefono: "76543221",
+      correo: "informacionsoboce@soboce.com",
+      direccion: "Zona Miraflores #789",
       visibilidad: true,
       logo: "logo3.png",
-      web: "www.equipospesados.com"
-    },
-    {
-      id_proveedor: 4,
-      nombre: "Insumos Eléctricos Modernos",
-      contacto: "Ana López",
-      telefono: "555-3456",
-      correo: "ventas@insumoselectricos.com",
-      direccion: "Av. Tecnológica #321, Ciudad",
-      visibilidad: true,
-      logo: "logo4.png",
-      web: "www.insumoselectricos.com"
-    },
-    {
-      id_proveedor: 5,
-      nombre: "Pinturas y Acabados Premium",
-      contacto: "Roberto Sánchez",
-      telefono: "555-7890",
-      correo: "cliente@pinturaspremium.com",
-      direccion: "Calle Color #654, Ciudad",
-      visibilidad: true,
-      logo: "logo5.png",
-      web: "www.pinturaspremium.com"
-    },
-    {
-      id_proveedor: 6,
-      nombre: "Cerámicas y Porcelanatos",
-      contacto: "Laura Morales",
-      telefono: "555-2345",
-      correo: "info@ceramicasyporcelanatos.com",
-      direccion: "Av. Decoración #987, Ciudad",
-      visibilidad: true,
-      logo: "logo6.png",
-      web: "www.ceramicasyporcelanatos.com"
+      web: "www.soboce.com"
     }
   ];
 
@@ -108,7 +75,7 @@ export class AdministrarProveedores implements OnInit {
     // Simulamos una llamada HTTP con setTimeout
     setTimeout(() => {
       try {
-        // Usamos los datos de prueba en lugar de la API real
+        // Usamos los datos de prueba
         this.proveedores.set(this.datosDePrueba);
         this.loading.set(false);
         console.log('Proveedores cargados (datos de prueba):', this.datosDePrueba);
@@ -136,9 +103,9 @@ export class AdministrarProveedores implements OnInit {
     */
   }
 
-  // Método para obtener proveedores desde API (listo para cuando tengas el endpoint)
+  // Método para obtener proveedores desde el endpoint
   obtenerProveedores(): Observable<Proveedor[]> {
-    return this.http.get<any[]>("http://127.0.0.1:8000/api/get_all_proveedores").pipe(
+    return this.http.get<any[]>("http://127.0.0.1:8000/api/get_proveedores").pipe(
       map(response =>
         response.map(item => ({
           id_proveedor: item.id_proveedor,
