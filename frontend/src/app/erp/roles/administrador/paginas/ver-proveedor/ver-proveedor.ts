@@ -50,6 +50,7 @@ export class VerProveedor implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.proveedor)
     this.inicializarFormulario();
   }
 
@@ -165,6 +166,7 @@ export class VerProveedor implements OnInit {
       
       console.log('Datos a actualizar:', valoresActuales);
       
+      
       this.modoEdicion = false;
       this.formularioModificado = false;
       
@@ -231,27 +233,68 @@ export class VerProveedor implements OnInit {
   }
 
   guardarMaterial(material: MaterialProveedor) {
-    // Aquí implementamos la lógica para guardar el material
-    console.log('Guardar material:', material);
-    
-    // Simulación de guardado
-    if (material.id_material_proveedor === 0) {
-      // Nuevo material
-      material.id_material_proveedor = this.generarNuevoId();
-      this.materiales.push(material);
-      console.log('Nuevo material añadido:', material);
-    } else {
-      // Editar material existente
-      const index = this.materiales.findIndex(m => m.id_material_proveedor === material.id_material_proveedor);
-      if (index !== -1) {
-        this.materiales[index] = material;
-        console.log('Material actualizado:', material);
-      }
-    }
-    
-    // Volver a la vista de lista de materiales después de guardar
-    this.cambiarVista('verMaterial');
+    console.log("ENVIANDO AL BACKEND:", {
+  id_proveedor: this.proveedor?.id_proveedor,
+  material: material.material,
+  descripcion: material.descripcion
+});
+  if (!material.material || !material.descripcion) {
+    alert("Debe llenar material y descripción");
+    return;
   }
+
+  // Si es un material existente → EDITAR
+  if (material.id_material_proveedor && material.id_material_proveedor !== 0) {
+    
+    this.http.put<MaterialProveedor>(`http://127.0.0.1:8000/api/update_material_proveedor/${material.id_material_proveedor}`, {
+  material: material.material,
+  descripcion: material.descripcion
+})
+.subscribe({
+  next: (respuesta: MaterialProveedor) => {
+    console.log("✔ Material actualizado:", respuesta);
+
+    const index = this.materiales.findIndex(m => m.id_material_proveedor === material.id_material_proveedor);
+    if (index !== -1) {
+      this.materiales[index] = respuesta; // ← ya no da error
+    }
+
+    this.cambiarVista('verMaterial');
+  },
+  error: (err) => {
+    console.error("❌ Error al actualizar material:", err);
+    alert("Error al actualizar material");
+  }
+});
+
+
+    return;
+  }
+
+  // Si es un material nuevo → REGISTRAR
+  this.http.post<MaterialProveedor>(
+  "http://127.0.0.1:8000/api/registrar_material_proveedor",
+  {
+    proveedor_id_proveedor: this.proveedor?.id_proveedor,   // ← OBLIGATORIO
+    material: material.material,
+    descripcion: material.descripcion
+  }
+)
+.subscribe({
+  next: (respuesta) => {
+    console.log("✔ Registrado correctamente:", respuesta);
+    this.materiales.push(respuesta);
+    this.cambiarVista('verMaterial');
+  },
+  error: (err) => {
+    console.error("❌ Error al registrar material:", err);
+    alert("Error en el registro: " + JSON.stringify(err.error));
+  }
+});
+
+
+}
+
 
   private generarNuevoId(): number {
     // Generar un ID único basado en el máximo ID existente
@@ -265,63 +308,41 @@ export class VerProveedor implements OnInit {
   }
 
   async cargarMateriales() {
-    try {
-      this.materiales = await this.simularCargaMateriales();
-      console.log('Materiales cargados para el proveedor:', this.proveedor?.id_proveedor, this.materiales);
-    } catch (error) {
-      console.error('Error al cargar materiales:', error);
+  if (!this.proveedor?.id_proveedor) {
+    console.warn("No hay proveedor seleccionado");
+    return;
+  }
+
+  this.http.get<any[]>("http://127.0.0.1:8000/api/get_material_proveedores")
+  .subscribe({
+    next: (lista) => {
+      console.log("Materiales obtenidos del backend:", lista);
+
+      // MAPEO → convertir las claves del backend a tu interfaz
+      const mapeados: MaterialProveedor[] = lista.map(m => ({
+        id_material_proveedor: m.id_material,         // backend → interfaz
+        id_proveedor: m.proveedor_id_proveedor,       // backend → interfaz
+        material: m.material,
+        descripcion: m.descripcion
+      }));
+
+      // FILTRAR por proveedor actual
+      this.materiales = mapeados.filter(m =>
+        m.id_proveedor === this.proveedor?.id_proveedor
+      );
+
+      console.log("Materiales filtrados y mapeados:", this.materiales);
+    },
+    error: (err) => {
+      console.error("❌ Error al cargar materiales:", err);
       this.materiales = [];
     }
-  }
+  });
 
-  private simularCargaMateriales(): Promise<MaterialProveedor[]> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        // DATOS DE PRUEBA
-        const todosLosMateriales: MaterialProveedor[] = [
-          {
-            id_material_proveedor: 1,
-            id_proveedor: 1,
-            material: 'Cemento',
-            descripcion: 'Cemento de alta resistencia'
-          },
-          {
-            id_material_proveedor: 2,
-            id_proveedor: 1, 
-            material: 'Arena',
-            descripcion: 'Arena fina para construcción'
-          },
-          {
-            id_material_proveedor: 3,
-            id_proveedor: 2, 
-            material: 'Grava',
-            descripcion: 'Grava de 3/4 para concreto'
-          },
-          {
-            id_material_proveedor: 4,
-            id_proveedor: 1, 
-            material: 'Ladrillos',
-            descripcion: 'Ladrillos de arcilla roja'
-          },
-          {
-            id_material_proveedor: 5,
-            id_proveedor: 3,
-            material: 'Pintura',
-            descripcion: 'Pintura latex blanca'
-          }
-        ];
+}
 
-        // Filtrar materiales que pertenecen al proveedor actual
-        const idProveedorActual = this.proveedor?.id_proveedor;
-        const materialesFiltrados = todosLosMateriales.filter(material => 
-          material.id_proveedor === idProveedorActual
-        );
-        
-        resolve(materialesFiltrados);
-      }, 500);
-    });
-  }
 
+  
   volverDesdeMateriales() {
     this.cambiarVista('default');
   }
@@ -344,8 +365,16 @@ export class VerProveedor implements OnInit {
 
     const datosActualizados = this.proveedorForm.getRawValue();
     datosActualizados.visibilidad = datosActualizados.visibilidad === 'true';
-
-    // Simulación de actualización 
+    const url=`http://127.0.0.1:8000/api/update_proveedor/`+this.proveedor?.id_proveedor;
+      this.http.put(url,datosActualizados).subscribe({
+        next:(resp)=>{
+          this.mostrarModal=true;
+        },error:(err)=>{
+          alert("Error al actualizar proveedor")
+        }
+      });
+    // Simulación de actualización
+    /* 
     setTimeout(() => {
       try {
         console.log('📋 Datos actualizados del proveedor:');
@@ -366,7 +395,7 @@ export class VerProveedor implements OnInit {
         console.error('Error:', err);
       }
     }, 1000);
-
+*/
     // CÓDIGO PAR EL ENDPOINT 
     /*
     this.http.put(`http://127.0.0.1:8000/api/update_proveedor/${this.proveedor?.id_proveedor}`, datosActualizados)

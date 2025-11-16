@@ -110,60 +110,50 @@ export class RegistrarProveedores {
 
   // Registrar proveedor en el backend
   registrarProveedor(proveedorData: any): void {
-    this.loading = true;
-    this.error = '';
-    
-    // Simulación de envío (reemplaza con tu endpoint real)
-    setTimeout(() => {
-      try {
-        console.log('Datos a enviar al backend:');
-        console.log('Nombre:', proveedorData.nombre);
-        console.log('Visibilidad:', proveedorData.visibilidad);
-        console.log('Web:', proveedorData.web);
-        console.log('Contacto:', proveedorData.contacto);
-        console.log('Teléfono:', proveedorData.telefono);
-        console.log('Correo:', proveedorData.correo);
-        console.log('Dirección:', proveedorData.direccion);
+  this.loading = true;
+  this.error = '';
+
+  // Ajustamos datos para enviar SOLO lo que el backend acepta
+ const formData = new FormData();
+
+formData.append('nombre', proveedorData.nombre);
+formData.append('contacto', proveedorData.contacto);
+formData.append('telefono', proveedorData.telefono);
+formData.append('correo', proveedorData.correo);
+formData.append('direccion', proveedorData.direccion);
+formData.append('web', proveedorData.web || '');
+
+if (this.logoArchivo) {
+  formData.append('logo', this.logoArchivo);
+}
+
+this.http.post("http://127.0.0.1:8000/api/registrar_proveedor", formData)
+    .subscribe({
+      next: (respuesta) => {
+        console.log("✔️ Registrado correctamente:", respuesta);
         
+        this.loading = false;
         this.registroForm.reset();
         this.pasoActual = 1;
         this.logoArchivo = null;
         this.mostrarModalExito = true;
+      },
+      error: (err) => {
         this.loading = false;
-        
-      } catch (err) {
-        this.loading = false;
-        this.error = 'Error al registrar el proveedor';
+
+        if (err.status === 422) {
+          this.error = "Datos inválidos";
+          console.log("❌ Error 422:", err.error);
+        } else {
+          this.error = "Error al registrar proveedor";
+          console.error("❌ Error:", err);
+        }
+
         this.mostrarModalError = true;
       }
-    }, 1000);
+    });
+}
 
-    // CÓDIGO PARA EL ENDPOINT 
-    /*
-    this.http.post("http://127.0.0.1:8000/api/registrar_proveedor", proveedorData)
-      .subscribe({
-        next: (respuesta) => {
-          console.log("Registrado correctamente:", respuesta);
-          this.loading = false;
-          this.registroForm.reset();
-          this.pasoActual = 1;
-          this.logoArchivo = null;
-          this.mostrarModalExito = true;
-        },
-        error: (err) => {
-          this.loading = false;
-          if (err.status === 422) {
-            this.error = "Datos inválidos";
-            console.log("Errores 422:", err.error);
-          } else {
-            this.error = "Error al registrar proveedor";
-            console.log(err);
-          }
-          this.mostrarModalError = true;
-        }
-      });
-    */
-  }
 
   // Métodos para modales
   cerrarModalExito(): void {
