@@ -2,30 +2,58 @@
   <div class="registro-container">
     <!-- Contenedor izquierdo (30%) -->
     <div class="left-panel">
-      <!-- Botón Volver en la esquina superior izquierda -->
-      <button class="btn-volver" (click)="volver()">← Volver</button>
-      
-      <img src="../../../../../../assets/img/logos/logo-proveedor.png" alt="logo UrbanLife" class="imagen">
-      
-      <!-- Botones de acción debajo de la imagen -->
-      <div class="botones-accion">
-        <button type="button" class="btn-material" (click)="anadirMaterial()">
-          Añadir Material
-        </button>
+      <div *ngIf="vistaPanelIzquierdo === 'default'">
+        <button class="btn-volver" (click)="volver()">← Volver</button>
         
-        <button type="button" class="btn-material" (click)="verMaterial()">
-          Ver Material
-        </button>
+        <img src="../../../../../../assets/img/logos/logo-proveedor.png" alt="logo UrbanLife" class="imagen">
         
-        <button type="button" 
-                class="btn-actualizar" 
-                [class.btn-cancelar]="modoEdicion && !formularioModificado"
-                [class.btn-guardar]="modoEdicion && formularioModificado"
-                (click)="manejarActualizacion()">
-          {{ obtenerTextoBoton() }}
-        </button>
+        <div class="botones-accion">
+          <button type="button" class="btn-material" (click)="anadirMaterial()">
+            Añadir Material
+          </button>
+          
+          <button type="button" class="btn-material" (click)="verMaterial()">
+            Ver Material
+          </button>
+          
+          <button type="button" 
+                  class="btn-actualizar" 
+                  [class.btn-cancelar]="modoEdicion && !formularioModificado"
+                  [class.btn-guardar]="modoEdicion && formularioModificado"
+                  (click)="manejarActualizacion()">
+            {{ obtenerTextoBoton() }}
+          </button>
+        </div>
       </div>
+
+      <!-- Vista lista de materiales -->
+      <app-materiales-list 
+        *ngIf="vistaPanelIzquierdo === 'verMaterial'"
+        [materiales]="materiales"
+        (seleccionarMaterial)="seleccionarMaterialParaEditar($event)"
+        (volver)="volverDesdeMateriales()">
+      </app-materiales-list>
+
+      <!-- Vista añadir material -->
+      <app-material-form 
+        *ngIf="vistaPanelIzquierdo === 'añadirMaterial'"
+        [idProveedor]="proveedor?.id_proveedor || 0"
+        (guardarMaterial)="guardarMaterial($event)"
+        (cancelarAccion)="volverDesdeMateriales()">
+      </app-material-form>
+
+      <!-- Vista editar material -->
+      <app-material-form 
+        *ngIf="vistaPanelIzquierdo === 'editarMaterial'"
+        [material]="materialSeleccionado"
+        [idProveedor]="proveedor?.id_proveedor || 0"
+        [editar]="true"
+        (guardarMaterial)="guardarMaterial($event)"
+        (cancelarAccion)="volverDesdeMateriales()">
+      </app-material-form>
     </div>
+
+
 
     <!-- Contenedor derecho (70%) -->
     <div class="right-panel">
@@ -155,7 +183,7 @@
               </div>
             </div>
           </div>
-          <!-- Botones de navegación -->
+          
           <!-- Botones de navegación -->
             <div class="botones-navegacion">
             <button 

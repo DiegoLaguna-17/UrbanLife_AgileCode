@@ -1,0 +1,16 @@
+<div class="materiales-list-container">
+  <button class="btn-volver" (click)="onVolver()">← Volver</button>
+  <h3 class="titulo-principal">Materiales del Proveedor</h3>
+  <div class="materiales-grid">
+    <app-card-material
+    class="card"
+      *ngFor="let material of materiales"
+      [material]="material"
+      (ver)="seleccionarMaterial.emit(material)">
+    </app-card-material>
+  </div>
+
+  <div class="no-results" *ngIf="materiales.length === 0">
+    No se encontraron materiales para este proveedor
+  </div>
+</div>

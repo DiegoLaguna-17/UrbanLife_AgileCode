@@ -1,0 +1,73 @@
+.card {
+  background: linear-gradient(135deg, var(--Celeste) 0%, var(--CelesteOscuro) 150%);
+  border-radius: 30px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid var(--AzulOscuro);
+  transition: all 0.3s ease;
+  margin: 20px 0px;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: var(--Verde);
+  }
+}
+
+.card-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.div-imagen {
+  flex-shrink: 0;
+}
+
+.imagen {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nombre {
+  color: var(--VerdeOscuro);
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+  font-size: 200%;
+  text-align: center;
+}
+
+.btn-ver {
+  background: var(--AzulOscuro);
+  color: var(--Blanco);
+  border: none;
+  padding: 6px 80px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  width: fit-content;
+  border-radius: 30px;
+  
+  &:hover {
+    background: var(--VerdeOscuro);
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}

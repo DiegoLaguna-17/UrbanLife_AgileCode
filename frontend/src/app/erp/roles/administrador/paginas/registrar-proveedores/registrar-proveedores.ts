@@ -27,16 +27,16 @@ export class RegistrarProveedores {
   constructor(private fb: FormBuilder) {
     this.registroForm = this.fb.group({
       // Paso 1: Datos del Proveedor
-      nombre: ['', [Validators.required, Validators.minLength(3)]],
+      nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
       visibilidad: ['', Validators.required],
       web: ['', [Validators.pattern('https?://.+')]],
       logo: [''],
       
       // Paso 2: Datos de Contacto
-      contacto: ['', [Validators.required, Validators.minLength(3)]],
+      contacto: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30)]],
       telefono: [''],
-      correo: ['', [Validators.required, Validators.email]],
-      direccion: ['', [Validators.required, Validators.minLength(10)]]
+      correo: ['', [Validators.required, Validators.email, Validators.maxLength(50)]],
+      direccion: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(200)]]
     });
   }
 
@@ -116,7 +116,7 @@ export class RegistrarProveedores {
     // Simulación de envío (reemplaza con tu endpoint real)
     setTimeout(() => {
       try {
-        console.log('📋 Datos a enviar al backend:');
+        console.log('Datos a enviar al backend:');
         console.log('Nombre:', proveedorData.nombre);
         console.log('Visibilidad:', proveedorData.visibilidad);
         console.log('Web:', proveedorData.web);
@@ -138,7 +138,7 @@ export class RegistrarProveedores {
       }
     }, 1000);
 
-    // ⚠️ CÓDIGO PARA CUANDO TENGAS EL ENDPOINT REAL (descomenta cuando lo necesites)
+    // CÓDIGO PARA EL ENDPOINT 
     /*
     this.http.post("http://127.0.0.1:8000/api/registrar_proveedor", proveedorData)
       .subscribe({
@@ -181,7 +181,7 @@ export class RegistrarProveedores {
     });
   }
 
-  // Getters para fácil acceso en el template
+  // Getters para fácil acceso
   get nombre() { return this.registroForm.get('nombre'); }
   get visibilidad() { return this.registroForm.get('visibilidad'); }
   get web() { return this.registroForm.get('web'); }

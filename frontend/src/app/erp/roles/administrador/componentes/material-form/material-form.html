@@ -1,0 +1,75 @@
+<div class="material-form-container">
+  <button class="btn-volver" (click)="volverAtras()">← Volver</button>
+  <h3 class="titulo-principal">{{ editar ? 'Editar Material' : 'Registrar Nuevo Material' }}</h3>
+  
+  <form class="form" [formGroup]="materialForm">
+    <div class="form-group">
+      <label class="form-label">Material</label>
+      <input 
+        type="text" 
+        class="form-input"
+        formControlName="material"
+        placeholder="Nombre del material"
+        [class.error]="materialControl?.invalid && materialControl?.touched"
+      >
+      <div class="error-message" *ngIf="materialControl?.invalid && materialControl?.touched">
+        <span *ngIf="materialControl?.errors?.['required']">El material es requerido</span>
+        <span *ngIf="materialControl?.errors?.['minlength']">Mínimo 2 caracteres</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Descripción</label>
+      <textarea 
+        class="form-textarea"
+        formControlName="descripcion"
+        placeholder="Descripción del material"
+        rows="3"
+        [class.error]="descripcionControl?.invalid && descripcionControl?.touched"
+      ></textarea>
+    </div>
+
+    <div class="botones-accion" *ngIf="modoEdicion">
+      <button type="button" class="btn-guardar" (click)="guardar()" [disabled]="materialForm.invalid">
+        {{ editar ? 'Actualizar' : 'Guardar' }}
+      </button>
+      <button type="button" class="btn-cancelar" (click)="cancelar()">
+        Cancelar
+      </button>
+    </div>
+
+    <div class="botones-accion" *ngIf="!modoEdicion && editar">
+      <button type="button" class="btn-actualizar" (click)="activarEdicion()">
+        Actualizar
+      </button>
+    </div>
+  </form>
+
+  <!-- Modal de éxito -->
+  <div class="modal-overlay" *ngIf="mostrarModalExito">
+    <div class="modal modal-exito">
+      <div class="modal-content">
+        <div class="modal-icon">✓</div>
+        <h3>¡Éxito!</h3>
+        <p>Material {{ editar ? 'actualizado' : 'registrado' }} correctamente.</p>
+        <div class="modal-buttons">
+          <button class="btn-modal btn-modal-success" (click)="cerrarModalExito()">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de error -->
+  <div class="modal-overlay" *ngIf="mostrarModalError">
+    <div class="modal modal-error">
+      <div class="modal-content">
+        <div class="modal-icon">✕</div>
+        <h3>Error</h3>
+        <p>{{ mensajeError }}</p>
+        <div class="modal-buttons">
+          <button class="btn-modal btn-modal-error" (click)="cerrarModalError()">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

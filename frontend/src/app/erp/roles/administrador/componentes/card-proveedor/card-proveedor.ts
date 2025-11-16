@@ -12,6 +12,13 @@ export interface Proveedor{
   web: string;
 }
 
+export interface MaterialProveedor {
+  id_material_proveedor: number;
+  id_proveedor: number;
+  material: string;
+  descripcion: string;
+}
+
 @Component({
   selector: 'app-card-proveedor',
   imports: [],
