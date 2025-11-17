@@ -25,7 +25,7 @@ ngAfterViewInit() {
   }
 }
 ngOnInit(){
-  /*
+  
   this.obtenerProveedores().subscribe({
     next: (res) => {
       this.proveedores = res; // 👈 Se cargan los objetos en un arreglo
@@ -33,7 +33,7 @@ ngOnInit(){
     },
     error: (err) => console.error(err)
   });
-  */
+  
 }
 
 

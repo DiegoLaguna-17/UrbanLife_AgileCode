@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-
+import { UploadService } from './upload.service';
 @Component({
   selector: 'app-registrar-proveedores',
   standalone: true,
@@ -23,8 +23,8 @@ export class RegistrarProveedores {
   mostrarModalError: boolean = false;
   loading: boolean = false;
   error: string = '';
-
-  constructor(private fb: FormBuilder) {
+  dataProveedor:any;
+  constructor(private fb: FormBuilder,private uploadService: UploadService) {
     this.registroForm = this.fb.group({
       // Paso 1: Datos del Proveedor
       nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
@@ -89,24 +89,33 @@ export class RegistrarProveedores {
   }
 
   // Envío del formulario
-  onSubmit(): void {
-    if (this.registroForm.valid) {
-      const proveedorData = {
-        ...this.registroForm.value,
-        // Convertir visibilidad a booleano
-        visibilidad: this.registroForm.value.visibilidad === 'true'
-      };
-      
-      console.log('Datos del proveedor:', proveedorData);
-      
-      // Aquí puedes enviar los datos al servidor
-      this.registrarProveedor(proveedorData);
-      
-    } else {
-      this.marcarCamposComoTouched();
-      this.mostrarModalError = true;
+  async onSubmit() {
+  if (!this.registroForm.valid) {
+    this.marcarCamposComoTouched();
+    this.mostrarModalError = true;
+    return;
+  }
+
+  let urlLogo = null;
+
+  if (this.logoArchivo) {
+    urlLogo = await this.uploadService.subirImagenProveedor(this.logoArchivo);
+
+    if (!urlLogo) {
+      alert("Error al subir imagen a Supabase");
+      return;
     }
   }
+
+  this.dataProveedor = {
+    ...this.registroForm.value,
+    visibilidad: this.registroForm.value.visibilidad === 'true',
+    logo: urlLogo // ← AQUÍ VA SOLO LA URL
+  };
+  console.log(this.dataProveedor)
+  this.registrarProveedor(this.dataProveedor)
+}
+
 
   // Registrar proveedor en el backend
   registrarProveedor(proveedorData: any): void {
@@ -114,44 +123,43 @@ export class RegistrarProveedores {
   this.error = '';
 
   // Ajustamos datos para enviar SOLO lo que el backend acepta
- const formData = new FormData();
+  const formData = new FormData();
 
-formData.append('nombre', proveedorData.nombre);
-formData.append('contacto', proveedorData.contacto);
-formData.append('telefono', proveedorData.telefono);
-formData.append('correo', proveedorData.correo);
-formData.append('direccion', proveedorData.direccion);
-formData.append('web', proveedorData.web || '');
+  formData.append('nombre', proveedorData.nombre);
+  formData.append('contacto', proveedorData.contacto);
+  formData.append('telefono', proveedorData.telefono);
+  formData.append('correo', proveedorData.correo);
+  formData.append('direccion', proveedorData.direccion);
+  formData.append('web', proveedorData.web || '');
+  formData.append('logo',proveedorData.logo);
 
-if (this.logoArchivo) {
-  formData.append('logo', this.logoArchivo);
-}
+  
 
-this.http.post("http://127.0.0.1:8000/api/registrar_proveedor", formData)
-    .subscribe({
-      next: (respuesta) => {
-        console.log("✔️ Registrado correctamente:", respuesta);
-        
-        this.loading = false;
-        this.registroForm.reset();
-        this.pasoActual = 1;
-        this.logoArchivo = null;
-        this.mostrarModalExito = true;
-      },
-      error: (err) => {
-        this.loading = false;
+  this.http.post("http://127.0.0.1:8000/api/registrar_proveedor", formData)
+      .subscribe({
+        next: (respuesta) => {
+          console.log("✔️ Registrado correctamente:", respuesta);
+          
+          this.loading = false;
+          this.registroForm.reset();
+          this.pasoActual = 1;
+          this.logoArchivo = null;
+          this.mostrarModalExito = true;
+        },
+        error: (err) => {
+          this.loading = false;
 
-        if (err.status === 422) {
-          this.error = "Datos inválidos";
-          console.log("❌ Error 422:", err.error);
-        } else {
-          this.error = "Error al registrar proveedor";
-          console.error("❌ Error:", err);
+          if (err.status === 422) {
+            this.error = "Datos inválidos";
+            console.log("❌ Error 422:", err.error);
+          } else {
+            this.error = "Error al registrar proveedor";
+            console.error("❌ Error:", err);
+          }
+
+          this.mostrarModalError = true;
         }
-
-        this.mostrarModalError = true;
-      }
-    });
+      });
 }
 
 
