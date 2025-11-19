@@ -110,15 +110,59 @@
               </div>
             </div>
 
-            <!-- Campo Logo (solo visualización) -->
+            <!-- Campo Logo -->
             <div class="form-group">
               <label class="form-label">Logo del Proveedor</label>
-              <div class="logo-preview" *ngIf="proveedor.logo">
+              
+              <!-- Mostrar logo actual -->
+              <div class="logo-preview" *ngIf="proveedor.logo && !nuevaImagen">
                 <img [src]="proveedor.logo" alt="Logo del proveedor" class="logo-image">
                 <div class="logo-text">Logo actual del proveedor</div>
               </div>
-              <div class="logo-preview" *ngIf="!proveedor.logo">
+              
+              <!-- Mostrar preview de nueva imagen -->
+              <div class="logo-preview" *ngIf="nuevaImagen">
+                <img [src]="nuevaImagen" alt="Nuevo logo" class="logo-image">
+                <div class="logo-text">Nueva imagen seleccionada</div>
+              </div>
+              
+              <div class="logo-preview" *ngIf="!proveedor.logo && !nuevaImagen">
                 <div class="logo-placeholder">No hay logo cargado</div>
+              </div>
+
+              <!-- Input para subir nueva imagen (solo visible en modo edición) -->
+              <div *ngIf="modoEdicion" class="logo-upload">
+                <input 
+                  type="file" 
+                  id="logoInput"
+                  class="file-input"
+                  (change)="onFileSelected($event)"
+                  accept="image/*"
+                  #fileInput
+                >
+                <label for="logoInput" class="file-input-label">
+                  {{ proveedor.logo ? 'Cambiar Logo' : 'Subir Logo' }}
+                </label>
+                
+                <!-- Botón para eliminar imagen (solo si hay imagen actual) -->
+                <button 
+                  *ngIf="proveedor.logo && !nuevaImagen"
+                  type="button" 
+                  class="btn-eliminar-imagen"
+                  (click)="eliminarImagen()"
+                >
+                  Eliminar Logo
+                </button>
+                
+                <!-- Botón para cancelar nueva imagen seleccionada -->
+                <button 
+                  *ngIf="nuevaImagen"
+                  type="button" 
+                  class="btn-cancelar-imagen"
+                  (click)="cancelarNuevaImagen()"
+                >
+                  Cancelar Nueva Imagen
+                </button>
               </div>
             </div>
           </div>

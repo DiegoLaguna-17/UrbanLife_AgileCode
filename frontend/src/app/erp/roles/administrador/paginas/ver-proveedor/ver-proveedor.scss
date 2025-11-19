@@ -583,3 +583,83 @@ select:enabled {
   border-color: var(--Verde) !important;
   box-shadow: 0 0 0 2px rgba(126, 217, 87, 0.2) !important;
 }
+
+/* Estilos para la subida de imágenes */
+.logo-upload {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-input-label {
+  background: linear-gradient(135deg, var(--Verde) 0%, var(--Celeste) 100%);
+  color: var(--AzulOscuro);
+  padding: 10px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  text-align: center;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(9, 109, 10, 0.3);
+  }
+}
+
+.btn-eliminar-imagen,
+.btn-cancelar-imagen {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+  }
+}
+
+.btn-cancelar-imagen {
+  background: #f39c12;
+  
+  &:hover {
+    background: #e67e22;
+  }
+}
+
+.logo-preview {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.logo-image {
+  max-width: 150px;
+  max-height: 150px;
+  border-radius: 10px;
+  border: 2px solid var(--VerdeOscuro);
+}
+
+.logo-text {
+  margin-top: 8px;
+  color: var(--AzulOscuro);
+  font-weight: 600;
+}
+
+.logo-placeholder {
+  padding: 40px 20px;
+  background: #f8f9fa;
+  border: 2px dashed #dee2e6;
+  border-radius: 10px;
+  color: #6c757d;
+  text-align: center;
+}
