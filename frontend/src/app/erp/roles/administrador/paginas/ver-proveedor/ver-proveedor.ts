@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -33,6 +33,9 @@ export class VerProveedor implements OnInit {
   loading: boolean = false;
   error: string = '';
   pasoActual: number = 1;
+  nuevaImagen: string | null = null;
+  archivoSeleccionado: File | null = null;
+  @ViewChild('fileInput') fileInput!: any;
 
   // Nuevas propiedades para el manejo de materiales
   vistaPanelIzquierdo: 'default' | 'añadirMaterial' | 'verMaterial' | 'editarMaterial' = 'default';
@@ -98,6 +101,49 @@ export class VerProveedor implements OnInit {
       });
     }
   }
+  //Para el manejo de las imágene
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    
+    if (file) {
+      // Validar tipo de archivo
+      if (!file.type.startsWith('image/')) {
+        alert('Por favor selecciona un archivo de imagen válido');
+        return;
+      }
+
+      // Validar tamaño (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('La imagen no debe superar los 5MB');
+        return;
+      }
+
+      this.archivoSeleccionado = file;
+      
+      // Crear preview de la imagen
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.nuevaImagen = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  eliminarImagen() {
+    this.proveedor!.logo = '';
+    this.nuevaImagen = null;
+    this.archivoSeleccionado = null;
+    this.verificarCambios(); // Para detectar que el formulario fue modificado
+  }
+
+  cancelarNuevaImagen() {
+    this.nuevaImagen = null;
+    this.archivoSeleccionado = null;
+    if (this.fileInput) {
+      this.fileInput.nativeElement.value = '';
+    }
+  }
+
 
   // Navegación entre pasos
   siguientePaso(): void {
@@ -113,11 +159,15 @@ export class VerProveedor implements OnInit {
   // Verificar si el formulario ha sido modificado
   verificarCambios() {
     if (this.datosOriginales) {
-      // Obtener valores actuales habilitando temporalmente los controles
+
       const valoresActuales = this.proveedorForm.getRawValue();
-      this.formularioModificado = JSON.stringify(valoresActuales) !== JSON.stringify(this.datosOriginales);
+      const cambiosFormulario = JSON.stringify(valoresActuales) !== JSON.stringify(this.datosOriginales);
+      const cambiosImagen = this.nuevaImagen !== null || this.proveedor?.logo !== this.datosOriginales.logo;
+      
+      this.formularioModificado = cambiosFormulario || cambiosImagen;
     }
   }
+
 
 
   manejarActualizacion() {
@@ -147,33 +197,40 @@ export class VerProveedor implements OnInit {
     this.modoEdicion = false;
     this.formularioModificado = false;
     
-    // Restaurar datos originales
+    // Restaurar datos originales del formulario
     this.proveedorForm.patchValue(this.datosOriginales);
     
-    // Deshabilitar todos los controles
+    // Restaurar imagen original
+    this.nuevaImagen = null;
+    this.archivoSeleccionado = null;
+    if (this.fileInput) {
+      this.fileInput.nativeElement.value = '';
+    }
+    
+    // Deshabilitar controles
     Object.keys(this.proveedorForm.controls).forEach(key => {
       this.proveedorForm.get(key)?.disable();
     });
     
-    // Volver al paso 1 al cancelar
+
     this.pasoActual = 1;
   }
 
   guardarCambios() {
     if (this.proveedorForm.valid) {
-      // Obtener los valores actuales (con controles habilitados)
+
       const valoresActuales = this.proveedorForm.getRawValue();
       
       console.log('Datos a actualizar:', valoresActuales);
-      
+
       
       this.modoEdicion = false;
       this.formularioModificado = false;
       
-      // Actualizar datos originales con los nuevos valores
+      // Actualizar datos originales
       this.datosOriginales = valoresActuales;
       
-      // Actualizar también el objeto proveedor
+      // Actualizar el objeto proveedor
       if (this.proveedor) {
         this.proveedor = {
           ...this.proveedor,
@@ -182,16 +239,17 @@ export class VerProveedor implements OnInit {
         };
       }
       
-      // Deshabilitar controles después de guardar
+      // Deshabilitar controles
       Object.keys(this.proveedorForm.controls).forEach(key => {
         this.proveedorForm.get(key)?.disable();
       });
       
+      // Llamar a actualizar proveedor (que ahora manejará la imagen)
       this.actualizarProveedor();
-      // Volver al paso 1 después de guardar
+
       this.pasoActual = 1;
     } else {
-      // Marcar todos los campos como touched para mostrar errores
+
       Object.keys(this.proveedorForm.controls).forEach(key => {
         this.proveedorForm.get(key)?.markAsTouched();
       });
@@ -365,14 +423,56 @@ export class VerProveedor implements OnInit {
 
     const datosActualizados = this.proveedorForm.getRawValue();
     datosActualizados.visibilidad = datosActualizados.visibilidad === 'true';
-    const url=`http://127.0.0.1:8000/api/update_proveedor/`+this.proveedor?.id_proveedor;
-      this.http.put(url,datosActualizados).subscribe({
-        next:(resp)=>{
-          this.mostrarModal=true;
-        },error:(err)=>{
-          alert("Error al actualizar proveedor")
+
+    // Si hay una nueva imagen, usar FormData
+    if (this.archivoSeleccionado) {
+      const formData = new FormData();
+      
+      // Añadir todos los campos del formulario
+      Object.keys(datosActualizados).forEach(key => {
+        formData.append(key, datosActualizados[key]);
+      });
+      
+      // Añadir la imagen
+      formData.append('logo', this.archivoSeleccionado);
+      
+      const url = `http://127.0.0.1:8000/api/update_proveedor/${this.proveedor?.id_proveedor}`;
+      
+      this.http.put(url, formData).subscribe({
+        next: (resp: any) => {
+          console.log('Proveedor actualizado con nueva imagen:', resp);
+          this.loading = false;
+          this.mostrarModal = true;
+          
+          // Actualizar la imagen en el objeto proveedor si viene en la respuesta
+          if (resp.logo) {
+            this.proveedor!.logo = resp.logo;
+          }
+          
+          // Limpiar la nueva imagen
+          this.nuevaImagen = null;
+          this.archivoSeleccionado = null;
+        },
+        error: (err) => {
+          console.error('Error al actualizar proveedor con imagen:', err);
+          this.loading = false;
+          alert("Error al actualizar proveedor");
         }
       });
+    } else {
+      // Sin nueva imagen, enviar normalmente
+      const url = `http://127.0.0.1:8000/api/update_proveedor/${this.proveedor?.id_proveedor}`;
+      this.http.put(url, datosActualizados).subscribe({
+        next: (resp) => {
+          this.loading = false;
+          this.mostrarModal = true;
+        },
+        error: (err) => {
+          this.loading = false;
+          alert("Error al actualizar proveedor");
+        }
+      });
+    }
     // Simulación de actualización
     /* 
     setTimeout(() => {
@@ -396,32 +496,6 @@ export class VerProveedor implements OnInit {
       }
     }, 1000);
 */
-    // CÓDIGO PAR EL ENDPOINT 
-    /*
-    this.http.put(`http://127.0.0.1:8000/api/update_proveedor/${this.proveedor?.id_proveedor}`, datosActualizados)
-      .subscribe({
-        next: (respuesta) => {
-          console.log("Actualizado correctamente:", respuesta);
-          this.loading = false;
-          this.mostrarModal = true;
-        },
-        error: (err) => {
-          this.loading = false;
-          if (err.status === 422) {
-            this.error = "Datos inválidos";
-            console.log("Errores 422:", err.error);
-            alert("Error de validación: " + JSON.stringify(err.error));
-          } else if (err.status === 404) {
-            this.error = "Proveedor no encontrado";
-            alert("Proveedor no encontrado");
-          } else {
-            this.error = "Error al actualizar proveedor";
-            console.log(err);
-            alert("Ocurrió un error al actualizar el proveedor");
-          }
-        }
-      });
-    */
   }
 
   // Getters para fácil acceso a los controles del formulario
