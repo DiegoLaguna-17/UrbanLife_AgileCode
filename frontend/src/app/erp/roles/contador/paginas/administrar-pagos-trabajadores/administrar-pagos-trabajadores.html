@@ -1,0 +1,135 @@
+<div class="main-container">
+  <div class="administrar-container">
+    <h1 class="titulo-principal">Administrar Pagos de Trabajadores</h1>
+
+    <div class="search-section">
+      <div class="search-container">
+        <input 
+          class="search-input" 
+          type="search" 
+          placeholder="Buscar trabajador por nombre..." 
+          [value]="q()" 
+          (input)="q.set($any($event.target).value)" 
+        />
+      </div>
+    </div>
+
+    <div class="loading" *ngIf="loading()">
+      Cargando trabajadores...
+    </div>
+
+    <div class="error" *ngIf="error()">
+      {{ error() }}
+    </div>
+
+    <div class="grid" *ngIf="!loading() && !error()">
+      <app-card-pago-trabajador
+        *ngFor="let trabajador of trabajadoresFiltrados()"
+        [pagoTrabajador]="trabajador"
+        (ver)="verTrabajador(trabajador)">
+      </app-card-pago-trabajador>
+    </div>
+
+    <div class="no-results" *ngIf="!loading() && !error() && trabajadoresFiltrados().length === 0">
+      No se encontraron trabajadores
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Detalles del Trabajador -->
+<div class="modal-overlay" *ngIf="mostrarModal()">
+  <div class="modal">
+    <div class="modal-content">
+      <!-- Header del modal -->
+      <div class="modal-header">
+        <button class="btn-cerrar" (click)="cerrarModal()">×</button>
+        <h2 class="modal-title">Realizar Pago</h2>
+        
+      </div>
+
+      <!-- Información del trabajador -->
+      <div class="trabajador-info" *ngIf="trabajadorSeleccionado()">
+        <div class="info-row">
+          <span class="info-label">Nombre del Trabajador:</span>
+          <span class="info-value">{{ trabajadorSeleccionado()?.nombre_trabajador }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Puesto:</span>
+          <span class="info-value">{{ trabajadorSeleccionado()?.puesto }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Fecha Inicio:</span>
+          <span class="info-value">{{ formatFecha(trabajadorSeleccionado()?.fecha_inicio || '') }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Fecha Fin:</span>
+          <span class="info-value">{{ formatFecha(trabajadorSeleccionado()?.fecha_fin || '') }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Proyecto:</span>
+          <span class="info-value">{{ trabajadorSeleccionado()?.nombre_proyecto }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Observación:</span>
+          <span class="info-value">{{ trabajadorSeleccionado()?.observacion || 'Sin observaciones' }}</span>
+        </div>
+        <div class="info-row destacado">
+          <span class="info-label">Salario a Pagar:</span>
+          <span class="info-value salario">{{ trabajadorSeleccionado()?.salario || 0 }} Bs</span>
+        </div>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="modal-buttons">
+        <button class="btn-pagar" (click)="abrirModalConfirmarPago()">
+          Pagar
+        </button>
+        <button class="btn-cancelar-modal" (click)="cerrarModal()">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Confirmación de Pago -->
+<div class="modal-overlay" *ngIf="mostrarModalConfirmarPago()">
+  <div class="modal modal-confirmacion">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">¿Estás seguro de realizar el pago?</h2>
+        <button class="btn-cerrar" (click)="cerrarTodosModales()">×</button>
+      </div>
+
+      <div class="modal-buttons">
+        <button class="btn-confirmar-pago" (click)="confirmarPago()">
+          Confirmar Pago
+        </button>
+        <button class="btn-cancelar" (click)="cerrarTodosModales()">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Éxito del Pago -->
+<div class="modal-overlay" *ngIf="mostrarModalExitoPago()">
+  <div class="modal modal-exito">
+    <div class="modal-content">
+      <div class="exito-body">
+        <div class="exito-icon">✔️</div>
+        <h3 class="exito-titulo">¡Pago Realizado!</h3>
+        <p class="exito-texto">
+          El pago de <strong>{{ trabajadorSeleccionado()?.salario || 0 }}</strong>Bs al trabajador <strong>{{ trabajadorSeleccionado()?.nombre_trabajador }}</strong> se realizó correctamente.
+        </p>
+      </div>
+
+      <div class="modal-buttons-center">
+        <button class="btn-ok" (click)="cerrarModalExitoPago()">
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

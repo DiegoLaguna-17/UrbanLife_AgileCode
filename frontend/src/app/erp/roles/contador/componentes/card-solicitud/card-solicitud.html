@@ -1,0 +1,12 @@
+<article class="card" style="cursor: pointer;">
+  <div class="card-content">
+    <div class="div-imagen">
+      <img src="../../../../../../assets/img/logos/logo-pedido.png" alt="Solicitud" class="imagen">
+    </div>
+    <div class="info">
+      <header class="nombre">{{ solicitud.nombre_proveedor }}</header>
+      <div class="fecha">{{ formatFecha(solicitud.fecha_solicitud) }}</div>
+      <button class="btn-ver" type="button" (click)="ver.emit(solicitud)">Ver</button>
+    </div>
+  </div>
+</article>

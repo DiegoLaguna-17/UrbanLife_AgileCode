@@ -1,0 +1,12 @@
+<article class="card">
+  <div class="card-content">
+    <div class="div-imagen">
+      <img src="../../../../../../assets/img/logos/logo-proyecto.png" alt="Proyecto" class="imagen">
+    </div>
+    <div class="info">
+      <div class="tipo">{{ movimiento.tipo }}</div>
+      <div class="fecha">{{ formatFecha(movimiento.fecha) }}</div>
+      <button class="btn-ver" type="button" (click)="ver.emit(movimiento)">Ver</button>
+    </div>
+  </div>
+</article>
