@@ -1,0 +1,147 @@
+<div class="main-container">
+  <div class="administrar-container">
+    <!-- VISTA PRINCIPAL - Lista de Proyectos -->
+    <div *ngIf="vistaActual() === 'proyectos'">
+      <h1 class="titulo-principal">Administrar Presupuestos de Proyectos</h1>
+
+      <div class="search-section">
+        <div class="search-container">
+          <input 
+            class="search-input" 
+            type="search" 
+            placeholder="Buscar proyecto por nombre..." 
+            [value]="q()" 
+            (input)="q.set($any($event.target).value)" 
+          />
+        </div>
+      </div>
+
+      <div class="loading" *ngIf="loading()">
+        Cargando proyectos...
+      </div>
+
+      <div class="error" *ngIf="error()">
+        {{ error() }}
+      </div>
+
+      <div class="grid" *ngIf="!loading() && !error()">
+        <app-card-proyecto-contabilidad
+          *ngFor="let proyecto of proyectosFiltrados()"
+          [proyecto]="proyecto"
+          (ver)="verProyecto(proyecto)">
+        </app-card-proyecto-contabilidad>
+      </div>
+
+      <div class="no-results" *ngIf="!loading() && !error() && proyectosFiltrados().length === 0">
+        No se encontraron proyectos
+      </div>
+    </div>
+
+    <!-- VISTA MOVIMIENTOS - Movimientos de un proyecto específico -->
+    <div *ngIf="vistaActual() === 'movimientos'">
+      <div class="vista-header">
+        <button class="btn-volver" (click)="volverAProyectos()">← Volver</button>
+        <h1 class="titulo-principal">Movimientos: {{ proyectoSeleccionado()?.nombre_proyecto }}</h1>
+      </div>
+
+      <div class="search-section">
+        <div class="search-container">
+          <input 
+            class="search-input" 
+            type="date" 
+            [value]="fechaFiltro()" 
+            (input)="fechaFiltro.set($any($event.target).value)" 
+            placeholder="Filtrar por fecha..."
+          />
+          <button class="btn-limpiar" (click)="limpiarFiltroFecha()" *ngIf="fechaFiltro()">
+            Limpiar
+          </button>
+          <button class="btn-capital" (click)="verCapitalProyecto()">
+            Ver Capital del Proyecto
+          </button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <app-card-movimiento
+          *ngFor="let movimiento of movimientosFiltrados()"
+          [movimiento]="movimiento"
+          (ver)="verMovimiento(movimiento)">
+        </app-card-movimiento>
+      </div>
+
+      <div class="no-results" *ngIf="movimientosFiltrados().length === 0">
+        No se encontraron movimientos
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Detalles del Movimiento -->
+<div class="modal-overlay" *ngIf="mostrarModalMovimiento()">
+  <div class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button class="btn-cerrar" (click)="cerrarModalMovimiento()">×</button>
+        <h2 class="modal-title">Detalles del Movimiento</h2>
+      </div>
+
+      <div class="movimiento-detalles" *ngIf="movimientoSeleccionado()">
+        <div class="info-row">
+          <span class="info-label">Proyecto:</span>
+          <span class="info-value">{{ proyectoSeleccionado()?.nombre_proyecto }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Fecha:</span>
+          <span class="info-value">{{ formatFecha(movimientoSeleccionado()?.fecha || '') }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Movimiento:</span>
+          <span class="info-value" [class.ingreso]="movimientoSeleccionado()?.movimiento === 'ingreso'" 
+                                [class.egreso]="movimientoSeleccionado()?.movimiento === 'egreso'">
+            {{ movimientoSeleccionado()?.movimiento | titlecase }}
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Tipo:</span>
+          <span class="info-value">{{ movimientoSeleccionado()?.tipo }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Monto:</span>
+          <span class="info-value monto">Bs {{ movimientoSeleccionado()?.monto || 0 }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Descripción:</span>
+          <span class="info-value">{{ movimientoSeleccionado()?.descripcion }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Capital del Proyecto -->
+<div class="modal-overlay" *ngIf="mostrarModalCapital()">
+  <div class="modal modal-capital">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Capital del Proyecto</h2>
+        <button class="btn-cerrar" (click)="cerrarModalCapital()">×</button>
+      </div>
+
+      <div class="capital-info" *ngIf="capitalProyecto()">
+        <div class="capital-row ingreso">
+          <span class="capital-label">Ingresos Totales:</span>
+          <span class="capital-value"> Bs {{ capitalProyecto()!.ingresos_totales }}</span>
+        </div>
+        <div class="capital-row egreso">
+          <span class="capital-label">Egresos Totales:</span>
+          <span class="capital-value"> Bs {{ capitalProyecto()!.egresos_totales }}</span>
+        </div>
+        <div class="capital-row presupuesto">
+          <span class="capital-label">Presupuesto Actual:</span>
+          <span class="capital-value"> Bs {{ capitalProyecto()!.presupuesto_actual }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

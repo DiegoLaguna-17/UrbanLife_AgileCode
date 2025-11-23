@@ -1,0 +1,200 @@
+<div class="main-container">
+  <div class="administrar-container">
+    <h1 class="titulo-principal">Administrar Solicitudes</h1>
+
+    <div class="search-section">
+      <div class="search-container">
+        <input 
+          class="search-input" 
+          type="date" 
+          [value]="fechaFiltro()" 
+          (input)="fechaFiltro.set($any($event.target).value)" 
+        />
+        <button class="btn-limpiar" (click)="limpiarFiltro()" *ngIf="fechaFiltro()">
+          Limpiar Filtro
+        </button>
+      </div>
+    </div>
+
+    <div class="loading" *ngIf="loading()">
+      Cargando solicitudes...
+    </div>
+
+    <div class="error" *ngIf="error()">
+      {{ error() }}
+    </div>
+
+    <div class="grid" *ngIf="!loading() && !error()">
+      <app-card-solicitud
+        *ngFor="let solicitud of solicitudesFiltradas()"
+        [solicitud]="solicitud"
+        (ver)="verSolicitud(solicitud)">
+      </app-card-solicitud>
+    </div>
+
+    <div class="no-results" *ngIf="!loading() && !error() && solicitudesFiltradas().length === 0">
+      No se encontraron solicitudes
+    </div>
+  </div>
+  <!-- MODAL DE DETALLES DE LA SOLICITUD -->
+  <div class="modal-overlay" *ngIf="mostrarModal()">
+    <div class="modal-detalles">
+      <div class="modal-content">
+        <button class="btn-cerrar" (click)="cerrarTodosModales()">×</button>
+        <!-- Información básica -->
+        <div class="solicitud-info" *ngIf="solicitudSeleccionada()">
+          <div class="info-row">
+            <span class="info-label">Nombre del Proveedor:</span>
+            <span class="info-value">{{ solicitudSeleccionada()?.nombre_proveedor }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Fecha de Solicitud:</span>
+            <span class="info-value">{{ formatFecha(solicitudSeleccionada()?.fecha_solicitud || '') }}</span>
+          </div>
+        </div>
+
+        <!-- Tabla de materiales -->
+        <div class="detalle-pedido" *ngIf="solicitudSeleccionada()?.materiales">
+          <h3 class="section-title">Detalle del pedido:</h3>
+          <table class="materiales-table">
+            <thead>
+              <tr>
+                <th>N°</th>
+                <th>Material</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let material of solicitudSeleccionada()?.materiales; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ material.material }}</td>
+                <td>{{ material.cantidad }}</td>
+                <td>Bs {{ material.precio_unitario }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Costo Total -->
+        <div class="costo-total">
+          <span class="costo-label">Costo Total:</span>
+          <span class="costo-value"> Bs {{ costoTotal() }}</span>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="modal-buttons">
+          <button class="btn-aceptar" (click)="abrirModalAceptar()">
+            Aceptar Solicitud
+          </button>
+          <button class="btn-rechazar" (click)="abrirModalRechazar()">
+            Rechazar Solicitud
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOAL DE CONFIRMACION ACEPTAR -->
+  <div class="modal-overlay" *ngIf="mostrarModalAceptar()">
+    <div class="modal modal-confirmacion">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button class="btn-cerrar" (click)="cerrarTodosModales()">×</button>
+          <h2 class="modal-title">¿Estás seguro de aceptar la solicitud?</h2>
+        </div>
+
+        <div class="modal-buttons">
+          <button class="btn-confirmar" (click)="confirmarAceptar()">
+            Aceptar
+          </button>
+          <button class="btn-cancelar" (click)="cerrarTodosModales()">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE RECHAZO -->
+  <div class="modal-overlay" *ngIf="mostrarModalRechazar()">
+    <div class="modal modal-rechazo">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Ingrese el motivo de rechazo</h2>
+          <button class="btn-cerrar" (click)="cerrarTodosModales()">×</button>
+        </div>
+
+        <div class="rechazo-body">
+          
+          <form [formGroup]="rechazoForm" class="rechazo-form">
+            <div class="form-group">
+              <textarea 
+                class="form-textarea"
+                formControlName="motivo"
+                placeholder="Describa el motivo del rechazo..."
+                rows="4"
+              ></textarea>
+              <div class="error-message" *ngIf="rechazoForm.get('motivo')?.invalid && rechazoForm.get('motivo')?.touched">
+                <span *ngIf="rechazoForm.get('motivo')?.errors?.['required']">El motivo es requerido</span>
+                <span *ngIf="rechazoForm.get('motivo')?.errors?.['minlength']">Mínimo 10 caracteres</span>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-buttons">
+          <button class="btn-continuar" 
+                  (click)="confirmarRechazar()" 
+                  [disabled]="rechazoForm.invalid">
+            Continuar
+          </button>
+          <button class="btn-cancelar" (click)="cerrarTodosModales()">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- MODAL DE ÉXITO AL ACEPTAR LA SOLICITUD -->
+  <div class="modal-overlay" *ngIf="mostrarModalExitoAceptar()">
+    <div class="modal-exito">
+      <div class="modal-content">
+        <div class="exito-body">
+          <div class="exito-icon">✔️</div>
+          <h3 class="exito-titulo">¡Solicitud Aceptada!</h3>
+          <p class="exito-texto">
+            Se aceptó correctamente la solicitud del proveedor: <strong>{{ solicitudSeleccionada()?.nombre_proveedor }}</strong>
+          </p>
+        </div>
+
+        <div class="modal-buttons-center">
+          <button class="btn-ok" (click)="cerrarModalExitoAceptar()">
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE ÉXITO AL RECHAZAR LA SOLICITUD -->
+  <div class="modal-overlay" *ngIf="mostrarModalExitoRechazar()">
+    <div class="modal modal-exito">
+      <div class="modal-content">
+        <div class="exito-body">
+          <div class="exito-icon">❌</div>
+          <h3 class="exito-titulo">¡Solicitud Rechazada!</h3>
+          <p class="exito-texto">
+            Se rechazó con éxito la solicitud del proveedor: <strong>{{ solicitudSeleccionada()?.nombre_proveedor }}</strong>
+          </p>
+        </div>
+
+        <div class="modal-buttons-center">
+          <button class="btn-ok" (click)="cerrarModalExitoRechazar()">
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

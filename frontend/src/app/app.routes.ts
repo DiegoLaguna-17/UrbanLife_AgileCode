@@ -67,10 +67,19 @@ export const routes: Routes = [
     path:'contador', loadComponent: ()=>import('./erp/roles/contador/contdor-shell/contdor-shell').then(m=>m.ContdorShell),
     children:[
       {
-        path:'', pathMatch:'full', redirectTo:'detalles'
+        path:'', pathMatch:'full', redirectTo:'administrar-solicitudes'
       },
       {
         path:'detalles', loadComponent: ()=>import('./erp/roles/contador/contdor-shell/contdor-shell').then(m=>m.ContdorShell)
+      },
+      {
+        path:'administrar-solicitudes', loadComponent: ()=>import('./erp/roles/contador/paginas/administrar-solicitudes/administrar-solicitudes'). then(m=>m.AdministrarSolicitudes)
+      },
+      {
+        path:'administrar-pagos-trabajadores', loadComponent: ()=>import('./erp/roles/contador/paginas/administrar-pagos-trabajadores/administrar-pagos-trabajadores').then(m=>m.AdministrarPagosTrabajadores)
+      },
+      {
+        path:'administrar-presupuestos-proyectos', loadComponent: ()=>import('./erp/roles/contador/paginas/administrar-presupuestos-proyectos/administrar-presupuestos-proyectos').then(m=>m.AdministrarPresupuestosProyectos)
       }
     ]
   },
