@@ -1,4 +1,5 @@
 export interface Movimiento {
+  id_contabilidad:number;
   movimiento: string;
   fecha: string;
   tipo: string;
@@ -7,12 +8,12 @@ export interface Movimiento {
 }
 
 export interface MovimientoPresupuesto {
+  id_contabilidad: number;
   movimiento: string;
   monto: number;
 }
 
 export interface ContabilidadProyecto {
-  id_contabilidad: number;
   id_proyecto: number;
   nombre_proyecto: string;
   movimientos: Movimiento[];
@@ -20,7 +21,7 @@ export interface ContabilidadProyecto {
 
 export interface PresupuestoProyecto {
   id_proyecto: number;
-  id_contabilidad: number;
+  nombre_proyecto:string;
   presupuesto: number;
   movimientos: MovimientoPresupuesto[];
 }

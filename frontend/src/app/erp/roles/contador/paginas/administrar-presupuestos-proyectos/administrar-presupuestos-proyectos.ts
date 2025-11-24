@@ -23,6 +23,7 @@ export class AdministrarPresupuestosProyectos implements OnInit {
 
   // Datos
   proyectos = signal<ContabilidadProyecto[]>([]);
+  proyectosC=signal<PresupuestoProyecto[]>([]);
   proyectoSeleccionado = signal<ContabilidadProyecto | null>(null);
   movimientoSeleccionado = signal<Movimiento | null>(null);
   capitalProyecto = signal<CapitalProyecto | null>(null);
@@ -55,37 +56,6 @@ export class AdministrarPresupuestosProyectos implements OnInit {
 
   // DATOS DE PRUEBA
   private datosDePrueba: ContabilidadProyecto[] = [
-    {
-      id_contabilidad: 1,
-      id_proyecto: 1,
-      nombre_proyecto: "Puente Central",
-      movimientos: [
-        { movimiento: "ingreso", fecha: "2024-01-15", tipo: "Inyección", monto: 50000, descripcion: "Fondos iniciales" },
-        { movimiento: "egreso", fecha: "2024-01-20", tipo: "Materiales", monto: 25000, descripcion: "Compra de cemento" },
-        { movimiento: "ingreso", fecha: "2024-01-25", tipo: "Préstamo", monto: 30000, descripcion: "Préstamo bancario" },
-        { movimiento: "egreso", fecha: "2024-02-01", tipo: "Mano de obra", monto: 15000, descripcion: "Pago a trabajadores" }
-      ]
-    },
-    {
-      id_contabilidad: 2,
-      id_proyecto: 2,
-      nombre_proyecto: "Edificio Norte",
-      movimientos: [
-        { movimiento: "ingreso", fecha: "2024-01-10", tipo: "Inversión", monto: 100000, descripcion: "Inversión inicial" },
-        { movimiento: "egreso", fecha: "2024-01-18", tipo: "Materiales", monto: 45000, descripcion: "Compra de acero" },
-        { movimiento: "ingreso", fecha: "2024-02-05", tipo: "Venta", monto: 20000, descripcion: "Venta de equipos" }
-      ]
-    },
-    {
-      id_contabilidad: 3,
-      id_proyecto: 3,
-      nombre_proyecto: "Carretera Sur",
-      movimientos: [
-        { movimiento: "ingreso", fecha: "2024-01-08", tipo: "Subvención", monto: 75000, descripcion: "Subvención estatal" },
-        { movimiento: "egreso", fecha: "2024-01-22", tipo: "Maquinaria", monto: 35000, descripcion: "Alquiler de excavadoras" },
-        { movimiento: "egreso", fecha: "2024-02-10", tipo: "Materiales", monto: 28000, descripcion: "Compra de asfalto" }
-      ]
-    }
   ];
 
   // Cargar proyectos
@@ -105,8 +75,8 @@ export class AdministrarPresupuestosProyectos implements OnInit {
     }, 1000);
 
     // ⚠️ CÓDIGO PARA ENDPOINT REAL:
-    /*
-    this.http.get<ContabilidadProyecto[]>('http://127.0.0.1:8000/api/contabilidad-proyecto').subscribe({
+    
+    this.http.get<ContabilidadProyecto[]>('http://127.0.0.1:8000/api/get_movimientos_proyectos').subscribe({
       next: (proyectos) => {
         this.proyectos.set(proyectos);
         this.loading.set(false);
@@ -117,7 +87,22 @@ export class AdministrarPresupuestosProyectos implements OnInit {
         this.loading.set(false);
       }
     });
-    */
+
+    this.http.get<PresupuestoProyecto[]>(`http://127.0.0.1:8000/api/get_movimientos_presupuesto`).subscribe({
+      next: (presupuesto) => {
+        this.proyectosC.set(presupuesto);
+
+        console.log(presupuesto)
+        /*
+        
+        */
+      },
+      error: (error) => {
+        console.error('Error al cargar presupuesto:', error);
+        alert('Error al cargar el capital del proyecto');
+      }
+    });
+    
   }
 
   // Ver proyecto - Cambia a vista de movimientos
@@ -144,27 +129,13 @@ export class AdministrarPresupuestosProyectos implements OnInit {
   verCapitalProyecto() {
     const proyecto = this.proyectoSeleccionado();
     if (!proyecto) return;
-
-    // Simular llamada al endpoint de presupuesto
-    this.simularCargaPresupuesto(proyecto.id_proyecto).then(capital => {
-      this.capitalProyecto.set(capital);
-      this.mostrarModalCapital.set(true);
-    });
-
-    // ⚠️ CÓDIGO PARA ENDPOINT REAL:
-    /*
-    this.http.get<PresupuestoProyecto>(`http://127.0.0.1:8000/api/presupuesto-proyecto/${proyecto.id_proyecto}`).subscribe({
-      next: (presupuesto) => {
-        const capital = this.calcularCapital(presupuesto);
+    const presupuesto: PresupuestoProyecto = this.proyectosC()
+  .find(p => p.id_proyecto === proyecto.id_proyecto)!;
+    const capital = this.calcularCapital(presupuesto);
         this.capitalProyecto.set(capital);
         this.mostrarModalCapital.set(true);
-      },
-      error: (error) => {
-        console.error('Error al cargar presupuesto:', error);
-        alert('Error al cargar el capital del proyecto');
-      }
-    });
-    */
+
+    
   }
 
   // Simular carga de presupuesto (datos de prueba)
@@ -173,37 +144,6 @@ export class AdministrarPresupuestosProyectos implements OnInit {
       setTimeout(() => {
         // Datos de prueba para presupuesto
         const datosPresupuesto: { [key: number]: PresupuestoProyecto } = {
-          1: {
-            id_proyecto: 1,
-            id_contabilidad: 1,
-            presupuesto: 200000,
-            movimientos: [
-              { movimiento: "ingreso", monto: 50000 },
-              { movimiento: "ingreso", monto: 30000 },
-              { movimiento: "egreso", monto: 25000 },
-              { movimiento: "egreso", monto: 15000 }
-            ]
-          },
-          2: {
-            id_proyecto: 2,
-            id_contabilidad: 2,
-            presupuesto: 300000,
-            movimientos: [
-              { movimiento: "ingreso", monto: 100000 },
-              { movimiento: "ingreso", monto: 20000 },
-              { movimiento: "egreso", monto: 45000 }
-            ]
-          },
-          3: {
-            id_proyecto: 3,
-            id_contabilidad: 3,
-            presupuesto: 150000,
-            movimientos: [
-              { movimiento: "ingreso", monto: 75000 },
-              { movimiento: "egreso", monto: 35000 },
-              { movimiento: "egreso", monto: 28000 }
-            ]
-          }
         };
 
         const presupuesto = datosPresupuesto[idProyecto] || {
@@ -220,22 +160,24 @@ export class AdministrarPresupuestosProyectos implements OnInit {
 
   // Calcular capital del proyecto
   private calcularCapital(presupuesto: PresupuestoProyecto): CapitalProyecto {
-    const ingresos_totales = presupuesto.movimientos
-      .filter(m => m.movimiento === 'ingreso')
-      .reduce((sum, m) => sum + m.monto, 0);
+  const ingresos_totales = presupuesto.movimientos
+    .filter(m => m.movimiento === 'ingreso')
+    .reduce((sum, m) => sum + Number(m.monto), 0);
 
-    const egresos_totales = presupuesto.movimientos
-      .filter(m => m.movimiento === 'egreso')
-      .reduce((sum, m) => sum + m.monto, 0);
+  const egresos_totales = presupuesto.movimientos
+    .filter(m => m.movimiento === 'egreso')
+    .reduce((sum, m) => sum + Number(m.monto), 0);
 
-    const presupuesto_actual = presupuesto.presupuesto + (ingresos_totales - egresos_totales);
+  const presupuesto_actual =
+    Number(presupuesto.presupuesto) + (ingresos_totales - egresos_totales);
 
-    return {
-      ingresos_totales,
-      egresos_totales,
-      presupuesto_actual
-    };
-  }
+  return {
+    ingresos_totales,
+    egresos_totales,
+    presupuesto_actual
+  };
+}
+
 
   // Métodos de utilidad
   formatFecha(fecha: string): string {
