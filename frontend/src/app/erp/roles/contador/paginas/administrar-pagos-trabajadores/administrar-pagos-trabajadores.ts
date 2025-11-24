@@ -37,71 +37,6 @@ export class AdministrarPagosTrabajadores implements OnInit {
 
   // DATOS DE PRUEBA
   private datosDePrueba: PagoTrabajador[] = [
-    {
-      id_trabajador: 1,
-      nombre_trabajador: "Juan Pérez",
-      puesto: "Albañil",
-      fecha_inicio: "2024-01-01",
-      fecha_fin: "2024-01-31",
-      id_proyecto: 1,
-      nombre_proyecto: "Edificio Central",
-      observacion: "Trabajo excelente",
-      salario: 2500.00,
-      fecha: "2024-01-31",
-      hora_entrada: "08:00"
-    },
-    {
-      id_trabajador: 2,
-      nombre_trabajador: "María García",
-      puesto: "Electricista",
-      fecha_inicio: "2024-01-01",
-      fecha_fin: "2024-01-31",
-      id_proyecto: 1,
-      nombre_proyecto: "Edificio Central",
-      observacion: "Instalaciones completadas",
-      salario: 2800.00,
-      fecha: "2024-01-31",
-      hora_entrada: "07:30"
-    },
-    {
-      id_trabajador: 3,
-      nombre_trabajador: "Carlos Rodríguez",
-      puesto: "Plomero",
-      fecha_inicio: "2024-01-15",
-      fecha_fin: "2024-01-31",
-      id_proyecto: 2,
-      nombre_proyecto: "Residencial Las Flores",
-      observacion: "",
-      salario: 1800.00,
-      fecha: "2024-01-31",
-      hora_entrada: "08:15"
-    },
-    {
-      id_trabajador: 4,
-      nombre_trabajador: "Ana López",
-      puesto: "Carpintera",
-      fecha_inicio: "2024-01-01",
-      fecha_fin: "2024-01-31",
-      id_proyecto: 2,
-      nombre_proyecto: "Residencial Las Flores",
-      observacion: "Muebles terminados",
-      salario: 2200.00,
-      fecha: "2024-01-31",
-      hora_entrada: "07:45"
-    },
-    {
-      id_trabajador: 5,
-      nombre_trabajador: "Roberto Sánchez",
-      puesto: "Pintor",
-      fecha_inicio: "2024-01-20",
-      fecha_fin: "2024-01-31",
-      id_proyecto: 1,
-      nombre_proyecto: "Edificio Central",
-      observacion: "Pintura exterior",
-      salario: 1500.00,
-      fecha: "2024-01-31",
-      hora_entrada: "08:30"
-    }
   ];
 
   // Cargar trabajadores - Versión con datos de prueba
@@ -123,10 +58,10 @@ export class AdministrarPagosTrabajadores implements OnInit {
     }, 1000);
 
     // ⚠️ CÓDIGO PARA CUANDO TENGAS EL ENDPOINT REAL
-    /*
-    this.obtenerTrabajadores().subscribe({
+    const url=`http://127.0.0.1:8000/api/get_detalles_trabajadores`;
+    this.http.get<{data: PagoTrabajador[]}>(url).subscribe({
       next: (trabajadores) => {
-        this.trabajadores.set(trabajadores);
+        this.trabajadores.set(trabajadores.data);
         console.log("✔️ Trabajadores cargados:", trabajadores);
         this.loading.set(false);
       },
@@ -136,7 +71,7 @@ export class AdministrarPagosTrabajadores implements OnInit {
         this.loading.set(false);
       }
     });
-    */
+    
   }
 
   // Método para obtener trabajadores desde API

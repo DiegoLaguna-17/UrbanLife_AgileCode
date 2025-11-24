@@ -54,65 +54,6 @@ export class AdministrarSolicitudes implements OnInit {
 
   // DATOS DE PRUEBA
   private datosDePrueba: Solicitud[] = [
-    {
-      id_pedido: 1,
-      nombre_proveedor: "Materiales Constructivos S.A.",
-      fecha_solicitud: "2025-11-15",
-      materiales: [
-        { material: "Cemento", cantidad: 50, precio_unitario: 25.50 },
-        { material: "Arena", cantidad: 100, precio_unitario: 12.75 },
-        { material: "Grava", cantidad: 80, precio_unitario: 18.30 }
-      ]
-    },
-    {
-      id_pedido: 2,
-      nombre_proveedor: "Herramientas Profesionales Ltda.",
-      fecha_solicitud: "2025-11-15",
-      materiales: [
-        { material: "Martillos", cantidad: 15, precio_unitario: 45.00 },
-        { material: "Destornilladores", cantidad: 30, precio_unitario: 8.50 },
-        { material: "Taladros", cantidad: 5, precio_unitario: 320.00 }
-      ]
-    },
-    {
-      id_pedido: 3,
-      nombre_proveedor: "Equipos Pesados Internacional",
-      fecha_solicitud: "2025-11-16",
-      materiales: [
-        { material: "Excavadora", cantidad: 1, precio_unitario: 25000.00 },
-        { material: "Compactadora", cantidad: 2, precio_unitario: 8500.00 }
-      ]
-    },
-    {
-      id_pedido: 4,
-      nombre_proveedor: "Insumos Eléctricos Modernos",
-      fecha_solicitud: "2025-11-16",
-      materiales: [
-        { material: "Cable THW 2.5mm", cantidad: 200, precio_unitario: 3.20 },
-        { material: "Interruptores", cantidad: 50, precio_unitario: 12.80 },
-        { material: "Tubos PVC", cantidad: 100, precio_unitario: 8.45 }
-      ]
-    },
-    {
-      id_pedido: 5,
-      nombre_proveedor: "Pinturas y Acabados Premium",
-      fecha_solicitud: "2025-11-17",
-      materiales: [
-        { material: "Pintura Latex", cantidad: 25, precio_unitario: 85.00 },
-        { material: "Brochas", cantidad: 40, precio_unitario: 15.50 },
-        { material: "Rodillos", cantidad: 30, precio_unitario: 12.00 }
-      ]
-    },
-    {
-      id_pedido: 6,
-      nombre_proveedor: "Cerámicas y Porcelanatos",
-      fecha_solicitud: "2025-11-17",
-      materiales: [
-        { material: "Porcelanato 60x60", cantidad: 150, precio_unitario: 45.00 },
-        { material: "Cerámica 30x30", cantidad: 200, precio_unitario: 28.50 },
-        { material: "Adhesivo para cerámica", cantidad: 50, precio_unitario: 32.00 }
-      ]
-    }
   ];
 
   constructor() {
@@ -139,11 +80,12 @@ export class AdministrarSolicitudes implements OnInit {
     }, 1000);
 
     // CÓDIGO PARA EL ENDPOINT
-    /*
-    this.obtenerSolicitudes().subscribe({
-      next: (solicitudes) => {
-        this.solicitudes.set(solicitudes);
-        console.log("✔️ Solicitudes cargadas:", solicitudes);
+    const url = `http://127.0.0.1:8000/api/get_material_pedidos`;
+
+    this.http.get<{ data: Solicitud[] }>(url).subscribe({
+      next: (resp) => {
+        this.solicitudes.set(resp.data);
+        console.log("✔️ Solicitudes cargadas:", resp.data);
         this.loading.set(false);
       },
       error: (error) => {
@@ -152,14 +94,11 @@ export class AdministrarSolicitudes implements OnInit {
         this.loading.set(false);
       }
     });
-    */
+
+    
   }
 
-  // PARA OBETENR LAS SOLICITUDES DEL ENDPOINT 
-  // obtenerSolicitudes() {
-  //   const url = 'http://127.0.0.1:8000/api/get_solicitudes';
-  //   return this.http.get<Solicitud[]>(url);
-  // }
+  
 
   // CALCULAR EL COSTO TOTAL DEL PEDIDO 
   calcularCostoTotal(solicitud: Solicitud) {
