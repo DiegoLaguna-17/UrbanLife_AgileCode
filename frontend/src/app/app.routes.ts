@@ -47,7 +47,7 @@ export const routes: Routes = [
     path:'administrador', loadComponent: ()=>import('./erp/roles/administrador/administrador-shell/administrador-shell').then(m=>m.AdministradorShell),
     children:[
       {
-        path:'', pathMatch:'full', redirectTo:'crear-proyectos'
+        path:'', pathMatch:'full', redirectTo:'administrar-proveedores'
       },
       {
         path:'crear-proyectos', loadComponent: ()=>import('./erp/roles/administrador/paginas/crear-proyectos/crear-proyectos').then(m=>m.CrearProyectos)
@@ -60,6 +60,15 @@ export const routes: Routes = [
       },
       {
         path:'ver-proveedor', loadComponent: ()=>import('./erp/roles/administrador/paginas/ver-proveedor/ver-proveedor').then(m=>m.VerProveedor)
+      },
+      {
+        path:'registrar-pedidos', loadComponent: ()=>import('./erp/roles/administrador/paginas/registrar-pedidos/registrar-pedidos').then(m=>m.RegistrarPedidos)
+      },
+      {
+        path:'administrar-pedidos', loadComponent: ()=>import('./erp/roles/administrador/paginas/administrar-pedidos/administrar-pedidos').then(m=>m.AdministrarPedidos)
+      },
+      {
+        path:'recibir-pedido', loadComponent: ()=>import('./erp/roles/administrador/paginas/recibir-pedido/recibir-pedido').then(m=>m.RecibirPedido)
       }
     ]
   },

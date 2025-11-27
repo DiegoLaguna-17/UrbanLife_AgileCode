@@ -1,0 +1,12 @@
+<article class="card">
+  <div class="card-content">
+    <div class="div-imagen">
+      <img src="../../../../../../assets/img/logos/logo-pedido.png" alt="Pedido" class="imagen">
+    </div>
+    <div class="info">
+      <div class="tipo">{{ pedido.nombre_proveedor }}</div>
+      <div class="fecha">{{ pedido.fecha_solicitud }}</div>
+      <button class="btn-ver" type="button" (click)="ver.emit(pedido)">Ver</button>
+    </div>
+  </div>
+</article>
