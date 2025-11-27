@@ -1,0 +1,289 @@
+<div class="main-container">
+  <div class="registro-container">
+    <!-- Contenedor izquierdo (30%) -->
+    <div class="left-panel">
+      <!-- Botón Volver-->
+      <button class="btn-volver" (click)="volver()">← Volver</button>
+      
+      <img src="../../../../../../assets/img/logos/logo-pedido.png" alt="logo UrbanLife" class="imagen">
+      
+      <!-- Botones de acción -->
+      <div class="action-buttons">
+        <button class="btn-action btn-hacer-pedido" (click)="hacerPedido()" [disabled]="!esFormularioValido()">
+          Hacer el pedido
+        </button>
+        <button class="btn-action btn-anadir-productos" (click)="anadirMasProductos()" [disabled]="!esPrimerProductoValido()">
+          Añadir más productos
+        </button>
+        <button class="btn-action btn-cancelar" (click)="cancelar()">
+          Cancelar
+        </button>
+      </div>
+    </div>
+
+    <!-- Contenedor derecho (70%) -->
+    <div class="right-panel">
+      <div class="form-container">
+        <h1 class="titulo-principal">Pedido de Material</h1>
+
+        <form class="pedido-form" [formGroup]="pedidoForm" (ngSubmit)="onSubmit()">
+          
+          <!-- PRIMERA PARTE: Datos principales del pedido -->
+          <div class="form-section" *ngIf="pasoActual === 1">
+            <h2 class="section-title">Datos del Pedido</h2>
+            
+            <!-- Campo Proyecto -->
+            <div class="form-group">
+              <label class="form-label">Proyecto *</label>
+              <select 
+                class="form-input"
+                formControlName="proyecto"
+                (change)="onProyectoChange()"
+              >
+                <option value="">Seleccione un proyecto</option>
+                <option *ngFor="let proyecto of proyectos" [value]="proyecto.id_proyecto">
+                  {{ proyecto.nombre_proyecto }}
+                </option>
+              </select>
+              <div class="error-message" *ngIf="proyecto?.invalid && proyecto?.touched">
+                <span *ngIf="proyecto?.errors?.['required']">El proyecto es requerido</span>
+              </div>
+            </div>
+
+            <!-- Campo Proveedor -->
+            <div class="form-group">
+              <label class="form-label">Proveedor *</label>
+              <select 
+                class="form-input"
+                formControlName="proveedor"
+                (change)="onProveedorChange()"
+              >
+                <option value="">Seleccione un proveedor</option>
+                <option *ngFor="let proveedor of proveedores" [value]="proveedor.id_proveedor">
+                  {{ proveedor.nombre_proveedor }}
+                </option>
+              </select>
+              <div class="error-message" *ngIf="proveedor?.invalid && proveedor?.touched">
+                <span *ngIf="proveedor?.errors?.['required']">El proveedor es requerido</span>
+              </div>
+            </div>
+
+            <!-- Campo Producto -->
+            <div class="form-group">
+              <label class="form-label">Producto *</label>
+              <select 
+                class="form-input"
+                formControlName="producto"
+              >
+                <option value="">Seleccione un producto</option>
+                <option *ngFor="let material of materialesProveedor" [value]="material.id_material_proveedor">
+                  {{ material.material }}
+                </option>
+              </select>
+              <div class="error-message" *ngIf="producto?.invalid && producto?.touched">
+                <span *ngIf="producto?.errors?.['required']">El producto es requerido</span>
+              </div>
+            </div>
+
+            <!-- Campo Cantidad -->
+            <div class="form-group">
+              <label class="form-label">Cantidad *</label>
+              <input 
+                type="number" 
+                class="form-input"
+                formControlName="cantidad"
+                placeholder="Ingrese la cantidad"
+                min="1"
+                step="1"
+              >
+              <div class="error-message" *ngIf="cantidad?.invalid && cantidad?.touched">
+                <span *ngIf="cantidad?.errors?.['required']">La cantidad es requerida</span>
+                <span *ngIf="cantidad?.errors?.['min']">La cantidad debe ser mayor a 0</span>
+              </div>
+            </div>
+
+            <!-- Campo Precio -->
+            <div class="form-group">
+              <label class="form-label">Precio Unitario *</label>
+              <input 
+                type="number" 
+                class="form-input"
+                formControlName="precio"
+                placeholder="Ingrese el precio unitario"
+                min="0.1"
+                step="0.1"
+              >
+              <div class="error-message" *ngIf="precio?.invalid && precio?.touched">
+                <span *ngIf="precio?.errors?.['required']">El precio es requerido</span>
+                <span *ngIf="precio?.errors?.['min']">El precio debe ser mayor a 0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- SEGUNDA PARTE: Productos adicionales -->
+          <div class="form-section" *ngIf="pasoActual === 2">
+            <h2 class="section-title">Producto Adicional {{productoActualIndex + 1}}</h2>
+            
+            <!-- Campo Producto Adicional -->
+            <div class="form-group">
+              <label class="form-label">Producto *</label>
+              <select 
+                class="form-input"
+                [formControl]="getProductoAdicionalControl()"
+              >
+                <option value="">Seleccione un producto</option>
+                <option *ngFor="let material of materialesDisponibles" [value]="material.id_material_proveedor">
+                  {{ material.material }}
+                </option>
+              </select>
+              <div class="error-message" *ngIf="getProductoAdicionalControl()?.invalid && getProductoAdicionalControl()?.touched">
+                <span *ngIf="getProductoAdicionalControl()?.errors?.['required']">El producto es requerido</span>
+              </div>
+            </div>
+
+            <!-- Campo Cantidad Adicional -->
+            <div class="form-group">
+              <label class="form-label">Cantidad *</label>
+              <input 
+                type="number" 
+                class="form-input"
+                [formControl]="getCantidadAdicionalControl()"
+                placeholder="Ingrese la cantidad"
+                min="1"
+                step="1"
+              >
+              <div class="error-message" *ngIf="getCantidadAdicionalControl()?.invalid && getCantidadAdicionalControl()?.touched">
+                <span *ngIf="getCantidadAdicionalControl()?.errors?.['required']">La cantidad es requerida</span>
+                <span *ngIf="getCantidadAdicionalControl()?.errors?.['min']">La cantidad debe ser mayor a 0</span>
+              </div>
+            </div>
+
+            <!-- Campo Precio Adicional -->
+            <div class="form-group">
+              <label class="form-label">Precio Unitario *</label>
+              <input 
+                type="number" 
+                class="form-input"
+                [formControl]="getPrecioAdicionalControl()"
+                placeholder="Ingrese el precio unitario"
+                min="0.1"
+                step="0.1"
+              >
+              <div class="error-message" *ngIf="getPrecioAdicionalControl()?.invalid && getPrecioAdicionalControl()?.touched">
+                <span *ngIf="getPrecioAdicionalControl()?.errors?.['required']">El precio es requerido</span>
+                <span *ngIf="getPrecioAdicionalControl()?.errors?.['min']">El precio debe ser mayor a 0</span>
+              </div>
+            </div>
+
+            <!-- Botones de navegación para productos adicionales -->
+            <div class="botones-productos-adicionales">
+              <button 
+                type="button" 
+                class="btn-anterior"
+                (click)="anteriorProducto()"
+                [disabled]="productoActualIndex === 0"
+              >
+                ← Anterior
+              </button>
+              
+              <button 
+                type="button" 
+                class="btn-siguiente"
+                (click)="siguienteProducto()"
+                [disabled]="!esProductoAdicionalValido()"
+              >
+                {{ esUltimoProducto() ? 'Finalizar' : 'Siguiente' }} →
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Barra de progreso -->
+        <div class="progress-bar-container">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="getProgreso()"></div>
+          </div>
+          <div class="progress-text">
+            {{ getTextoProgreso() }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación -->
+<div class="modal-overlay" *ngIf="mostrarModalConfirmacion">
+  <div class="modal modal-confirmacion">
+    <div class="modal-content">
+      <div class="modal-icon">📋</div>
+      <h3 class="modal-title">Confirmar Pedido</h3>
+      
+      <div class="confirmacion-info">
+        <div class="info-row">
+          <strong>Proveedor:</strong>
+          <span>{{ proveedorSeleccionadoNombre }}</span>
+        </div>
+        <div class="info-row">
+          <strong>Costo Total:</strong>
+          <span class="costo-total">Bs. {{ costoTotal.toFixed(2) }}</span>
+        </div>
+      </div>
+
+      <div class="tabla-productos">
+        <h4>Productos del Pedido</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Material</th>
+              <th>Cantidad</th>
+              <th>Precio Unit.</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let producto of productosConfirmacion">
+              <td>{{ producto.nombre_material }}</td>
+              <td>{{ producto.cantidad }}</td>
+              <td>Bs. {{ producto.precio_unitario.toFixed(2) }}</td>
+              <td>Bs. {{ producto.subtotal.toFixed(2) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="botones-confirmacion">
+        <button class="btn-modal btn-cancelar-modal" (click)="cancelarPedido()">
+          Cancelar
+        </button>
+        <button class="btn-modal btn-confirmar" (click)="confirmarPedido()">
+          Confirmar Pedido
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de éxito -->
+<div class="modal-overlay" *ngIf="mostrarModalExito">
+  <div class="modal">
+    <div class="modal-content">
+      <div class="modal-icon">✅</div>
+      <h3 class="modal-title">¡Pedido Registrado!</h3>
+      <p class="modal-message">El pedido ha sido registrado correctamente en el sistema.</p>
+      <button class="btn-modal" (click)="cerrarModalExito()">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de error -->
+<div class="modal-overlay" *ngIf="mostrarModalError">
+  <div class="modal">
+    <div class="modal-content">
+      <div class="modal-icon">⚠️</div>
+      <h3 class="modal-title">Error en el Formulario</h3>
+      <p class="modal-message">{{ error }}</p>
+      <button class="btn-modal" (click)="cerrarModalError()">Entendido</button>
+    </div>
+  </div>
+</div>

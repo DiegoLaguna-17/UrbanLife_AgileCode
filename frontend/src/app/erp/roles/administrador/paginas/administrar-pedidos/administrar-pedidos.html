@@ -1,0 +1,418 @@
+<div class="main-container">
+  <div class="administrar-container">
+    <h1 class="titulo-principal">Pedidos de Material</h1>
+
+    <!-- Filtro por fecha -->
+    <div class="search-section">
+      <div class="search-container">
+        <input 
+          class="search-input" 
+          type="date" 
+          [value]="fechaFiltro()" 
+          (input)="fechaFiltro.set($any($event.target).value)" 
+          placeholder="Busque por fecha de solicitud"/>
+      </div>
+      <button class="btn-registrar" (click)="irARegistrar()">
+            HACER NUEVO PEDIDO
+          </button>
+    </div>
+
+    
+    <!-- Sección de filtros y botón nuevo pedido -->
+    <div class="filtros-section">
+      <div class="filtros-container">
+        <div class="filtros-left">
+          <span class="filtros-label">Filtrar por estado:</span>
+          <div class="filtros-checkboxes">
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                class="checkbox-input" 
+                [checked]="estadosFiltro().includes('pendiente')"
+                (change)="toggleEstadoFiltro('pendiente')">
+              <span class="checkbox-custom"></span>
+              <span class="checkbox-text">Pendiente</span>
+            </label>
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                class="checkbox-input" 
+                [checked]="estadosFiltro().includes('aceptado')"
+                (change)="toggleEstadoFiltro('aceptado')">
+              <span class="checkbox-custom"></span>
+              <span class="checkbox-text">Aceptado</span>
+            </label>
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                class="checkbox-input" 
+                [checked]="estadosFiltro().includes('rechazado')"
+                (change)="toggleEstadoFiltro('rechazado')">
+              <span class="checkbox-custom"></span>
+              <span class="checkbox-text">Rechazado</span>
+            </label>
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                class="checkbox-input" 
+                [checked]="estadosFiltro().includes('transito')"
+                (change)="toggleEstadoFiltro('transito')">
+              <span class="checkbox-custom"></span>
+              <span class="checkbox-text">Tránsito</span>
+            </label>
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                class="checkbox-input" 
+                [checked]="estadosFiltro().includes('recibido')"
+                (change)="toggleEstadoFiltro('recibido')">
+              <span class="checkbox-custom"></span>
+              <span class="checkbox-text">Recibido</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="loading" *ngIf="loading()">
+      Cargando pedidos...
+    </div>
+
+    <div class="error" *ngIf="error()">
+      {{ error() }}
+    </div>
+
+    <div class="pedidos-grid" *ngIf="!loading() && !error()">
+      <app-card-pedido
+        *ngFor="let pedido of pedidosFiltrados()"
+        [pedido]="pedido"
+        (ver)="verPedido(pedido)">
+      </app-card-pedido>
+    </div>
+
+    <div class="no-results" *ngIf="!loading() && !error() && pedidosFiltrados().length === 0">
+      No se encontraron pedidos
+    </div>
+  </div>
+</div>
+
+<!-- Modal para pedidos en PENDIENTE -->
+<div class="modal-overlay" *ngIf="mostrarModalPendiente">
+  <div class="modal modal-pedido">
+    <div class="modal-header">
+      <h3 class="modal-title">Pedido Pendiente</h3>
+      <button class="btn-cerrar" (click)="cerrarModal()">×</button>
+    </div>
+    <div class="modal-content">
+      <div class="pedido-info">
+        <div class="info-row">
+          <strong class="detalle">Proveedor:</strong>
+          <span class="info">{{ pedidoSeleccionado?.nombre_proveedor }}</span>
+        </div>
+        <div class="info-row">
+          <strong class="detalle">Fecha de Solicitud:</strong>
+          <span class="info">{{ pedidoSeleccionado?.fecha_solicitud }}</span>
+        </div>
+      </div>
+
+      <div class="tabla-materiales">
+        <h3 class="section-title">Detalle del Pedido</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Material</th>
+              <th>Cantidad</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let material of pedidoSeleccionado?.materiales">
+              <td>{{ material.material }}</td>
+              <td>{{ material.cantidad }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="costo-total">
+        <strong class="costo">Costo Total:</strong>
+        <br><br>
+        <strong class="costo-calculado"> Bs. {{ calcularCostoTotal() }}</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para pedido ACEPTADO -->
+<div class="modal-overlay" *ngIf="mostrarModalAceptado">
+  <div class="modal modal-pedido">
+    <div class="modal-header">
+      <h3 class="modal-title">Pedido Aceptado</h3>
+      <button class="btn-cerrar" (click)="cerrarModal()">×</button>
+    </div>
+    <div class="modal-content">
+      <div class="pedido-info">
+        <div class="info-row">
+          <strong class="detalle">Proveedor:</strong>
+          <span class="info">{{ pedidoSeleccionado?.nombre_proveedor }}</span>
+        </div>
+        <div class="info-row">
+          <strong class="detalle">Fecha de Solicitud:</strong>
+          <span class="info">{{ pedidoSeleccionado?.fecha_solicitud }}</span>
+        </div>
+      </div>
+
+      <div class="costo-total">
+        <strong class="costo">Costo Total:</strong>
+        <br><br>
+        <strong class="costo-calculado"> Bs. {{ calcularCostoTotal() }}</strong>
+      </div>
+
+      <div class="tabla-materiales">
+        <h3 class="section-title">Materiales Solicitados</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Material</th>
+              <th>Cantidad</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let material of pedidoSeleccionado?.materiales">
+              <td>{{ material.material }}</td>
+              <td>{{ material.cantidad }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-primary" (click)="abrirModalFechaLlegada()">
+            Ingresar fecha de llegada
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para ingresar la FECHA DE LLEGADA -->
+<div class="modal-overlay" *ngIf="mostrarModalFechaLlegada">
+  <div class="modal">
+    <div class="modal-content">
+      <h3 class="modal-title">Ingrese la fecha de llegada del pedido</h3>
+      
+      <div class="form-group">
+        <input 
+          type="date" 
+          class="form-input"
+          [min]="fechaHoy"
+          [(ngModel)]="fechaLlegadaEstimada"
+        >
+      </div>
+
+      <div class="botones-confirmacion">
+        <button class="btn-modal-confirmar btn-confirmar" 
+                (click)="abrirModalConfirmarFecha()"
+                [disabled]="!fechaLlegadaEstimada">
+        Registrar fecha
+        </button>
+        <button class="btn-modal-cancelar btn-cancelar" (click)="cerrarModalFechaLlegada()">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para confirmar fecha -->
+<div class="modal-overlay" *ngIf="mostrarModalConfirmarFecha">
+  <div class="modal">
+    <div class="modal-content">
+      <h3 class="modal-title">La fecha de llegada:</h3>
+      <p class="modal-message">
+        {{ fechaLlegadaEstimada }} <br> ¿Es correcta??
+      </p>
+      <div class="botones-confirmacion">
+        <button class="btn-modal-confirmar btn-confirmar" (click)="confirmarFechaLlegada()">
+          Confirmar
+        </button>
+        <button class="btn-modal-cancelar btn-cancelar" (click)="cerrarModalConfirmarFecha()">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para pedido RECHAZADO -->
+<div class="modal-overlay" *ngIf="mostrarModalRechazado">
+  <div class="modal modal-pedido">
+    <div class="modal-header">
+      <h3 class="modal-title">Pedido Rechazado</h3>
+      <button class="btn-cerrar" (click)="cerrarModal()">×</button>
+    </div>
+    <div class="modal-content">
+      <div class="pedido-info">
+        <div class="info-row">
+          <strong class="detalle">Proveedor:</strong>
+          <span class="info">{{ pedidoSeleccionado?.nombre_proveedor }}</span>
+        </div>
+        <div class="info-row">
+          <strong class="detalle">Fecha de Solicitud:</strong>
+          <span class="info">{{ pedidoSeleccionado?.fecha_solicitud }}</span>
+        </div>
+        <div class="info-row">
+          <strong class="detalle">Costo Total:</strong>
+          <span class="info">Bs. {{ calcularCostoTotal() }}</span>
+        </div>
+      </div>
+
+      <div class="tabla-materiales">
+        <h3 class="section-title">Materiales Solicitados</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Material</th>
+              <th>Cantidad</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let material of pedidoSeleccionado?.materiales">
+              <td>{{ material.material }}</td>
+              <td>{{ material.cantidad }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mensaje-rechazo">
+        <strong>Detalle del Rechazo:</strong>
+        <p>{{ pedidoSeleccionado?.mensaje }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para pedido en TRANSITO -->
+<div class="modal-overlay" *ngIf="mostrarModalTransito">
+  <div class="modal modal-pedido">
+    <div class="modal-header">
+      <h3 class="modal-title">Detalles del Pedido - En Tránsito</h3>
+      <button class="btn-cerrar" (click)="cerrarModal()">×</button>
+    </div>
+    <div class="modal-content">
+      <div class="pedido-info">
+        <div class="info-row">
+          <strong class="detalle">Nombre del Proveedor:</strong>
+          <span class="info">{{ pedidoSeleccionado?.nombre_proveedor }}</span>
+        </div>
+        <div class="info-row">
+          <strong class="detalle">Costo Total: </strong>
+          <span class="info">Bs. {{ calcularCostoTotal() }}</span>
+        </div>
+      </div>
+
+      <div class="tabla-materiales">
+        <h3 class="section-title">Materiales Solicitados</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Material</th>
+              <th>Cantidad</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let material of pedidoSeleccionado?.materiales">
+              <td>{{ material.material }}</td>
+              <td>{{ material.cantidad }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pedido-info">
+        <div class="info-row">
+          <strong class="detalle">Fecha de Solicitud:</strong>
+          <span class="info">{{ pedidoSeleccionado?.fecha_solicitud }}</span>
+        </div>
+        <div class="info-row">
+          <strong class="detalle">Fecha Llegada Estimada:</strong>
+          <span class="info">{{ pedidoSeleccionado?.fecha_llegada_estimada }}</span>
+        </div>
+        <div class="info-row">
+          <strong class="detalle">Días Faltantes:</strong>
+          <span [class.dias-negativos]="calcularDiasFaltantes() < 0" 
+                [class.dias-cero]="calcularDiasFaltantes() === 0"
+                [class.dias-positivos]="calcularDiasFaltantes() > 0"
+                class="info">
+            {{ calcularDiasFaltantes() }} días
+          </span>
+        </div>
+      </div>
+      
+
+      <div class="modal-actions">
+        <button class="btn-modal btn-primary" (click)="irARecibirPedido()">
+          Llegó el pedido
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal para pedido RECIBIDO -->
+<div class="modal-overlay" *ngIf="mostrarModalRecibido">
+  <div class="modal modal-pedido">
+    <div class="modal-header">
+      <h3 class="modal-title">Pedido Recibido</h3>
+      <button class="btn-cerrar" (click)="cerrarModal()">×</button>
+    </div>
+    <div class="modal-content">
+      <div class="pedido-info">
+        <div class="info-row">
+          <strong class="detalle">Proveedor:</strong>
+          <span class="info">{{ pedidoSeleccionado?.nombre_proveedor }}</span>
+        </div>
+        <div class="info-row">
+          <strong class="detalle">Costo Total:</strong>
+          <span class="info">Bs. {{ calcularCostoTotal() }}</span>
+        </div>
+      </div>
+
+      <div class="tabla-materiales">
+        <h3 class="section-title">Materiales Recibidos</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Material</th>
+              <th>Solicitado</th>
+              <th>Recibido</th>
+              <th>Faltante</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let material of pedidoSeleccionado?.materiales">
+              <td>{{ material.material }}</td>
+              <td>{{ material.cantidad }}</td>
+              <td>{{ material.cantidadRecibida !== undefined ? material.cantidadRecibida : material.cantidad }}</td>
+              <td>{{ calcularFaltante(material) }}</td>
+              <td [class.estado-completo]="calcularFaltante(material) === 0"
+                  [class.estado-incompleto]="calcularFaltante(material) > 0">
+                {{ calcularFaltante(material) === 0 ? 'COMPLETO' : 'INCOMPLETO' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pedido-info">
+        <div class="info-row">
+          <strong class="detalle">Fecha de Solicitud:</strong>
+          <span class="info">{{ pedidoSeleccionado?.fecha_solicitud }}</span>
+        </div>
+        <div class="info-row">
+          <strong class="detalle">Fecha de Llegada:</strong>
+          <span class="info">{{ pedidoSeleccionado?.fecha_llegada_real }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
