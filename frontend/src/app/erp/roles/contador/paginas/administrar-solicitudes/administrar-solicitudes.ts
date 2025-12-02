@@ -132,10 +132,49 @@ export class AdministrarSolicitudes implements OnInit {
     const solicitud = this.solicitudSeleccionada();
     if (solicitud) {
       console.log('✅ Solicitud aceptada:', solicitud.id_pedido);
-      // Cerrar modales actuales y mostrar modal de éxito
+      const body={
+        id_pedido:solicitud.id_pedido,
+        id_proyecto:solicitud.id_proyecto,
+        movimiento:'ingreso',
+        descripcion:'compra al proveedor '+solicitud.nombre_proveedor,
+        fecha:new Date().toISOString().split('T')[0],
+        monto:this.costoTotal(),
+        tipo:'compra'
+      }
+      const url = 'http://127.0.0.1:8000/api/cambiar_aceptado';
+
+  this.http.post<any>(url, body).subscribe({
+    next: (response) => {
+      console.log('✔ Pedido aceptado exitosamente:', response);
+
+      // 🔥 Actualizar la lista local
+      this.solicitudes.update(lista =>
+  lista.filter(item => item.id_pedido !== solicitud.id_pedido)
+);
+     
+      // Cerrar modales
       this.mostrarModalAceptar.set(false);
       this.mostrarModal.set(false);
+
+      // Mostrar modal de éxito
       this.mostrarModalExitoAceptar.set(true);
+    },
+
+    error: (error) => {
+      console.error('❌ Error al aceptar pedido:', error);
+
+      if (error.status === 422) {
+        alert('Faltan datos obligatorios o el pedido ya fue aceptado.');
+      } else if (error.status === 404) {
+        alert('El pedido no existe.');
+      } else if (error.status === 500) {
+        alert('Error en el servidor. Inténtelo más tarde.');
+      } else {
+        alert('Error desconocido al aceptar el pedido.');
+      }
+    }
+  });
+      
     }
   }
 
@@ -147,23 +186,53 @@ export class AdministrarSolicitudes implements OnInit {
 
   //CONFIRMAR EL RECHAZO DE LA SOLICITUD
   confirmarRechazar() {
-    if (this.rechazoForm.valid) {
-      const solicitud = this.solicitudSeleccionada();
-      const motivo = this.rechazoForm.value.motivo;
-      
-      if (solicitud) {
-        console.log('❌ Solicitud rechazada:', solicitud.id_pedido);
-        console.log('Motivo:', motivo);
-        // Aquí iría la lógica real para rechazar la solicitud
-        // this.http.post(`/api/rechazar_solicitud/${solicitud.id_solicitud}`, { motivo }).subscribe(...)
-        
-        // Cerrar modales actuales y mostrar modal de éxito
-        this.mostrarModalRechazar.set(false);
-        this.mostrarModal.set(false);
-        this.mostrarModalExitoRechazar.set(true);
-      }
+  if (!this.rechazoForm.valid) return;
+
+  const solicitud = this.solicitudSeleccionada();
+  const motivo = this.rechazoForm.value.motivo;
+
+  if (!solicitud) return;
+
+  const url = 'http://127.0.0.1:8000/api/cambiar_rechazado';
+
+  const body = {
+    id_pedido: solicitud.id_pedido,
+    estado: 'rechazado',
+    mensaje: motivo
+  };
+
+  this.http.put<any>(url, body).subscribe({
+    next: (response) => {
+      console.log('✔ Pedido rechazado exitosamente:', response);
+
+      // 🔥 Actualizar la lista local con el nuevo estado
+      this.solicitudes.update(lista =>
+  lista.filter(item => item.id_pedido !== solicitud.id_pedido)
+);
+
+      // Cerrar modales
+      this.mostrarModalRechazar.set(false);
+      this.mostrarModal.set(false);
+
+      // Abrir modal de éxito
+      this.mostrarModalExitoRechazar.set(true);
+    },
+
+    error: (error) => {
+      console.error('❌ Error al rechazar pedido:', error);
+
+      if (error.status === 422)
+        alert('Faltan datos obligatorios.');
+      else if (error.status === 404)
+        alert('El pedido no existe.');
+      else if (error.status === 500)
+        alert('Error en el servidor.');
+      else
+        alert('Error desconocido.');
     }
-  }
+  });
+}
+
 
   // Cerrar modal de éxito aceptar
   cerrarModalExitoAceptar() {

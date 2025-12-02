@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CardPedido, Pedido, Materiales } from '../../componentes/card-pedido/card-pedido';
 import { map, Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { delay, reduce } from 'rxjs/operators';
 
 @Component({
   selector: 'app-administrar-pedidos',
@@ -62,130 +62,32 @@ export class AdministrarPedidos implements OnInit {
 
   // Datos de prueba simulados
   private pedidosSimulados: Pedido[] = [
-    {
-      id_pedido: 1,
-      id_proveedor: 1,
-      nombre_proveedor: "Soboce",
-      fecha_solicitud: "2024-01-15",
-      fecha_llegada_estimada: "",
-      fecha_llegada_real: "",
-      estado: "pendiente",
-      mensaje: "",
-      monto: 1500,
-      materiales: [
-        { material: "ladrillos", cantidad: 1000 },
-        { material: "cemento", cantidad: 50 }
-      ]
-    },
-    {
-      id_pedido: 2,
-      id_proveedor: 2,
-      nombre_proveedor: "Cemento Viacha",
-      fecha_solicitud: "2024-01-10",
-      fecha_llegada_estimada: "2024-01-25",
-      fecha_llegada_real: "",
-      estado: "aceptado",
-      mensaje: "",
-      monto: 2000,
-      materiales: [
-        { material: "cemento especial", cantidad: 100 },
-        { material: "cal", cantidad: 200 }
-      ]
-    },
-    {
-      id_pedido: 3,
-      id_proveedor: 3,
-      nombre_proveedor: "Hierros Bolivia",
-      fecha_solicitud: "2024-01-05",
-      fecha_llegada_estimada: "",
-      fecha_llegada_real: "",
-      estado: "rechazado",
-      mensaje: "No tenemos stock disponible de los materiales solicitados",
-      monto: 3000,
-      materiales: [
-        { material: "varilla corrugada 1/2", cantidad: 500 },
-        { material: "alambre negro", cantidad: 1000 }
-      ]
-    },
-    {
-      id_pedido: 4,
-      id_proveedor: 4,
-      nombre_proveedor: "Maderas del Oriente",
-      fecha_solicitud: "2024-01-12",
-      fecha_llegada_estimada: "2024-01-30",
-      fecha_llegada_real: "",
-      estado: "transito",
-      mensaje: "",
-      monto: 1800,
-      materiales: [
-        { material: "madera pino", cantidad: 200 },
-        { material: "triplay", cantidad: 100 }
-      ]
-    },
-    {
-      id_pedido: 5,
-      id_proveedor: 1,
-      nombre_proveedor: "Soboce",
-      fecha_solicitud: "2024-01-08",
-      fecha_llegada_estimada: "2024-01-20",
-      fecha_llegada_real: "2024-01-19",
-      estado: "recibido",
-      mensaje: "",
-      monto: 2200,
-      materiales: [
-        { 
-          material: "arena", 
-          cantidad: 5000,
-          cantidadRecibida: 4800 // ← AHORA SÍ RECONOCE ESTA PROPIEDAD
-        },
-        { 
-          material: "grava", 
-          cantidad: 3000,
-          cantidadRecibida: 3000 // ← AHORA SÍ RECONOCE ESTA PROPIEDAD
-        }
-      ]
-    }
   ];
 
   // Cargar pedidos - Versión con datos de prueba
   cargarPedidos() {
-    this.obtenerPedidos().subscribe({
-      next: (pedidos) => {
-        this.pedidos.set(pedidos);
-        console.log("Pedidos cargados:", this.pedidos());
+    this.obtenerPedidos();
+  }
+
+  obtenerPedidos() {
+    // Simulamos una llamada HTTP
+   const url =`http://127.0.0.1:8000/api/get_all_pedidos`;
+    this.http.get<any>(url).subscribe({
+      next: (response)=>{
+        this.pedidos.set(response.data);
+        console.log('Pedidos cargados')
+        console.log(response.data)
         this.loading.set(false);
       },
-      error: (error) => {
-        console.error('Error al obtener pedidos:', error);
-        this.error.set('Error al cargar los pedidos');
+      error:(err)=>{
+        console.log('Error al cargar pedidos ',err)
         this.loading.set(false);
       }
     });
-  }
-
-  obtenerPedidos(): Observable<Pedido[]> {
-    // Simulamos una llamada HTTP
-    return of(this.pedidosSimulados).pipe(delay(1000));
     
-    // Para usar con backend real
-    /*
-    return this.http.get<any[]>("http://127.0.0.1:8000/api/get_all_pedidos").pipe(
-      map(response =>
-        response.map(item => ({
-          id_pedido: item.id_pedido,
-          id_proveedor: item.id_proveedor,
-          nombre_proveedor: item.nombre_proveedor,
-          fecha_solicitud: item.fecha_solicitud,
-          fecha_llegada_estimada: item.fecha_llegada_estimada,
-          fecha_llegada_real: item.fecha_llegada_real,
-          estado: item.estado,
-          mensaje: item.mensaje,
-          monto: item.monto,
-          materiales: item.materiales
-        }))
-      )
-    );
-    */
+    
+    
+    
   }
 
   // Toggle para filtros de estado
@@ -267,6 +169,23 @@ export class AdministrarPedidos implements OnInit {
       // Aquí iría la llamada al backend para actualizar el pedido
       console.log('Actualizando pedido:', this.pedidoSeleccionado.id_pedido, 'con fecha:', this.fechaLlegadaEstimada);
       
+      const url=`http://127.0.0.1:8000/api/cambiar_transito`;
+      const body={
+        id_pedido:this.pedidoSeleccionado.id_pedido,
+        fecha_llegada_estimada: this.fechaLlegadaEstimada,
+        estado:'transito',
+        
+      }
+
+      this.http.put(url,body).subscribe({
+        next:(response)=>{
+          console.log('Pedido actualizado transito')
+        },
+        error:(err)=>{
+          console.log('Error al actualizar pedido transito')
+        } 
+      })
+
       // Simulamos la actualización
       const pedidosActualizados = this.pedidos().map(pedido => 
         pedido.id_pedido === this.pedidoSeleccionado!.id_pedido 

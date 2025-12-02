@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-
+import { HttpClient,HttpClientModule } from '@angular/common/http';
 interface Usuario {
   id: number;
   nombre: string;
@@ -16,7 +16,7 @@ interface Usuario {
 @Component({
   selector: 'app-ver-usuario',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule,HttpClientModule],
   templateUrl: './ver-usuario.html',
   styleUrls: ['./ver-usuario.scss']
 })
@@ -33,7 +33,8 @@ export class VerUsuario implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private http:HttpClient
   ) {
     this.usuarioForm = this.fb.group({
       nombre: [{ value: '', disabled: true }, [Validators.required, Validators.minLength(3)]], // Siempre disabled
@@ -49,6 +50,7 @@ export class VerUsuario implements OnInit {
     this.usuarioForm.get('correo')?.disable();
     this.usuarioForm.get('contrasena')?.disable();
     this.obtenerDatosUsuario();
+      
   }
   obtenerDatosUsuario(): void {
   const state = history.state;
@@ -151,34 +153,75 @@ export class VerUsuario implements OnInit {
   }
 
   onToggleEdicion(): void {
-    if (this.modoEdicion) {
-      // Guardar cambios
-      if (this.usuarioForm.valid && this.usuarioData) {
-        this.mostrarModalExito = true;
-        this.modoEdicion = false;
-        
-        // Deshabilitamos solo los campos editables (nombre ya está disabled)
-        this.usuarioForm.get('rol')?.disable();
-        this.usuarioForm.get('correo')?.disable();
-        this.usuarioForm.get('contrasena')?.disable();
-        
-        // Actualizar datos locales
-        this.usuarioData = {
-          ...this.usuarioData,
-          ...this.usuarioForm.value
-        };
-        
-        console.log('Usuario actualizado:', this.usuarioData);
-      }
-    } else {
-      // Activar edición - solo habilitamos campos editables
-      this.modoEdicion = true;
-      this.usuarioForm.get('rol')?.enable();
-      this.usuarioForm.get('correo')?.enable();
-      this.usuarioForm.get('contrasena')?.enable();
-      // El nombre se mantiene disabled
+  if (this.modoEdicion) {
+
+    // Solo ejecutar si el usuario realmente modificó algo
+    if (this.usuarioForm.dirty) {
+       // 👈 SOLO si hubo cambios
+  
+
+      let id_rol=0;
+        if(this.usuarioForm.get('rol')?.value=="Administrador"){
+          id_rol=3;
+        }else if(this.usuarioForm.get('rol')?.value=="Recursos Humanos"){
+          id_rol=5
+        }else if(this.usuarioForm.get('rol')?.value=="Jefe de Obra"){
+          id_rol=6;
+        }else{
+          id_rol=4;
+        }
+        const body={
+          correo:this.usuarioData?.correo,
+          rol_id_rol:id_rol,
+        }
+        console.log('Usuario actualizado:', body);
+         const url='http://127.0.0.1:8000/api/update_usuario/'+this.usuarioData?.id;
+      this.http.put(url,body).subscribe({
+        next:(response)=>{
+          this.mostrarModalExito = true;
+        },
+        error:(err)=>{
+          alert('Error al actualizar usuario '+err)
+        }
+      })
+
+      
+
+      this.usuarioForm.get('rol')?.disable();
+      this.usuarioForm.get('correo')?.disable();
+      this.usuarioForm.get('contrasena')?.disable();
+
+      this.usuarioData = {
+        ...this.usuarioData,
+        ...this.usuarioForm.value
+      };
+      this.onGuardarCambios();
+      // Importante: resetear dirty para evitar falsos positivos
+      this.usuarioForm.markAsPristine();
+    }else{
+   
+      this.usuarioForm.get('rol')?.disable();
+      this.usuarioForm.get('correo')?.disable();
+      this.usuarioForm.get('contrasena')?.disable();
+
     }
+       this.modoEdicion = false;
+    
+
+  } else {
+    // Activar edición
+    this.modoEdicion = true;
+
+    this.usuarioForm.get('rol')?.enable();
+    this.usuarioForm.get('correo')?.enable();
+    this.usuarioForm.get('contrasena')?.enable();
   }
+}
+
+  onGuardarCambios(): void {
+    
+
+}
 
   onEliminar(): void {
     this.mostrarModalConfirmacion = true;
@@ -189,6 +232,15 @@ export class VerUsuario implements OnInit {
       // Cambiar estado activo/inactivo
       this.usuarioData.activo = !this.usuarioData.activo;
       console.log('Usuario actualizado:', this.usuarioData.activo ? 'Activado' : 'Desactivado', this.usuarioData);
+         const url='http://127.0.0.1:8000/api/eliminar_empleado/'+this.usuarioData?.empleadoId;
+         this.http.put(url,{}).subscribe({
+          next:(response)=>{
+            alert('Usuario desactivado')
+          },
+          error:(err)=>{
+            alert('error al desactivar usuario')
+          }
+         })
     }
     
     this.mostrarModalConfirmacion = false;

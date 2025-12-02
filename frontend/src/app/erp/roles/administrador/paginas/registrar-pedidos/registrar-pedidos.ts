@@ -19,7 +19,7 @@ interface MaterialProveedor {
 
 interface Proveedor {
   id_proveedor: number;
-  nombre_proveedor: string;
+  nombre: string;
   correo: string;
   materiales: MaterialProveedor[];
 }
@@ -69,68 +69,10 @@ export class RegistrarPedidos implements OnInit {
 
   // Datos simulados para pruebas
   private proyectosSimulados: Proyecto[] = [
-    {
-      id_proyecto: 1,
-      nombre_proyecto: "Condominio Lomas del sol",
-      fecha_fin: "2026-11-20"
-    },
-    {
-      id_proyecto: 2,
-      nombre_proyecto: "Puente viacha",
-      fecha_fin: "2027-11-20"
-    },
-    {
-      id_proyecto: 3,
-      nombre_proyecto: "Edificio Central",
-      fecha_fin: "2025-08-15"
-    }
   ];
 
   private proveedoresSimulados: Proveedor[] = [
-    {
-      id_proveedor: 1,
-      nombre_proveedor: "Soboce",
-      correo: "proveedor1@gmail.com",
-      materiales: [
-        { id_material_proveedor: 1, material: "ladrillos" },
-        { id_material_proveedor: 2, material: "cemento" },
-        { id_material_proveedor: 3, material: "arena" },
-        { id_material_proveedor: 4, material: "grava" }
-      ]
-    },
-    {
-      id_proveedor: 2,
-      nombre_proveedor: "Cemento Viacha",
-      correo: "proveedor2@gmail.com",
-      materiales: [
-        { id_material_proveedor: 5, material: "mezclador" },
-        { id_material_proveedor: 6, material: "cemento especial" },
-        { id_material_proveedor: 7, material: "cal" },
-        { id_material_proveedor: 8, material: "yeso" }
-      ]
-    },
-    {
-      id_proveedor: 3,
-      nombre_proveedor: "Hierros Bolivia",
-      correo: "hierros@bolivia.com",
-      materiales: [
-        { id_material_proveedor: 9, material: "varilla corrugada 1/2" },
-        { id_material_proveedor: 10, material: "varilla corrugada 3/8" },
-        { id_material_proveedor: 11, material: "alambre negro" },
-        { id_material_proveedor: 12, material: "malla electrosoldada" }
-      ]
-    },
-    {
-      id_proveedor: 4,
-      nombre_proveedor: "Maderas del Oriente",
-      correo: "maderas@oriente.com",
-      materiales: [
-        { id_material_proveedor: 13, material: "madera pino" },
-        { id_material_proveedor: 14, material: "triplay" },
-        { id_material_proveedor: 15, material: "clavos" },
-        { id_material_proveedor: 16, material: "tornillos" }
-      ]
-    }
+    
   ];
 
   constructor(private fb: FormBuilder) {
@@ -163,37 +105,32 @@ export class RegistrarPedidos implements OnInit {
   }
 
   // Cargar datos SIMULADOS del backend
-  cargarProyectos(): void {
-    of(this.proyectosSimulados).pipe(delay(500)).subscribe({
-      next: (proyectos) => {
-        this.proyectos = proyectos;
-        console.log('Proyectos cargados:', proyectos);
-      },
-      error: (err) => {
-        console.error('Error al cargar proyectos:', err);
-        this.error = 'Error al cargar los proyectos';
-        this.mostrarModalError = true;
-        this.proyectos = this.proyectosSimulados;
-      }
-    });
-  }
+    cargarProyectos() {
+      const url=`http://127.0.0.1:8000/api/get_proyectos_activos`;
+      this.http.get<Proyecto[]>(url).subscribe({
+        next:(response)=>{
+          this.proyectos=response;
+          console.log('Proyectos cargados')
+          console.log(this.proyectos);
+        },
+        error:(err)=>{
+          console.log('Error al cargar proyectos ',err)
+        }
+      });
+    }
 
-  cargarProveedores(): void {
-    of(this.proveedoresSimulados).pipe(delay(800)).subscribe({
-      next: (proveedores) => {
-        this.proveedores = proveedores;
-        console.log('Proveedores cargados:', proveedores);
-        // Inicializar el mapa de materiales
-        this.inicializarMaterialesMap();
+  cargarProveedores(){
+    const url=`http://127.0.0.1:8000/api/get_all_materiales_proveedores`
+    this.http.get<Proveedor[]>(url).subscribe({
+      next:(response)=>{
+        this.proveedores=response;
+        console.log('Proveedores cargados')
+        console.log(this.proveedores)
       },
-      error: (err) => {
-        console.error('Error al cargar proveedores:', err);
-        this.error = 'Error al cargar los proveedores';
-        this.mostrarModalError = true;
-        this.proveedores = this.proveedoresSimulados;
-        this.inicializarMaterialesMap();
+      error:(err)=>{
+        console.log('Error al cargar proveedores')
       }
-    });
+    })
   }
 
   // Inicializar el mapa de materiales para búsquedas rápidas
@@ -280,7 +217,7 @@ export class RegistrarPedidos implements OnInit {
   prepararModalConfirmacion(): void {
     const proveedorId = this.proveedor?.value;
     const proveedor = this.proveedores.find(p => p.id_proveedor == proveedorId);
-    this.proveedorSeleccionadoNombre = proveedor ? proveedor.nombre_proveedor : 'Proveedor no seleccionado';
+    this.proveedorSeleccionadoNombre = proveedor ? proveedor.nombre : 'Proveedor no seleccionado';
     
     // Calcular productos y costo total
     this.productosConfirmacion = [];
@@ -495,29 +432,30 @@ export class RegistrarPedidos implements OnInit {
     
     this.loading = true;
     
-    const pedidoData = {
-      proyecto_id: this.proyecto?.value,
-      proveedor_id: this.proveedor?.value,
-      productos: [
-        {
-          material_proveedor_id: this.producto?.value,
-          cantidad: this.cantidad?.value,
-          precio_unitario: this.precio?.value
-        },
-        ...this.productosAdicionales.controls.map(control => ({
-          material_proveedor_id: control.get('producto')?.value,
-          cantidad: control.get('cantidad')?.value,
-          precio_unitario: control.get('precio')?.value
-        }))
-      ]
-    };
+   const pedidoData = {
+  id_proyecto: this.proyecto?.value,
+  id_proveedor: this.proveedor?.value,
+  fecha_solicitud: new Date().toISOString().split('T')[0],
+  estado: 'pendiente',
+  materiales: [
+    {
+      id_material_proveedor: this.producto?.value,
+      cantidad: this.cantidad?.value,
+      precio_unitario: this.precio?.value
+    },
+    ...this.productosAdicionales.controls.map(control => ({
+      id_material_proveedor: control.get('producto')?.value,
+      cantidad: control.get('cantidad')?.value,
+      precio_unitario: control.get('precio')?.value
+    }))
+  ]
+};
+
 
     console.log('Datos del pedido a enviar:', pedidoData);
-
+  const url=`http://127.0.0.1:8000/api/registrar_pedido`;
     // Simulamos el envío al backend
-    of({ success: true, id_pedido: Math.floor(Math.random() * 1000) + 1 })
-      .pipe(delay(1500))
-      .subscribe({
+    this.http.post(url,pedidoData).subscribe({
         next: (respuesta) => {
           console.log("✔️ Pedido registrado correctamente:", respuesta);
           this.loading = false;

@@ -81,7 +81,7 @@ export class RecibirPedido implements OnInit {
 
       // Método 3: Si todo falla, cargar datos de prueba
       console.warn('No se pudo obtener el pedido, cargando datos de prueba');
-      this.cargarPedidoDePrueba();
+      //this.cargarPedidoDePrueba();
     });
   }
 
@@ -194,21 +194,18 @@ export class RecibirPedido implements OnInit {
   private actualizarPedido() {
     const datosActualizacion = {
       id_pedido: this.pedido?.id_pedido,
+      id_proveedor:this.pedido?.id_proveedor,
       fecha_llegada_real: new Date().toISOString().split('T')[0],
       estado: 'recibido',
-      materiales_recibidos: this.materialesConRecepcion.map(material => ({
-        material: material.material,
-        cantidad_recibida: material.cantidadRecibida
+      materiales: this.materialesConRecepcion.map(material => ({
+        nombre: material.material,
+        cantidad: material.cantidadRecibida
       }))
     };
 
     console.log('Datos a enviar al backend:', datosActualizacion);
-
-    return of({ 
-      success: true, 
-      message: 'Pedido marcado como recibido',
-      id_pedido: this.pedido?.id_pedido 
-    }).pipe(delay(1500));
+    const url= `http://127.0.0.1:8000/api/cambiar_recibido`;
+    return this.http.post(url, datosActualizacion);
   }
 
   cerrarModalExito(): void {

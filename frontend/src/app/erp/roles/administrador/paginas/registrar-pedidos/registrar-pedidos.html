@@ -60,7 +60,7 @@
               >
                 <option value="">Seleccione un proveedor</option>
                 <option *ngFor="let proveedor of proveedores" [value]="proveedor.id_proveedor">
-                  {{ proveedor.nombre_proveedor }}
+                  {{ proveedor.nombre }}
                 </option>
               </select>
               <div class="error-message" *ngIf="proveedor?.invalid && proveedor?.touched">

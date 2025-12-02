@@ -14,6 +14,7 @@ export interface Pedido{
 }
 
 export interface Materiales{
+  id_material:number;
   material: string;
   cantidad: number;
   cantidadRecibida?: number;
