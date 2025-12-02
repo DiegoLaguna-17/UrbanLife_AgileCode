@@ -32,7 +32,7 @@ export class AdministrarUsuarios {
             correo: item.correo,
             contrasena: '', // No viene en la respuesta, lo dejamos vacío
             activo: true,   // Puedes cambiar esto según tu lógica
-            empleadoId: item.empleado?.id_empleado
+            empleadoId: item.empleadoId
           } as Usuario));
         }
         return [];

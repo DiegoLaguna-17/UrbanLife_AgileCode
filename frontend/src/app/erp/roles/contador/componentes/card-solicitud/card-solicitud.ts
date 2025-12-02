@@ -11,6 +11,7 @@ export interface Solicitud{
   nombre_proveedor: string;
   fecha_solicitud: string;
   materiales: MaterialSolicitud[];
+  id_proyecto:number;
 }
 @Component({
   selector: 'app-card-solicitud',
