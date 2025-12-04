@@ -69,6 +69,18 @@ export const routes: Routes = [
       },
       {
         path:'recibir-pedido', loadComponent: ()=>import('./erp/roles/administrador/paginas/recibir-pedido/recibir-pedido').then(m=>m.RecibirPedido)
+      },
+      {
+        path:'administrar-proyectos', loadComponent: ()=>import('./erp/roles/administrador/paginas/administrar-proyectos/administrar-proyectos').then(m=>m.AdministrarProyectos)
+      },
+      {
+        path:'ver-proyecto', loadComponent: ()=>import('./erp/roles/administrador/paginas/ver-proyecto/ver-proyecto').then(m=>m.VerProyecto)
+      },
+      {
+        path:'ver-documentacion', loadComponent: ()=>import('./erp/roles/administrador/paginas/ver-documentacion/ver-documentacion').then(m=>m.VerDocumentacion)
+      },
+      {
+        path:'ver-actividades', loadComponent: ()=>import('./erp/roles/administrador/paginas/ver-actividades/ver-actividades').then(m=>m.VerActividades)
       }
     ]
   },

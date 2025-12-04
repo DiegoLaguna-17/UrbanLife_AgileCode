@@ -1,0 +1,41 @@
+<div class="main-container">
+  <div class="administrar-container">
+    <h1 class="titulo-principal">Administrar Proyectos</h1>
+
+    <!-- Barra de búsqueda y botón crear -->
+    <div class="search-section">
+      <div class="search-container">
+        <input 
+          class="search-input" 
+          type="search" 
+          placeholder="Buscar proyecto por nombre..." 
+          [value]="q()" 
+          (input)="q.set($any($event.target).value)" />
+      </div>
+      <button class="btn-registrar" (click)="irARegistrar()">
+        CREAR NUEVO PROYECTO
+      </button>
+    </div>
+
+    <div class="loading" *ngIf="loading()">
+      Cargando proyectos...
+    </div>
+
+    <div class="error" *ngIf="error()">
+      {{ error() }}
+    </div>
+
+    <!-- Grid de proyectos - 3 cards por fila -->
+    <div class="proyectos-grid" *ngIf="!loading() && !error()">
+      <app-card-proyecto
+        *ngFor="let proyecto of proyectosFiltrados()"
+        [proyecto]="proyecto"
+        (ver)="verProyecto(proyecto)">
+      </app-card-proyecto>
+    </div>
+
+    <div class="no-results" *ngIf="!loading() && !error() && proyectosFiltrados().length === 0">
+      No se encontraron proyectos
+    </div>
+  </div>
+</div>
