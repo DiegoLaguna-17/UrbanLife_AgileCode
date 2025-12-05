@@ -81,6 +81,9 @@ export const routes: Routes = [
       },
       {
         path:'ver-actividades', loadComponent: ()=>import('./erp/roles/administrador/paginas/ver-actividades/ver-actividades').then(m=>m.VerActividades)
+      },
+      {
+        path:'registrar-documentos', loadComponent: ()=>import('./erp/roles/administrador/paginas/registrar-documentos/registrar-documentos').then(m=>m.RegistrarDocumentos)
       }
     ]
   },

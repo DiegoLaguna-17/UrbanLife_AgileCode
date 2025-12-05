@@ -15,4 +15,5 @@ export class AdministradorSidebar {
   perfil(){
     console.log('yendo a perfil')
   }
+  sidebarOpen: boolean = false;
 }

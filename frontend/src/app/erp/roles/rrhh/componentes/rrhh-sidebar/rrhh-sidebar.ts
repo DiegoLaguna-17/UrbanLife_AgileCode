@@ -15,4 +15,5 @@ export class RrhhSidebar {
   perfil(){
     console.log('yendo a perfil')
   }
+  sidebarOpen: boolean = false;
 }

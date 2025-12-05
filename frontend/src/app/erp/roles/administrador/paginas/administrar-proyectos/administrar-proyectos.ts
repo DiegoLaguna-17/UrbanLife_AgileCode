@@ -149,7 +149,7 @@ export class AdministrarProyectos implements OnInit {
     }
   ];
 
-  // Cargar proyectos - Versión con datos de prueba
+  // Cargar proyectos para misa datos de prueba
   cargarProyectos(): void {
     this.obtenerProyectos().subscribe({
       next: (proyectos) => {
@@ -172,7 +172,7 @@ export class AdministrarProyectos implements OnInit {
     // Simulamos una llamada HTTP
     return of(this.proyectosSimulados).pipe(delay(1000));
     
-    // Para usar con backend real, descomenta esto:
+    // Para usar con back
     /*
     return this.http.get<any[]>("http://127.0.0.1:8000/api/get_all_proyectos").pipe(
       map(response =>
@@ -204,7 +204,7 @@ export class AdministrarProyectos implements OnInit {
 
   // Navegar a la página de registrar proyecto
   irARegistrar(): void {
-    this.router.navigate(['./administrador/registrar-proyecto']);
+    this.router.navigate(['./administrador/crear-proyectos']);
   }
 
   ngOnInit(): void {

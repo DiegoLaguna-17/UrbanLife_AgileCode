@@ -189,10 +189,7 @@ export class VerDocumentacion implements OnInit {
 
   anadirDocumento(): void {
     console.log('Añadir documento - Implementar funcionalidad');
-    alert('Funcionalidad de añadir documento será implementada próximamente');
-    // this.router.navigate(['./administrador/añadir-documento'], {
-    //   queryParams: { proyecto: JSON.stringify(this.proyecto) }
-    // });
+    this.router.navigate(['./administrador/registrar-documentos']);
   }
 
   // Ver documento (abrir modal)
