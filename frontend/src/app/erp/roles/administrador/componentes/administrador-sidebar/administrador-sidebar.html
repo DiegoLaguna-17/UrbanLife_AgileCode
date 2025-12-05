@@ -1,4 +1,9 @@
- <aside class="sidebar">
+<!-- Botón hamburguesa (solo móvil) -->
+<button class="menu-toggle" (click)="sidebarOpen = !sidebarOpen">
+  ☰
+</button>
+
+<aside class="sidebar" [class.open]="sidebarOpen">
     <div class="top">
       <div class="avatar"><img src="../../../../../../assets/img/urbanlogo.png" alt="logo UrbanLife"></div>
       <div class="contain_name">
@@ -15,17 +20,14 @@
             <span>Pedidos</span>
         </a>
 
-        <!-- opcion de crear proyetcos -->
         <a class="item" routerLink="./administrar-proyectos" routerLinkActive="active">
             <span>Proyectos</span>
         </a>
 
-        <!-- opcion de designar a proyectos -->
         <a class="item" routerLink="./registros" routerLinkActive="active">
             <span>Designar</span>
         </a>
 
-        <!-- opcion de regisrar usuarios -->
         <a class="item" routerLink="./registros" routerLinkActive="active">
             <span>Administrar Trabajadores</span>
         </a>
@@ -34,4 +36,4 @@
     <button class="logout" type="button" (click)="logout.emit()">
       Cerrar Sesión
     </button>
-  </aside>
+</aside>

@@ -1,41 +1,42 @@
- <aside class="sidebar">
+<!-- Botón hamburguesa (solo móvil) -->
+<button class="menu-toggle" (click)="sidebarOpen = !sidebarOpen">
+  ☰
+</button>
+
+<aside class="sidebar" [class.open]="sidebarOpen">
     <div class="top">
-      <div class="avatar"><img src="../../../../../../assets/img/urbanlogo.png" alt="logo UrbanLife"></div>
+      <div class="avatar">
+        <img src="../../../../../../assets/img/urbanlogo.png" alt="logo UrbanLife">
+      </div>
       <div class="contain_name">
         <h2 class="name">Recursos Humanos</h2>
       </div>
     </div>
 
     <nav class="menu">
-        <!-- opcion de registro de empleados y trabajadores -->
         <a class="item" routerLink="./registrar" routerLinkActive="active">
-            
             <span>Registrar Empleados</span>
         </a>
 
-        <!-- opcion de Administrar empleados de la empresa -->
         <a class="item" routerLink="./administrar-empleados" routerLinkActive="active">
-            
             <span>Administrar Empleados</span>
         </a>
 
-        <!-- opcion de Administrar Trabajadores -->
         <a class="item" routerLink="./administrar-trabajadores" routerLinkActive="active">
-            
-            <span>Administrar trabajadores</span>
+            <span>Administrar Trabajadores</span>
         </a>
 
-        <!-- opcion de Administrar Usuarios -->
         <a class="item" routerLink="./administrar-usuarios" routerLinkActive="active">
-            
             <span>Administrar Usuarios</span>
         </a>
     </nav>
 
     <button class="logout" type="button" (click)="logout.emit()">
       <span class="logout-icon">
-        <svg viewBox="0 0 24 24"><path d="M10 3h7a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-7v-2h6V5h-6ZM4 12l4-4v3h7v2H8v3Z"/></svg>
+        <svg viewBox="0 0 24 24">
+          <path d="M10 3h7a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-7v-2h6V5h-6ZM4 12l4-4v3h7v2H8v3Z"/>
+        </svg>
       </span>
       Cerrar Sesión
     </button>
-  </aside>
+</aside>

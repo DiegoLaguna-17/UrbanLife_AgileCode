@@ -1,4 +1,4 @@
-/* crear-proyectos.component.scss */
+/* registrar-documentos.component.scss */
 
 * {
     --AzulOscuro: #094c6d;
@@ -44,7 +44,6 @@
     text-align: center;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     line-height: 1.3;
-    margin-bottom: -3%;
 }
 
 .imagen {
@@ -76,22 +75,6 @@
     gap: 25px;
 }
 
-/* Secciones del formulario */
-.form-section {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.section-title {
-    color: var(--Celeste);
-    font-size: 35px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 5px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-}
-
 .form-group {
     display: flex;
     flex-direction: column;
@@ -111,11 +94,6 @@
     }
 }
 
-/* Para campos no obligatorios */
-.form-group:has(.form-input:not([required])) .form-label::after {
-    content: '';
-}
-
 .form-input,
 .form-textarea {
     padding: 12px 15px;
@@ -133,22 +111,6 @@
 
     &::placeholder {
         color: #999;
-    }
-}
-
-.form-textarea {
-    border-radius: 15px;
-    resize: vertical;
-    min-height: 100px;
-}
-
-/* Contenedor para fechas */
-.fecha-container {
-    display: flex;
-    gap: 15px;
-
-    .form-group {
-        flex: 1;
     }
 }
 
@@ -195,6 +157,11 @@ select.form-input {
     &:hover {
         border-color: var(--Verde);
         background-color: rgba(126, 217, 87, 0.1);
+    }
+
+    &.has-file {
+        border-color: var(--Verde);
+        background-color: rgba(126, 217, 87, 0.05);
     }
 }
 
@@ -275,43 +242,7 @@ select.form-input {
     gap: 15px;
     justify-content: center;
     flex-wrap: wrap;
-    margin-top: 20px;
-}
-
-.btn-siguiente,
-.btn-anterior {
-    background: linear-gradient(135deg, var(--Verde) 0%, var(--Celeste) 100%);
-    color: var(--AzulOscuro);
-    border: none;
-    padding: 12px 25px;
-    border-radius: 25px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    min-width: 120px;
-
-    &:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(9, 109, 10, 0.3);
-    }
-
-    &:disabled {
-        background: #cccccc;
-        cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
-    }
-}
-
-.btn-siguiente {
-    margin-bottom: 20px;
-}
-
-.btn-anterior {
-    background: linear-gradient(135deg, var(--Celeste) 0%, var(--Verde) 100%);
+    margin-top: 30px;
 }
 
 .btn-registrar {
@@ -351,35 +282,6 @@ select.form-input {
     font-size: 12px;
     margin-top: 5px;
     font-weight: 500;
-}
-
-/* Barra de progreso */
-.progress-bar-container {
-    margin-bottom: 30px;
-}
-
-.progress-bar {
-    width: 100%;
-    height: 8px;
-    background: var(--AzulOscuro);
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 10px;
-}
-
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(135deg, var(--Blanco) 0%, var(--Celeste) 100%);
-    border-radius: 4px;
-    transition: width 0.5s ease;
-    border: 1px solid var(--Negro);
-}
-
-.progress-text {
-    text-align: center;
-    color: var(--Blanco);
-    font-size: 12px;
-    font-weight: 600;
 }
 
 /* Estilos para modales */
@@ -454,6 +356,35 @@ select.form-input {
     }
 }
 
+/* Overlay de carga */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(9, 76, 109, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.loading-spinner-large {
+    width: 60px;
+    height: 60px;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-top-color: var(--Verde);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .main-container {
@@ -485,30 +416,9 @@ select.form-input {
         font-size: 24px;
     }
 
-    .section-title {
-        font-size: 20px;
-    }
-
     .form-container {
         margin: 20px;
         padding: 30px 20px;
-    }
-
-    .fecha-container {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .botones-navegacion {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .btn-siguiente,
-    .btn-anterior,
-    .btn-registrar {
-        width: 100%;
-        max-width: 200px;
     }
 
     .btn-volver {
@@ -539,10 +449,6 @@ select.form-input {
 @media (max-width: 480px) {
     .titulo-principal {
         font-size: 20px;
-    }
-
-    .section-title {
-        font-size: 18px;
     }
 
     .imagen {

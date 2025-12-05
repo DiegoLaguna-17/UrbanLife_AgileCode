@@ -15,4 +15,5 @@ export class JefeobraSidebar {
   perfil(){
     console.log('yendo a perfil')
   }
+  sidebarOpen: boolean = false;
 }

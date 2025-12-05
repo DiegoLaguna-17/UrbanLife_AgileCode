@@ -4,16 +4,6 @@
     <button class="btn-volver" (click)="volver()">← Volver</button>
 
     <h1 class="titulo-principal">Actividades del Proyecto</h1>
-    
-    <!-- Información del proyecto -->
-    <div class="proyecto-info">
-      <h2 class="nombre-proyecto">{{ proyecto?.nombre }}</h2>
-      <p class="descripcion-proyecto">{{ proyecto?.descripcion }}</p>
-      <div class="proyecto-estado">
-        <span class="estado-badge" [class]="getEstadoClass()">{{ proyecto?.estado }}</span>
-        <span class="fechas-proyecto">📅 {{ proyecto?.fecha_inicio }} - {{ proyecto?.fecha_fin }}</span>
-      </div>
-    </div>
 
     <!-- Botón para añadir actividad -->
     <div class="add-activity-section">
@@ -37,56 +27,6 @@
       </div>
     </div>
 
-    <!-- Filtros de actividades -->
-    <div class="filters-section">
-      <div class="filter-group">
-        <label class="filter-label">Filtrar por estado:</label>
-        <div class="filter-buttons">
-          <button class="filter-btn" 
-                  [class.active]="filtroEstado === 'todas'"
-                  (click)="cambiarFiltro('todas')">
-            Todas ({{ contarActividadesTotales() }})
-          </button>
-          <button class="filter-btn" 
-                  [class.active]="filtroEstado === 'Completada'"
-                  (click)="cambiarFiltro('Completada')">
-            Completadas ({{ contarPorEstado('Completada') }})
-          </button>
-          <button class="filter-btn" 
-                  [class.active]="filtroEstado === 'En progreso'"
-                  (click)="cambiarFiltro('En progreso')">
-            En Progreso ({{ contarPorEstado('En progreso') }})
-          </button>
-          <button class="filter-btn" 
-                  [class.active]="filtroEstado === 'Pendiente'"
-                  (click)="cambiarFiltro('Pendiente')">
-            Pendientes ({{ contarPorEstado('Pendiente') }})
-          </button>
-        </div>
-      </div>
-      
-      <div class="filter-group">
-        <label class="filter-label">Ordenar por:</label>
-        <div class="filter-buttons">
-          <button class="filter-btn" 
-                  [class.active]="ordenPor === 'fecha'"
-                  (click)="cambiarOrden('fecha')">
-            Fecha
-          </button>
-          <button class="filter-btn" 
-                  [class.active]="ordenPor === 'estado'"
-                  (click)="cambiarOrden('estado')">
-            Estado
-          </button>
-          <button class="filter-btn" 
-                  [class.active]="ordenPor === 'nombre'"
-                  (click)="cambiarOrden('nombre')">
-            Nombre
-          </button>
-        </div>
-      </div>
-    </div>
-
     <!-- Lista de actividades -->
     <div class="actividades-list">
       <!-- Actividades Completadas -->
@@ -106,10 +46,6 @@
               <p class="activity-desc">{{ actividad.descripcion }}</p>
               <div class="activity-footer">
                 <span class="activity-status completed">COMPLETADA</span>
-                <div class="activity-actions">
-                  <button class="btn-action btn-edit" (click)="editarActividad(actividad)">Editar</button>
-                  <button class="btn-action btn-view" (click)="verActividad(actividad)">Ver Detalles</button>
-                </div>
               </div>
             </div>
           </div>
@@ -133,11 +69,6 @@
               <p class="activity-desc">{{ actividad.descripcion }}</p>
               <div class="activity-footer">
                 <span class="activity-status in-progress">EN PROGRESO</span>
-                <div class="activity-actions">
-                  <button class="btn-action btn-complete" (click)="completarActividad(actividad)">Marcar como Completada</button>
-                  <button class="btn-action btn-edit" (click)="editarActividad(actividad)">Editar</button>
-                  <button class="btn-action btn-view" (click)="verActividad(actividad)">Ver Detalles</button>
-                </div>
               </div>
             </div>
           </div>
@@ -161,11 +92,6 @@
               <p class="activity-desc">{{ actividad.descripcion }}</p>
               <div class="activity-footer">
                 <span class="activity-status pending">PENDIENTE</span>
-                <div class="activity-actions">
-                  <button class="btn-action btn-start" (click)="iniciarActividad(actividad)">Iniciar Actividad</button>
-                  <button class="btn-action btn-edit" (click)="editarActividad(actividad)">Editar</button>
-                  <button class="btn-action btn-view" (click)="verActividad(actividad)">Ver Detalles</button>
-                </div>
               </div>
             </div>
           </div>
@@ -174,7 +100,6 @@
 
       <!-- Mensaje si no hay actividades -->
       <div class="no-activities" *ngIf="actividadesFiltradas().length === 0">
-        <div class="no-activities-icon">📋</div>
         <h3>No hay actividades registradas</h3>
         <p *ngIf="filtroEstado === 'todas'">
           Presiona "Añadir Actividad" para comenzar a registrar las actividades del proyecto.
@@ -212,48 +137,6 @@
           <span class="detail-label">Total de Actividades:</span>
           <span class="detail-value">{{ contarActividadesTotales() }}</span>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal para ver actividad -->
-<div class="modal-overlay" *ngIf="mostrarModalVer">
-  <div class="modal">
-    <div class="modal-content">
-      <div class="modal-icon">{{ getActividadIcon(actividadSeleccionada) }}</div>
-      <h3 class="modal-title">{{ actividadSeleccionada?.nombre_actividad }}</h3>
-      
-      <div class="activity-details-modal">
-        <div class="detail-item">
-          <strong>Descripción:</strong>
-          <p>{{ actividadSeleccionada?.descripcion }}</p>
-        </div>
-        <div class="detail-row">
-          <div class="detail-item">
-            <strong>Fecha:</strong>
-            <span>{{ actividadSeleccionada?.fecha | date:'dd/MM/yyyy' }}</span>
-          </div>
-          <div class="detail-item">
-            <strong>Estado:</strong>
-            <span [class]="'status-' + actividadSeleccionada?.estado?.toLowerCase()">
-              {{ actividadSeleccionada?.estado }}
-            </span>
-          </div>
-        </div>
-        <div class="detail-item">
-          <strong>Proyecto:</strong>
-          <span>{{ proyecto?.nombre }}</span>
-        </div>
-      </div>
-      
-      <div class="modal-actions">
-        <button class="btn-modal btn-edit" (click)="editarActividad(actividadSeleccionada!)">
-          Editar
-        </button>
-        <button class="btn-modal btn-close" (click)="cerrarModalVer()">
-          Cerrar
-        </button>
       </div>
     </div>
   </div>

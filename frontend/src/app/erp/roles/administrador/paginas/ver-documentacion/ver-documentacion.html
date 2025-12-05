@@ -4,12 +4,6 @@
     <button class="btn-volver" (click)="volver()">← Volver</button>
 
     <h1 class="titulo-principal">Documentación del Proyecto</h1>
-    
-    <!-- Información del proyecto -->
-    <div class="proyecto-info">
-      <h2 class="nombre-proyecto">{{ proyecto?.nombre }}</h2>
-      <p class="descripcion-proyecto">{{ proyecto?.descripcion }}</p>
-    </div>
 
     <!-- Botón para añadir documentos -->
     <div class="add-document-section">
@@ -34,9 +28,7 @@
           <div class="document-info">
             <h3 class="document-name">{{ documento.nombre_documento }}</h3>
             <div class="document-details">
-              <span class="document-type">{{ documento.tipo }}</span>
               <span class="document-actions">
-                <button class="btn-action btn-view" (click)="verDocumento(documento)">Ver</button>
                 <button class="btn-action btn-download" (click)="descargarDocumento(documento)">Descargar</button>
               </span>
             </div>
@@ -57,9 +49,7 @@
           <div class="document-info">
             <h3 class="document-name">{{ documento.nombre_documento }}</h3>
             <div class="document-details">
-              <span class="document-type">{{ documento.tipo }}</span>
               <span class="document-actions">
-                <button class="btn-action btn-view" (click)="verDocumento(documento)">Ver</button>
                 <button class="btn-action btn-download" (click)="descargarDocumento(documento)">Descargar</button>
               </span>
             </div>
@@ -80,9 +70,7 @@
           <div class="document-info">
             <h3 class="document-name">{{ documento.nombre_documento }}</h3>
             <div class="document-details">
-              <span class="document-type">{{ documento.tipo }}</span>
               <span class="document-actions">
-                <button class="btn-action btn-view" (click)="verDocumento(documento)">Ver</button>
                 <button class="btn-action btn-download" (click)="descargarDocumento(documento)">Descargar</button>
               </span>
             </div>
@@ -103,9 +91,7 @@
           <div class="document-info">
             <h3 class="document-name">{{ documento.nombre_documento }}</h3>
             <div class="document-details">
-              <span class="document-type">{{ documento.tipo }}</span>
               <span class="document-actions">
-                <button class="btn-action btn-view" (click)="verDocumento(documento)">Ver</button>
                 <button class="btn-action btn-download" (click)="descargarDocumento(documento)">Descargar</button>
               </span>
             </div>
@@ -150,34 +136,3 @@
   </div>
 </div>
 
-<!-- Modal para ver documento -->
-<div class="modal-overlay" *ngIf="mostrarModalVer">
-  <div class="modal">
-    <div class="modal-content">
-      <div class="modal-icon">📄</div>
-      <h3 class="modal-title">{{ documentoSeleccionado?.nombre_documento }}</h3>
-      <div class="document-details-modal">
-        <div class="detail-item">
-          <strong>Tipo:</strong>
-          <span>{{ documentoSeleccionado?.tipo }}</span>
-        </div>
-        <div class="detail-item">
-          <strong>Categoría:</strong>
-          <span>{{ obtenerCategoria(documentoSeleccionado) }}</span>
-        </div>
-        <div class="detail-item">
-          <strong>Ruta:</strong>
-          <span class="document-path">{{ documentoSeleccionado?.ruta }}</span>
-        </div>
-      </div>
-      <div class="modal-actions">
-        <button class="btn-modal btn-download" (click)="descargarDocumento(documentoSeleccionado!)">
-          Descargar
-        </button>
-        <button class="btn-modal btn-close" (click)="cerrarModalVer()">
-          Cerrar
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
