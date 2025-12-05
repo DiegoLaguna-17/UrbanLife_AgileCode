@@ -266,3 +266,277 @@
     height: auto !important;
   }
 }
+
+
+//PARA EL DACH
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+/* Modal de gráfica específico */
+.modal.modal-grafica {
+  max-width: 700px;
+  background: white;
+  border-radius: 12px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8f9fa;
+  border-radius: 12px 12px 0 0;
+}
+
+.modal-header-grafica {
+  text-align: center;
+  color: white;
+
+  .modal-title {
+    color:var(--AzulOscuro);
+    font-size: 1.7rem;
+    text-align: center;
+  }
+
+  .btn-cerrar {
+    color: var(--VerdeOscuro);
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: var(--AzulOscuro);
+    }
+  }
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--AzulOscuro);
+  margin: 0;
+  text-align: center;
+}
+
+.btn-cerrar {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+
+  &:hover {
+    background-color: #eee;
+    color: #333;
+  }
+}
+
+.modal-content {
+  padding: 20px;
+}
+
+/* Contenedor de gráfica en modal */
+.chart-container-modal {
+  width: 100%;
+  height: 300px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+/* Estadísticas */
+.estadisticas-resumen {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.estadistica-item {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+  border: 1px solid #e9ecef;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.estadistica-label {
+  display: block;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.estadistica-valor {
+  display: block;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+
+  &.total { color: #333; }
+  &.admin { 
+    color: #1E88E5;
+    text-shadow: 0 1px 2px rgba(30, 136, 229, 0.2);
+  }
+  &.contador { 
+    color: #43A047;
+    text-shadow: 0 1px 2px rgba(67, 160, 71, 0.2);
+  }
+  &.rrhh { 
+    color: #FB8C00;
+    text-shadow: 0 1px 2px rgba(251, 140, 0, 0.2);
+  }
+  &.jefe { 
+    color: #8E24AA;
+    text-shadow: 0 1px 2px rgba(142, 36, 170, 0.2);
+  }
+  &.recibido { 
+    color: #4CAF50;
+    text-shadow: 0 1px 2px rgba(76, 175, 80, 0.2);
+  }
+  &.transito { 
+    color: #2196F3;
+    text-shadow: 0 1px 2px rgba(33, 150, 243, 0.2);
+  }
+  &.rechazado { 
+    color: #F44336;
+    text-shadow: 0 1px 2px rgba(244, 67, 54, 0.2);
+  }
+  &.aceptado { 
+    color: #9C27B0;
+    text-shadow: 0 1px 2px rgba(156, 39, 176, 0.2);
+  }
+  &.pendiente { 
+    color: #FF9800;
+    text-shadow: 0 1px 2px rgba(255, 152, 0, 0.2);
+  }
+}
+
+/* Animación del modal */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal.modal-grafica {
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+/* Responsive para modal de gráfica */
+@media (max-width: 768px) {
+  .modal.modal-grafica {
+    max-width: 95%;
+    margin: 10px;
+  }
+
+  .estadisticas-resumen {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .chart-container-modal {
+    height: 250px;
+  }
+
+  .modal-title {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal.modal-grafica {
+    max-width: 100%;
+    margin: 5px;
+  }
+
+  .estadisticas-resumen {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-container-modal {
+    height: 200px;
+  }
+
+  .estadistica-item {
+    padding: 12px;
+  }
+
+  .estadistica-valor {
+    font-size: 20px;
+  }
+
+  .modal-title {
+    font-size: 16px;
+  }
+}
+
+/* Efecto de overlay con blur */
+.modal-overlay-grafica {
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(3px);
+}
+
+.boton-grafica-container {
+  display: flex;
+  justify-content: center;
+}
+
+
+.btn-grafica {
+  background: var(--AzulOscuro);
+  color: var(--Blanco);
+  border: none;
+  padding: 12px 25px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  margin: 10px 10px;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(9, 109, 10, 0.3);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}

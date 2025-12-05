@@ -12,17 +12,17 @@
           (input)="fechaFiltro.set($any($event.target).value)" 
           placeholder="Busque por fecha de solicitud"/>
       </div>
-      <button class="btn-registrar" (click)="irARegistrar()">
-            HACER NUEVO PEDIDO
-          </button>
-    </div>
-
-    <div  class="chart-container">
-      
-      <canvas id="estadoPedidos"></canvas>
+      <div class="botones-accion">
+        <button class="btn-registrar" (click)="irARegistrar()">
+          HACER NUEVO PEDIDO
+        </button>
+        <button class="btn-grafica" (click)="mostrarGrafica()">
+          VER EN GRÁFICA
+        </button>
+      </div>
     </div>
     
-    <!-- Sección de filtros y botón nuevo pedido -->
+    <!-- Sección de filtros -->
     <div class="filtros-section">
       <div class="filtros-container">
         <div class="filtros-left">
@@ -32,7 +32,7 @@
               <input 
                 type="checkbox" 
                 class="checkbox-input" 
-                [checked]=""
+                [checked]="estadosFiltro().includes('pendiente')"
                 (change)="toggleEstadoFiltro('pendiente')">
               <span class="checkbox-custom"></span>
               <span class="checkbox-text">Pendiente</span>
@@ -41,7 +41,7 @@
               <input 
                 type="checkbox" 
                 class="checkbox-input" 
-                [checked]=""
+                [checked]="estadosFiltro().includes('aceptado')"
                 (change)="toggleEstadoFiltro('aceptado')">
               <span class="checkbox-custom"></span>
               <span class="checkbox-text">Aceptado</span>
@@ -50,7 +50,7 @@
               <input 
                 type="checkbox" 
                 class="checkbox-input" 
-                [checked]=""
+                [checked]="estadosFiltro().includes('rechazado')"
                 (change)="toggleEstadoFiltro('rechazado')">
               <span class="checkbox-custom"></span>
               <span class="checkbox-text">Rechazado</span>
@@ -59,7 +59,7 @@
               <input 
                 type="checkbox" 
                 class="checkbox-input" 
-                [checked]=""
+                [checked]="estadosFiltro().includes('transito')"
                 (change)="toggleEstadoFiltro('transito')">
               <span class="checkbox-custom"></span>
               <span class="checkbox-text">Tránsito</span>
@@ -68,7 +68,7 @@
               <input 
                 type="checkbox" 
                 class="checkbox-input" 
-                [checked]=""
+                [checked]="estadosFiltro().includes('recibido')"
                 (change)="toggleEstadoFiltro('recibido')">
               <span class="checkbox-custom"></span>
               <span class="checkbox-text">Recibido</span>
@@ -96,6 +96,47 @@
 
     <div class="no-results" *ngIf="!loading() && !error() && pedidosFiltrados().length === 0">
       No se encontraron pedidos
+    </div>
+  </div>
+</div>
+
+<!-- Modal para gráfica -->
+<div class="modal-overlay" *ngIf="mostrarModalGrafica">
+  <div class="modal modal-grafica">
+    <div class="modal-header">
+      <h3 class="modal-title">Gráfica de Estados de Pedidos</h3>
+      <button class="btn-cerrar" (click)="cerrarModalGrafica()">×</button>
+    </div>
+    <div class="modal-content">
+      <div class="chart-container-modal">
+        <canvas id="estadoPedidosModal"></canvas>
+      </div>
+      <div class="estadisticas-resumen">
+        <div class="estadistica-item">
+          <span class="estadistica-label">Total Pedidos:</span>
+          <span class="estadistica-valor">{{ pedidos().length }}</span>
+        </div>
+        <div class="estadistica-item">
+          <span class="estadistica-label">Recibidos:</span>
+          <span class="estadistica-valor recibido">{{ totalRecibidos }}</span>
+        </div>
+        <div class="estadistica-item">
+          <span class="estadistica-label">En Tránsito:</span>
+          <span class="estadistica-valor transito">{{ totalTransito }}</span>
+        </div>
+        <div class="estadistica-item">
+          <span class="estadistica-label">Rechazados:</span>
+          <span class="estadistica-valor rechazado">{{ totalRechazados }}</span>
+        </div>
+        <div class="estadistica-item">
+          <span class="estadistica-label">Aceptados:</span>
+          <span class="estadistica-valor aceptado">{{ totalAceptados }}</span>
+        </div>
+        <div class="estadistica-item">
+          <span class="estadistica-label">Pendientes:</span>
+          <span class="estadistica-valor pendiente">{{ totalPendiente }}</span>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -190,7 +231,7 @@
       </div>
       <div class="modal-actions">
         <button class="btn-modal btn-primary" (click)="abrirModalFechaLlegada()">
-            Ingresar fecha de llegada
+          Ingresar fecha de llegada
         </button>
       </div>
     </div>
@@ -216,7 +257,7 @@
         <button class="btn-modal-confirmar btn-confirmar" 
                 (click)="abrirModalConfirmarFecha()"
                 [disabled]="!fechaLlegadaEstimada">
-        Registrar fecha
+          Registrar fecha
         </button>
         <button class="btn-modal-cancelar btn-cancelar" (click)="cerrarModalFechaLlegada()">
           Cancelar
@@ -350,7 +391,6 @@
           </span>
         </div>
       </div>
-      
 
       <div class="modal-actions">
         <button class="btn-modal btn-primary" (click)="irARecibirPedido()">
@@ -360,7 +400,6 @@
     </div>
   </div>
 </div>
-
 
 <!-- Modal para pedido RECIBIDO -->
 <div class="modal-overlay" *ngIf="mostrarModalRecibido">

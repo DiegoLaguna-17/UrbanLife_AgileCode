@@ -1,10 +1,13 @@
 <div class="main-container">
   <div class="administrar-container">
     <h1 class="titulo-principal">Búsqueda de Usuarios</h1>
-    <div class="chart-container">
-  <canvas id="chartRoles"></canvas>
-</div>
-
+    
+    <!-- Botón para ver gráfica -->
+    <div class="boton-grafica-container">
+      <button class="btn-grafica" (click)="mostrarGrafica()">
+        VER EN GRÁFICA
+      </button>
+    </div>
     
     <div class="search-section">
       <div class="search-container">
@@ -71,6 +74,43 @@
 
     <div *ngIf="usuariosFiltrados.length === 0" class="no-resultados">
       <p>No se encontraron usuarios</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para gráfica -->
+<div class="modal-overlay" *ngIf="mostrarModalGrafica">
+  <div class="modal modal-grafica">
+    <div class="modal-header modal-header-grafica">
+      <h3 class="modal-title">Gráfica de Distribución de Usuarios por Rol</h3>
+      <button class="btn-cerrar" (click)="cerrarModalGrafica()">×</button>
+    </div>
+    <div class="modal-content">
+      <div class="chart-container-modal">
+        <canvas id="chartRolesModal"></canvas>
+      </div>
+      <div class="estadisticas-resumen">
+        <div class="estadistica-item">
+          <span class="estadistica-label">Total Usuarios:</span>
+          <span class="estadistica-valor total">{{ totalUsuarios }}</span>
+        </div>
+        <div class="estadistica-item">
+          <span class="estadistica-label">Administradores:</span>
+          <span class="estadistica-valor admin">{{ totalAdmins }}</span>
+        </div>
+        <div class="estadistica-item">
+          <span class="estadistica-label">Contadores:</span>
+          <span class="estadistica-valor contador">{{ totalContadores }}</span>
+        </div>
+        <div class="estadistica-item">
+          <span class="estadistica-label">RRHH:</span>
+          <span class="estadistica-valor rrhh">{{ totalRrhh }}</span>
+        </div>
+        <div class="estadistica-item">
+          <span class="estadistica-label">Jefes de Obra:</span>
+          <span class="estadistica-valor jefe">{{ totalJefes }}</span>
+        </div>
+      </div>
     </div>
   </div>
 </div>
