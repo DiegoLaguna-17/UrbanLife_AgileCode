@@ -16,6 +16,7 @@ export class AdministrarTrabajadores implements OnInit {
   private router = inject(Router);
 
   // Señales reactivas
+  totalTrabajadores=0;
   trabajadores = signal<Trabajador[]>([]);
   loading = signal<boolean>(true);
   error = signal<string>('');
@@ -36,6 +37,7 @@ export class AdministrarTrabajadores implements OnInit {
  cargarTrabajadores() {
   this.obtenerTrabajadores().subscribe({
     next: (trabajadores) => {
+      this.totalTrabajadores=trabajadores.length;
       this.trabajadores.set(trabajadores);
       console.log("Trabajadores:", this.trabajadores()); 
       this.loading.set(false); // <── Aquí sí verás el array

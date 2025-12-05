@@ -21,44 +21,6 @@ export class VerProyecto implements OnInit {
 
   // Datos de prueba (para desarrollo)
   private proyectosEjemplo: Proyecto[] = [
-    {
-      id_proyecto: 1,
-      nombre: "Condominio Lomas del Sol",
-      descripcion: "Construcción de condominio residencial de lujo",
-      fecha_inicio: "2024-01-15",
-      fecha_fin: "2026-11-20",
-      estado: "En progreso",
-      presupuesto: 2500000,
-      departamento: "Construcción",
-      nombre_empleado: "Juan Pérez",
-      documentos: [
-        { nombre_documento: "Planos arquitectónicos", tipo: "PDF", ruta: "/docs/planos.pdf" },
-        { nombre_documento: "Permisos municipales", tipo: "PDF", ruta: "/docs/permisos.pdf" }
-      ],
-      actividades: [
-        { nombre_actividad: "Excavación", descripcion: "Preparación del terreno", fecha: "2024-02-01", estado: "Completada" },
-        { nombre_actividad: "Cimentación", descripcion: "Colocación de cimientos", fecha: "2024-03-15", estado: "En progreso" }
-      ]
-    },
-    {
-      id_proyecto: 2,
-      nombre: "Puente Viacha",
-      descripcion: "Construcción de puente vehicular",
-      fecha_inicio: "2024-02-01",
-      fecha_fin: "2027-11-20",
-      estado: "Planificación",
-      presupuesto: 1800000,
-      departamento: "Infraestructura",
-      nombre_empleado: "María López",
-      documentos: [
-        { nombre_documento: "Estudio de suelo", tipo: "PDF", ruta: "/docs/suelo.pdf" },
-        { nombre_documento: "Diseño estructural", tipo: "CAD", ruta: "/docs/diseno.cad" }
-      ],
-      actividades: [
-        { nombre_actividad: "Estudio de viabilidad", descripcion: "Análisis técnico-económico", fecha: "2024-01-15", estado: "Completada" },
-        { nombre_actividad: "Licitación", descripcion: "Proceso de selección de contratistas", fecha: "2024-03-01", estado: "En progreso" }
-      ]
-    }
   ];
 
   ngOnInit(): void {
@@ -171,12 +133,14 @@ export class VerProyecto implements OnInit {
   }
 
   verDocumentacion(): void {
-    if (this.proyecto) {
-      this.router.navigate(['./administrador/ver-documentacion'], {
-        state: { proyecto: this.proyecto }
-      });
-    }
+  if (this.proyecto) {
+    console.log('documentacion ', this.proyecto)
+    this.router.navigate(['/administrador/ver-documentacion'], {
+      state: { proyecto: this.proyecto }
+    });
   }
+}
+
 
   verActividades(): void {
     if (this.proyecto) {

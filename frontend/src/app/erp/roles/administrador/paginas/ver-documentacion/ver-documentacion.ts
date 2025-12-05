@@ -30,31 +30,25 @@ export class VerDocumentacion implements OnInit {
 
   // Cargar proyecto y organizar documentos
   private cargarProyecto(): void {
-    this.route.queryParams.subscribe(params => {
-      const proyectoParam = params['proyecto'];
-      if (proyectoParam) {
-        try {
-          this.proyecto = JSON.parse(proyectoParam);
-          this.organizarDocumentos();
-          console.log('Proyecto cargado:', this.proyecto);
-        } catch (e) {
-          console.error('Error parsing proyecto:', e);
-          this.cargarDatosEjemplo();
-        }
-      } else {
-        // Intentar obtener del state
-        const navigation = this.router.getCurrentNavigation();
-        const proyectoFromState = navigation?.extras?.state?.['proyecto'] as Proyecto;
-        
-        if (proyectoFromState) {
-          this.proyecto = proyectoFromState;
-          this.organizarDocumentos();
-        } else {
-          this.cargarDatosEjemplo();
-        }
-      }
-    });
+  // 1. Intentar obtener desde getCurrentNavigation()
+  const navigation = this.router.getCurrentNavigation();
+  const stateProyecto = navigation?.extras?.state?.['proyecto'];
+
+  // 2. Si no existe (lo más común), intentar leer desde history.state
+  const historyProyecto = history.state?.proyecto;
+
+  const proyecto = stateProyecto || historyProyecto;
+
+  console.log("PROYECTO RECIBIDO:", proyecto);
+
+  if (proyecto) {
+    this.proyecto = proyecto;
+    this.organizarDocumentos();
+  } else {
+    this.cargarDatosEjemplo();
   }
+}
+
 
   // Organizar documentos por tipo
   private organizarDocumentos(): void {
@@ -150,32 +144,7 @@ export class VerDocumentacion implements OnInit {
 
   // Cargar datos de ejemplo
   private cargarDatosEjemplo(): void {
-    this.proyecto = {
-      id_proyecto: 1,
-      nombre: "Condominio Lomas del Sol",
-      descripcion: "Construcción de condominio residencial de lujo",
-      fecha_inicio: "2024-01-15",
-      fecha_fin: "2026-11-20",
-      estado: "En progreso",
-      presupuesto: 2500000,
-      departamento: "Construcción",
-      nombre_empleado: "Juan Pérez",
-      documentos: [
-        { nombre_documento: "Contrato de construcción general", tipo: "PDF", ruta: "/docs/contrato-construccion.pdf" },
-        { nombre_documento: "Contrato con subcontratistas", tipo: "PDF", ruta: "/docs/contrato-subcontratistas.pdf" },
-        { nombre_documento: "Permiso de construcción municipal", tipo: "PDF", ruta: "/docs/permiso-construccion.pdf" },
-        { nombre_documento: "Licencia ambiental", tipo: "PDF", ruta: "/docs/licencia-ambiental.pdf" },
-        { nombre_documento: "Planos arquitectónicos completos", tipo: "PDF", ruta: "/docs/planos-arquitectonicos.pdf" },
-        { nombre_documento: "Planos estructurales", tipo: "CAD", ruta: "/docs/planos-estructurales.cad" },
-        { nombre_documento: "Planos de instalaciones", tipo: "PDF", ruta: "/docs/planos-instalaciones.pdf" },
-        { nombre_documento: "Estudio de suelo", tipo: "PDF", ruta: "/docs/estudio-suelo.pdf" },
-        { nombre_documento: "Estudio de impacto ambiental", tipo: "PDF", ruta: "/docs/impacto-ambiental.pdf" },
-        { nombre_documento: "Estudio de viabilidad económica", tipo: "Excel", ruta: "/docs/viabilidad-economica.xlsx" },
-        { nombre_documento: "Permiso de uso de suelo", tipo: "PDF", ruta: "/docs/permiso-uso-suelo.pdf" },
-        { nombre_documento: "Contrato de suministro de materiales", tipo: "PDF", ruta: "/docs/contrato-materiales.pdf" }
-      ],
-      actividades: []
-    };
+    
     
     this.organizarDocumentos();
   }
@@ -189,7 +158,7 @@ export class VerDocumentacion implements OnInit {
 
   anadirDocumento(): void {
     console.log('Añadir documento - Implementar funcionalidad');
-    this.router.navigate(['./administrador/registrar-documentos']);
+    this.router.navigate(['/administrador/registrar-documentos'],{state: { proyecto: this.proyecto }});
   }
 
   // Ver documento (abrir modal)

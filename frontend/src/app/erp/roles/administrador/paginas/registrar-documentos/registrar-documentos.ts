@@ -1,8 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject,OnInit
+ } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { UploadProyectoService } from './upload-proyecto.service';
+import { Proyecto, Documento } from '../../componentes/card-proyecto/card-proyecto';
 
 @Component({
   selector: 'app-registrar-documentos',
@@ -12,10 +15,10 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
   styleUrl: './registrar-documentos.scss'
 })
 export class RegistrarDocumentos {
+    proyecto: Proyecto | null = null;
   registroForm: FormGroup;
   private router = inject(Router);
   private http = inject(HttpClient);
-  
   // Variables de control
   archivoSeleccionado: File | null = null;
   mostrarModalExito: boolean = false;
@@ -31,14 +34,24 @@ export class RegistrarDocumentos {
     { value: 'estudio', label: 'Estudios' }
   ];
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder,private uploadService: UploadProyectoService) {
     this.registroForm = this.fb.group({
       nombreDocumento: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       tipoDocumento: ['', Validators.required],
       archivo: ['', [Validators.required, this.fileValidator.bind(this)]]
     });
   }
+ngOnInit(){
+  const navigation = this.router.getCurrentNavigation();
+  const stateProyecto = navigation?.extras?.state?.['proyecto'];
 
+  // 2. Si no existe (lo más común), intentar leer desde history.state
+  const historyProyecto = history.state?.proyecto;
+
+  const proyecto = stateProyecto || historyProyecto;
+  this.proyecto=proyecto;
+  console.log(this.proyecto)
+}
   // Validador personalizado para archivos
   private fileValidator(control: AbstractControl): ValidationErrors | null {
     const file = control.value;
@@ -109,41 +122,67 @@ export class RegistrarDocumentos {
   }
 
   // Envío del formulario
-  async onSubmit() {
-    if (!this.registroForm.valid) {
-      this.marcarCamposComoTouched();
+ async onSubmit() {
+  if (!this.registroForm.valid || !this.archivoSeleccionado) {
+    this.marcarCamposComoTouched();
+    this.mostrarModalError = true;
+    return;
+  }
+
+  this.loading = true;
+
+  try {
+    // 1️⃣ Subir archivo a Supabase
+    const url = await this.uploadService.subirDocumentoProyecto(this.archivoSeleccionado);
+
+    if (!url) {
+      this.loading = false;
+      this.error = "No se pudo subir el archivo.";
       this.mostrarModalError = true;
       return;
     }
 
-    this.loading = true;
-    
-    // Crear FormData para enviar
-    const formData = new FormData();
-    formData.append('nombre', this.nombreDocumento?.value);
-    formData.append('tipo', this.tipoDocumento?.value);
-    formData.append('archivo', this.archivoSeleccionado as File);
+    console.log("URL obtenida:", url);
 
-    // Simular llamada al API (reemplazar con llamada real)
-    this.simularRegistroDocumento(formData);
+    // 2️⃣ Ahora enviar los datos al backend
+    const body = {
+      id_proyecto:this.proyecto?.id_proyecto,
+      nombre_documento: this.nombreDocumento?.value,
+      tipo: this.tipoDocumento?.value,
+      ruta: url,
+      fecha: new Date().toISOString()
+    };
+
+    console.log("Body final a enviar:", body);
+
+    // Simular POST (reemplazar por tu endpoint real)
+   await this.registrarDoc(body);
+
+    
+
+  } catch (err) {
+    console.error("Error en registro:", err);
+    this.error = "Ocurrió un error durante el registro.";
+    this.mostrarModalError = true;
+    this.loading = false;
   }
+}
+
 
   // Simular registro (reemplazar con API real)
-  simularRegistroDocumento(formData: FormData): void {
-    setTimeout(() => {
-      this.loading = false;
-      
-      // Mostrar datos en consola para pruebas
-      console.log('Datos del documento a enviar:');
-      console.log('Nombre:', formData.get('nombre'));
-      console.log('Tipo:', formData.get('tipo'));
-      console.log('Archivo:', this.archivoSeleccionado?.name);
-      
-      // Simular éxito
-      this.registroForm.reset();
-      this.archivoSeleccionado = null;
-      this.mostrarModalExito = true;
-    }, 2000);
+  registrarDoc(body:any): void {
+    const url='http://127.0.0.1:8000/api/registrar_documento';
+    this.http.post(url,body).subscribe({
+      next:(response)=>{
+        this.loading = false;
+        this.mostrarModalExito=true
+    this.registroForm.reset();
+    this.archivoSeleccionado = null;
+      },
+      error:(err)=>{
+        console.log('Error al registrar documento')
+      }
+    })
   }
 
   // Métodos para modales

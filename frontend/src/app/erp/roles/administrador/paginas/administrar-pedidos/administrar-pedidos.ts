@@ -1,4 +1,4 @@
-import { Component, computed, signal, inject, OnInit } from '@angular/core';
+import { Component, computed, signal, inject, OnInit,AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -6,7 +6,9 @@ import { FormsModule } from '@angular/forms';
 import { CardPedido, Pedido, Materiales } from '../../componentes/card-pedido/card-pedido';
 import { map, Observable, of } from 'rxjs';
 import { delay, reduce } from 'rxjs/operators';
-
+import { Chart,ArcElement,registerables,
+  Tooltip,
+  Legend } from 'chart.js';
 @Component({
   selector: 'app-administrar-pedidos',
   imports: [CommonModule, HttpClientModule, CardPedido, FormsModule],
@@ -16,14 +18,21 @@ import { delay, reduce } from 'rxjs/operators';
 export class AdministrarPedidos implements OnInit {
   private http = inject(HttpClient);
   private router = inject(Router);
-
+  constructor() {
+    // REGISTRAMOS LOS COMPONENTES NECESARIOS PARA PIE CHART
+    Chart.register(...registerables);
+  }
   // Señales reactivas
   pedidos = signal<Pedido[]>([]);
   loading = signal<boolean>(true);
   error = signal<string>('');
   fechaFiltro = signal<string>('');
   estadosFiltro = signal<string[]>(['pendiente', 'aceptado', 'rechazado', 'transito', 'recibido']);
-
+  totalTransito:any=0;
+  totalRecibidos:any=0;
+  totalRechazados:any=0;
+  totalPendiente:any=0;
+  totalAceptados:any=0;
   // Variables para modales
   pedidoSeleccionado: Pedido | null = null;
   mostrarModalPendiente = false;
@@ -74,6 +83,21 @@ export class AdministrarPedidos implements OnInit {
    const url =`http://127.0.0.1:8000/api/get_all_pedidos`;
     this.http.get<any>(url).subscribe({
       next: (response)=>{
+        response.data.forEach((p:any)=>{
+          if(p.estado=="rechazado"){
+            this.totalRechazados++;
+          }else if(p.estado=="recibido"){
+            this.totalRecibidos++;
+          }else if(p.estado=="transito"){
+            this.totalTransito++;
+          }else if(p.estado=="pendiente"){
+            this.totalPendiente++;
+
+          }else{
+            this.totalAceptados++;
+          }
+        });
+        this.loadPieChart();
         this.pedidos.set(response.data);
         console.log('Pedidos cargados')
         console.log(response.data)
@@ -84,10 +108,61 @@ export class AdministrarPedidos implements OnInit {
         this.loading.set(false);
       }
     });
+
     
-    
-    
-    
+  }
+   
+
+  loadPieChart() {
+    const recibidos = this.totalRecibidos;
+    const transito = this.totalTransito;
+    const rechazados = this.totalRechazados;
+    const aceptados=this.totalAceptados;
+    const pendientes=this.totalPendiente;
+
+    new Chart("estadoPedidos", {
+      type: 'pie',
+      data: {
+        labels: ['Recibidos', 'En Tránsito', 'Rechazados','Aceptados','Pendientes'],
+        datasets: [{
+          data: [recibidos, transito, rechazados,aceptados,pendientes],
+          backgroundColor: ['#4CAF50', '#2196F3', '#F44336','#9C27B0', '#FF9800']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom' },
+          title:{
+             display: true,
+          text: 'Estado de Pedidos',   // 🔥 TÍTULO
+          font: {
+            size: 18,
+            weight: 'bold'
+          },
+          padding:20
+          }
+        }
+      }
+    });
+  }
+
+  obtenerDash(){
+    const url="http://127.0.0.1:8000/api/dashboard_data";
+    this.http.get(url).subscribe({
+      next:(response:any)=>{
+        this.totalRechazados=response.totalRechazados;
+        this.totalRecibidos=response.totalRecibidos;
+        this.totalTransito=response.totalTransito;
+        console.log('Total rechazados ',this.totalRechazados)
+        console.log('Total recibidos ',this.totalRecibidos)
+        console.log('Total en transito ',this.totalTransito)
+        
+      },
+      error:(err)=>{
+        console.log('Error al obtener datos de dashboard ',err.error)
+      }
+    })
   }
 
   // Toggle para filtros de estado
@@ -264,6 +339,8 @@ export class AdministrarPedidos implements OnInit {
   }
 
   ngOnInit() {
+    //this.obtenerDash();
     this.cargarPedidos();
+    
   }
 }
