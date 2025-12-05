@@ -109,7 +109,7 @@ export class VerActividades implements OnInit {
     return Math.round(progreso);
   }
 
-  // Obtener clase CSS para el estado del proyecto
+  // Obtener clase SCSS para el estado del proyecto
   getEstadoClass(): string {
     const estado = this.proyecto?.estado?.toLowerCase() || '';
     

@@ -1,100 +1,202 @@
-import { Component,Injectable } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CardUsuario, Usuario } from '../../componentes/card-usuario/card-usuario';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { map,Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Chart, registerables } from 'chart.js';
+
 @Component({
   selector: 'app-administrar-usuarios',
   standalone: true,
-  imports: [CommonModule, FormsModule, CardUsuario,HttpClientModule],
+  imports: [CommonModule, FormsModule, CardUsuario, HttpClientModule],
   templateUrl: './administrar-usuarios.html',
   styleUrl: './administrar-usuarios.scss'
 })
-export class AdministrarUsuarios {
-  totalUsuarios=0;
-  totalContadores=0;
-  totalRrhh=0;
-  totalJefes=0;
-  totalAdmins=0;
+export class AdministrarUsuarios implements OnInit {
+  totalUsuarios = 0;
+  totalContadores = 0;
+  totalRrhh = 0;
+  totalJefes = 0;
+  totalAdmins = 0;
   terminoBusqueda: string = '';
-  constructor( private http: HttpClient) {
+  mostrarModalGrafica = false;
+  
+  constructor(private http: HttpClient) {
     Chart.register(...registerables);
   }
+  
   filtros = {
     administrador: false,
     contador: false,
     jefeObra: false,
     recursosHumanos: false
-
-    
   };
-  loadRolesChart() {
-  new Chart("chartRoles", {
-    type: 'pie',
-    data: {
-      labels: ['Administradores', 'Contadores', 'Recursos Humanos', 'Jefes de Obra'],
-      datasets: [{
-        data: [
-          this.totalAdmins,
-          this.totalContadores,
-          this.totalRrhh,
-          this.totalJefes
-        ],
-        backgroundColor: [
-          '#1E88E5',  // azul
-          '#43A047',  // verde
-          '#FB8C00',  // naranja
-          '#8E24AA'   // morado
-        ],
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          position: 'bottom',
-        },
-        title: {
-          display: true,
-          text: 'Distribución de Usuarios por Rol',
-          font: {
-            size: 18,
-            weight: 'bold'
+
+  mostrarGrafica() {
+    this.mostrarModalGrafica = true;
+    setTimeout(() => {
+      this.loadChartModal();
+    }, 100);
+  }
+
+  cerrarModalGrafica() {
+    this.mostrarModalGrafica = false;
+  }
+
+  loadChartModal() {
+    const canvas = document.getElementById('chartRolesModal') as HTMLCanvasElement;
+    if (!canvas) {
+      console.error('No se encontró el elemento canvas para el modal');
+      return;
+    }
+
+    const chartExist = Chart.getChart(canvas);
+    if (chartExist) {
+      chartExist.destroy();
+    }
+
+    new Chart(canvas, {
+      type: 'pie',
+      data: {
+        labels: ['Administradores', 'Contadores', 'Recursos Humanos', 'Jefes de Obra'],
+        datasets: [{
+          data: [
+            this.totalAdmins,
+            this.totalContadores,
+            this.totalRrhh,
+            this.totalJefes
+          ],
+          backgroundColor: [
+            '#1E88E5',
+            '#43A047',
+            '#FB8C00',
+            '#8E24AA'
+          ],
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              font: {
+                size: 14
+              },
+              padding: 20
+            }
           },
-          padding: 20
+          title: {
+            display: true,
+            text: 'Distribución de Usuarios por Rol',
+            font: {
+              size: 18,
+              weight: 'bold'
+            },
+            padding: 20
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.raw as number;
+                const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
+                const percentage = Math.round((value / total) * 100);
+                return `${label}: ${value} (${percentage}%)`;
+              }
+            }
+          }
         }
       }
-    }
-  });
-}
+    });
+  }
+
+  loadRolesChart() {
+    setTimeout(() => {
+      const canvas = document.getElementById('chartRoles') as HTMLCanvasElement;
+      if (canvas) {
+        const chartExist = Chart.getChart(canvas);
+        if (chartExist) {
+          chartExist.destroy();
+        }
+
+        new Chart(canvas, {
+          type: 'pie',
+          data: {
+            labels: ['Administradores', 'Contadores', 'Recursos Humanos', 'Jefes de Obra'],
+            datasets: [{
+              data: [
+                this.totalAdmins,
+                this.totalContadores,
+                this.totalRrhh,
+                this.totalJefes
+              ],
+              backgroundColor: [
+                '#1E88E5',
+                '#43A047',
+                '#FB8C00',
+                '#8E24AA'
+              ],
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'bottom',
+              },
+              title: {
+                display: true,
+                text: 'Distribución de Usuarios por Rol',
+                font: {
+                  size: 18,
+                  weight: 'bold'
+                },
+                padding: 20
+              }
+            }
+          }
+        });
+      }
+    }, 500);
+  }
 
   obtenerUsuarios(): Observable<Usuario[]> {
     return this.http.get<any>("http://127.0.0.1:8000/api/get_all_usuarios").pipe(
       map(response => {
         if (response.success && Array.isArray(response.data)) {
-          this.totalUsuarios=response.data.length;
-          console.log(this.totalUsuarios)
-          response.data.forEach((r:any)=>{
-            if(r.rol=="RRHH"){
+          this.totalUsuarios = response.data.length;
+          
+          // Reiniciamos contadores
+          this.totalAdmins = 0;
+          this.totalContadores = 0;
+          this.totalRrhh = 0;
+          this.totalJefes = 0;
+          
+          // Contamos usuarios por rol
+          response.data.forEach((r: any) => {
+            if (r.rol == "RRHH") {
               this.totalRrhh++;
-            }else if(r.rol=="Jefe de obra"){
+            } else if (r.rol == "Jefe de obra") {
               this.totalJefes++;
-            }else if(r.rol=="Administrador"){
+            } else if (r.rol == "Administrador") {
               this.totalAdmins++;
-            }else{
+            } else {
               this.totalContadores++;
             }
-          })
+          });
+          
           this.loadRolesChart();
+          
           return response.data.map((item: any) => ({
             id: item.id_usuario,
             nombre: item.nombre,
             rol: item.rol,
             correo: item.correo,
-            contrasena: '', // No viene en la respuesta, lo dejamos vacío
-            activo: true,   // Puedes cambiar esto según tu lógica
+            contrasena: '',
+            activo: true,
             empleadoId: item.empleadoId
           } as Usuario));
         }
@@ -103,66 +205,8 @@ export class AdministrarUsuarios {
     );
   }
   
-  
   usuarios: Usuario[] = [];
-    /*
-    {
-      id: 1,
-      nombre: 'Juan Pérez',
-      rol: 'Administrador',
-      correo: 'juan.perez@urbanlife.com',
-      contrasena: '********',
-      activo: true,
-      empleadoId: 1
-    },
-    {
-      id: 2,
-      nombre: 'María García',
-      rol: 'Contador',
-      correo: 'maria.garcia@urbanlife.com',
-      contrasena: '********',
-      activo: true,
-      empleadoId: 2
-    },
-    {
-      id: 3,
-      nombre: 'Carlos López',
-      rol: 'Jefe de Obra',
-      correo: 'carlos.lopez@urbanlife.com',
-      contrasena: '********',
-      activo: true,
-      empleadoId: 3
-    },
-    {
-      id: 4,
-      nombre: 'Ana Martínez',
-      rol: 'Recursos Humanos',
-      correo: 'ana.martinez@urbanlife.com',
-      contrasena: '********',
-      activo: true,
-      empleadoId: 4
-    },
-    {
-      id: 5,
-      nombre: 'Pedro Rodríguez',
-      rol: 'Administrador',
-      correo: 'pedro.rodriguez@urbanlife.com',
-      contrasena: '********',
-      activo: true,
-      empleadoId: 5
-    },
-    {
-      id: 6,
-      nombre: 'Laura Sánchez',
-      rol: 'Contador',
-      correo: 'laura.sanchez@urbanlife.com',
-      contrasena: '********',
-      activo: false,
-      empleadoId: 6
-    }
-  ];
-*/
-  usuariosFiltrados: Usuario[] = [...this.usuarios];
+  usuariosFiltrados: Usuario[] = [];
 
   onBuscar(): void {
     this.aplicarFiltros();
@@ -171,7 +215,6 @@ export class AdministrarUsuarios {
   aplicarFiltros(): void {
     let resultados = [...this.usuarios];
 
-    // Aplicar filtro de búsqueda por texto
     if (this.terminoBusqueda.trim()) {
       const termino = this.terminoBusqueda.toLowerCase().trim();
       resultados = resultados.filter(usuario =>
@@ -181,7 +224,6 @@ export class AdministrarUsuarios {
       );
     }
 
-    // Aplicar filtros por rol solo si hay algún filtro activo
     const hayFiltrosActivos = Object.values(this.filtros).some(filtro => filtro);
     
     if (hayFiltrosActivos) {
@@ -209,18 +251,16 @@ export class AdministrarUsuarios {
     this.aplicarFiltros();
   }
 
-    ngOnInit(): void {
-    // ✅ Suscribirse al observable para obtener los datos
+  ngOnInit(): void {
     this.obtenerUsuarios().subscribe({
       next: (usuarios) => {
         this.usuarios = usuarios;
-        this.usuariosFiltrados = [...usuarios]; // para los filtros
-        console.log(this.usuarios)
+        this.usuariosFiltrados = [...usuarios];
+        console.log(this.usuarios);
       },
       error: (error) => {
         console.error('Error al obtener usuarios:', error);
       }
     });
   }
-
 }
