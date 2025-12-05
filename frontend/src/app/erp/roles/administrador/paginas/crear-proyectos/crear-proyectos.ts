@@ -1,9 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject,OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-
+import { UploadProyectoService } from '../registrar-documentos/upload-proyecto.service';
 @Component({
   selector: 'app-crear-proyectos',
   standalone: true,
@@ -15,7 +15,8 @@ export class CrearProyectos {
   registroForm: FormGroup;
   private router = inject(Router);
   private http = inject(HttpClient);
-  
+  private uploadService = inject(UploadProyectoService);
+
   // Variables de control
   pasoActual: number = 1;
   contratoArchivo: File | null = null;
@@ -27,24 +28,7 @@ export class CrearProyectos {
   error: string = '';
   
   // Datos de prueba para jefes de obra
-  jefesObra = [
-    {
-      id_usuario: 1,
-      nombre_empleado: "Rodrigo Paz"
-    },
-    {
-      id_usuario: 2,
-      nombre_empleado: "Camila Aliaga"
-    },
-    {
-      id_usuario: 3,
-      nombre_empleado: "Luis Fernández"
-    },
-    {
-      id_usuario: 4,
-      nombre_empleado: "Ana Gutiérrez"
-    }
-  ];
+  jefesObra:any= [];
 
   // Opciones de departamento
   departamentos = ['La Paz', 'Cochabamba', 'Santa Cruz'];
@@ -60,13 +44,15 @@ export class CrearProyectos {
       
       // Paso 2: Información financiera y documentación
       presupuesto: ['', [Validators.required, Validators.min(0), Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$')]],
-      jefeObra: ['', Validators.required],
+      id_usuario: ['', Validators.required],
       contrato: [''],
       plano: [''],
       permisosLegales: ['']
     });
   }
-
+  ngOnInit(){
+    this.cargarJefes();
+  }
   // Método para volver a la página principal
   volver(): void {
     this.router.navigate(['./administrador/crear-proyectos']);
@@ -192,38 +178,141 @@ export class CrearProyectos {
     if (this.permisosArchivo) {
       formData.append('permisosLegales', this.permisosArchivo);
     }
+    let id_empleado_jefe:number=0;
+    this.jefesObra.forEach((a:any)=>{
+      if(a.id_usuario==formData.get('id_usuario')){
+        id_empleado_jefe=a.id_empleado
+      }
+    });
 
+    formData.append('id_empleado',id_empleado_jefe.toString());
     // Aquí iría la llamada al endpoint real
-    this.simularEnvioProyecto(formData);
+    this.EnvioProyecto(formData);
   }
 
   // Simula que se envia
-  simularEnvioProyecto(formData: FormData): void {
+  EnvioProyecto(formData: FormData): void {
     this.loading = true;
     this.error = '';
 
     // Simular llamada API
-    setTimeout(() => {
+    
       this.loading = false;
       
       // Mostrar datos en consola (para pruebas)
       console.log('Datos del proyecto a enviar:');
-      for (let [key, value] of formData.entries()) {
-        if (value instanceof File) {
-          console.log(`${key}: ${value.name} (${value.type})`);
-        } else {
-          console.log(`${key}: ${value}`);
-        }
-      }
+     
+       formData.forEach((value, key) => {
+        console.log(key, value);
+      });
 
+      this.registroProyecto(formData);
       // Simular éxito
-      this.registroForm.reset();
+      
+    
+  }
+
+registroProyecto(formData: FormData){
+
+    const body= {
+      nombre:formData.get('nombreProyecto'),
+      descripcion:formData.get('descripcion'),
+      fecha_inicio:formData.get('fechaInicio'),
+      fecha_fin:formData.get('fechaFinalizacion'),
+      estado:'en construccion',
+      presupuesto:formData.get('presupuesto'),
+      departamento:formData.get('departamento'),
+      id_usuario:formData.get('id_usuario'),
+      id_empleado:formData.get('id_empleado')
+    };
+    const url="http://127.0.0.1:8000/api/registrar_proyecto";
+    this.http.post(url,body).subscribe({
+      next:(response:any)=>{
+        console.log(response);
+         this.subirArchivos(response.data.id_proyecto)
+      },
+      error:(err)=>{
+        console.log(err)
+      }
+    })
+   
+  }
+  async subirArchivos(id_proyecto:any){
+
+  try {
+
+    // 🌟 1. Subir archivos a Supabase
+    let contratoUrl = null;
+    let planoUrl = null;
+    let permisosUrl = null;
+
+    if (this.contratoArchivo) {
+      contratoUrl = await this.uploadService.subirDocumentoProyecto(this.contratoArchivo);
+      console.log("URL contrato:", contratoUrl);
+    }
+
+    if (this.planoArchivo) {
+      planoUrl = await this.uploadService.subirDocumentoProyecto(this.planoArchivo);
+      console.log("URL plano:", planoUrl);
+    }
+
+    if (this.permisosArchivo) {
+      permisosUrl = await this.uploadService.subirDocumentoProyecto(this.permisosArchivo);
+      console.log("URL permisos:", permisosUrl);
+    }
+
+     const body1 = {
+      id_proyecto:id_proyecto,
+      nombre_documento: this.contratoArchivo?.name,
+      tipo: 'Contrato',
+      ruta: contratoUrl,
+      fecha: new Date().toISOString()
+    };
+    await this.registrarDoc(body1)
+
+    const body2 = {
+      id_proyecto:id_proyecto,
+      nombre_documento: this.planoArchivo?.name,
+      tipo: 'Planos',
+      ruta: planoUrl,
+      fecha: new Date().toISOString()
+    };
+  await this.registrarDoc(body2)
+
+    const body3 = {
+      id_proyecto:id_proyecto,
+      nombre_documento: this.permisosArchivo?.name,
+      tipo: 'Permisos',
+      ruta: permisosUrl,
+      fecha: new Date().toISOString()
+    };
+    await this.registrarDoc(body3);
+
+    this.registroForm.reset();
       this.pasoActual = 1;
-      this.contratoArchivo = null;
-      this.planoArchivo = null;
-      this.permisosArchivo = null;
+      this.contratoArchivo=null;
+      this.permisosArchivo=null;
+      this.planoArchivo=null;
       this.mostrarModalExito = true;
-    }, 2000);
+
+  } catch (error) {
+    console.error("Error final:", error);
+    this.error = "Error al crear el proyecto";
+    this.loading = false;
+    this.mostrarModalError = true;
+  }
+
+  }
+   registrarDoc(body:any): void {
+    const url='http://127.0.0.1:8000/api/registrar_documento';
+    this.http.post(url,body).subscribe({
+      next:(response)=>{
+        console.log('archivo Registrado')
+      },
+      error:(err)=>{
+        console.log('Error al registrar documento ',err.error)
+      }
+    })
   }
 
   // Métodos para modales
@@ -252,7 +341,19 @@ export class CrearProyectos {
       }
     }
   }
+  cargarJefes(){
+    const url='http://127.0.0.1:8000/api/get_jefes_de_obra';
+    this.http.get<any[]>(url).subscribe({
+      next:(response)=>{
+        this.jefesObra=response;
+        console.log(this.jefesObra)
+      },
+      error:(err)=>{
+        console.log('Error al cargar jefes de obra')
+      }
 
+    })
+  }
   // Getters para fácil acceso a los controles del formulario
   get nombreProyecto() { return this.registroForm.get('nombreProyecto'); }
   get descripcion() { return this.registroForm.get('descripcion'); }

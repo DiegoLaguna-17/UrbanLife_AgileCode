@@ -21,6 +21,30 @@
   max-width: 1200px;
   margin-left: 16%;
 }
+.chart-container {
+  width: 100%;
+  max-width: 350px;   // 🔥 tamaño controlado del gráfico
+  margin: 0 auto;     // 🔥 centra horizontalmente
+  padding: 10px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  // Responsivo
+  canvas {
+    width: 100% !important;
+    height: auto !important;
+  }
+}
+
+// Si quieres centrarlo verticalmente también:
+.centro-vertical {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
 
 .titulo-principal {
   color: var(--Blanco);
