@@ -1,0 +1,265 @@
+<div class="main-container">
+  <div class="ver-container">
+    <!-- Contenedor izquierdo (30%) -->
+    <div class="left-panel">
+      <img src="../../../../../../assets/img/logos/logo-empleado.png" alt="logo UrbanLife" class="imagen">
+      
+      <!-- Botones en panel izquierdo -->
+      <div class="botones-izquierda" *ngIf="!modoEdicion">
+        <button class="btn-accion btn-editar" (click)="activarModoEdicion()">
+          <span class="btn-icon">✏️</span>
+          EDITAR
+        </button>
+        <button 
+          class="btn-accion btn-deshabilitar" 
+          (click)="mostrarModalDeshabilitar()"
+          [disabled]="!trabajador?.activo"
+        >
+          <span class="btn-icon">🚫</span>
+          {{ trabajador?.activo ? 'DESHABILITAR' : 'DESHABILITADO' }}
+        </button>
+      </div>
+
+      <!-- Botones cuando está en modo edición -->
+      <div class="botones-izquierda" *ngIf="modoEdicion">
+        <button class="btn-accion btn-guardar" (click)="guardarCambios()" [disabled]="formulario.invalid || procesando">
+          <span class="btn-icon">💾</span>
+          {{ procesando ? 'GUARDANDO...' : 'GUARDAR' }}
+        </button>
+        <button class="btn-accion btn-cancelar" (click)="cancelarEdicion()" [disabled]="procesando">
+          <span class="btn-icon">✖️</span>
+          CANCELAR
+        </button>
+      </div>
+    </div>
+
+    <!-- Contenedor derecho (70%) -->
+    <div class="right-panel">
+      <div class="form-container">
+        <h1 class="titulo-principal" *ngIf="!modoEdicion">Obra designada</h1>
+        <h1 class="titulo-principal" *ngIf="modoEdicion">Editar</h1>
+
+        <form class="ver-form" [formGroup]="formulario" *ngIf="trabajador">
+          
+          <!-- Campo Nombre del Trabajador (Select) -->
+          <div class="form-group">
+            <label class="form-label">Nombre del Trabajador</label>
+            <select 
+              class="form-input form-select"
+              formControlName="id_trabajador"
+              [disabled]="true"
+            >
+              <option [value]="trabajador.id_trabajador">{{ obtenerNombreTrabajador(trabajador.id_trabajador) }}</option>
+            </select>
+          </div>
+
+          <!-- Fecha Inicio -->
+          <div class="form-group">
+            <label class="form-label">Fecha de Inicio</label>
+            <input 
+              type="date" 
+              class="form-input"
+              formControlName="fecha_inicio"
+              [readonly]="!modoEdicion"
+              [class.readonly]="!modoEdicion"
+            >
+            <div class="error-message" *ngIf="modoEdicion && fecha_inicio?.invalid && fecha_inicio?.touched">
+              <span *ngIf="fecha_inicio?.errors?.['required']">La fecha de inicio es requerida</span>
+            </div>
+          </div>
+
+          <!-- Fecha Fin -->
+          <div class="form-group">
+            <label class="form-label">Fecha de Fin</label>
+            <input 
+              type="date" 
+              class="form-input"
+              formControlName="fecha_fin"
+              [readonly]="!modoEdicion"
+              [class.readonly]="!modoEdicion"
+              (change)="validarFechas()"
+            >
+            <div class="error-message" *ngIf="modoEdicion && fecha_fin?.invalid && fecha_fin?.touched">
+              <span *ngIf="fecha_fin?.errors?.['required']">La fecha de fin es requerida</span>
+              <span *ngIf="formulario.hasError('fechaInvalida')">La fecha fin debe ser posterior a la fecha inicio</span>
+            </div>
+          </div>
+
+          <!-- Puesto de Trabajo -->
+          <div class="form-group">
+            <label class="form-label">Puesto de Trabajo</label>
+            <input 
+              type="text" 
+              class="form-input"
+              formControlName="puesto"
+              [readonly]="!modoEdicion"
+              [class.readonly]="!modoEdicion"
+              placeholder="Puesto de trabajo"
+            >
+            <div class="error-message" *ngIf="modoEdicion && puesto?.invalid && puesto?.touched">
+              <span *ngIf="puesto?.errors?.['required']">El puesto es requerido</span>
+              <span *ngIf="puesto?.errors?.['minlength']">Mínimo 3 caracteres</span>
+            </div>
+          </div>
+
+          <!-- Salario -->
+          <div class="form-group">
+            <label class="form-label">Salario</label>
+            <div class="salario-container">
+              <input 
+                type="number" 
+                class="form-input salario-input"
+                formControlName="salario"
+                [readonly]="!modoEdicion"
+                [class.readonly]="!modoEdicion"
+                placeholder="Salario"
+                min="0"
+                step="0.01"
+              >
+              <span class="moneda">Bs.</span>
+            </div>
+            <div class="error-message" *ngIf="modoEdicion && salario?.invalid && salario?.touched">
+              <span *ngIf="salario?.errors?.['required']">El salario es requerido</span>
+              <span *ngIf="salario?.errors?.['min']">El salario debe ser mayor a 0</span>
+            </div>
+          </div>
+
+          <!-- Tipo de Contrato -->
+          <div class="form-group">
+            <label class="form-label">Tipo de Contrato</label>
+            <input 
+              type="text" 
+              class="form-input"
+              formControlName="contrato"
+              [readonly]="!modoEdicion"
+              [class.readonly]="!modoEdicion"
+              placeholder="Tipo de contrato"
+            >
+            <div class="error-message" *ngIf="modoEdicion && contrato?.invalid && contrato?.touched">
+              <span *ngIf="contrato?.errors?.['required']">El tipo de contrato es requerido</span>
+              <span *ngIf="contrato?.errors?.['minlength']">Mínimo 3 caracteres</span>
+            </div>
+          </div>
+        </form>
+
+        <!-- Mensaje de carga -->
+        <div class="loading-message" *ngIf="cargando">
+          <div class="spinner"></div>
+          <p>Cargando información del trabajador...</p>
+        </div>
+
+        <!-- Mensaje de error -->
+        <div class="error-message-container" *ngIf="error && !cargando">
+          <div class="error-icon">⚠️</div>
+          <p class="error-text">{{ error }}</p>
+          <button class="btn-error" (click)="volver()">Volver</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de éxito -->
+<div class="modal-overlay" *ngIf="mostrarModalExito">
+  <div class="modal">
+    <div class="modal-content modal-exito">
+      <div class="modal-icon">✅</div>
+      <h3 class="modal-title">¡Cambios Guardados!</h3>
+      <p class="modal-message">{{ mensajeExito }}</p>
+      <button class="btn-modal btn-modal-exito" (click)="cerrarModalExito()">
+        ACEPTAR
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de error -->
+<div class="modal-overlay" *ngIf="mostrarModalError">
+  <div class="modal">
+    <div class="modal-content modal-error">
+      <div class="modal-icon">⚠️</div>
+      <h3 class="modal-title">Error</h3>
+      <p class="modal-message">{{ mensajeError }}</p>
+      <button class="btn-modal btn-modal-error" (click)="cerrarModalError()">
+        INTENTAR NUEVAMENTE
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación cancelar -->
+<div class="modal-overlay" *ngIf="mostrarModalConfirmacionCancelar">
+  <div class="modal">
+    <div class="modal-content modal-confirmacion">
+      <div class="modal-icon">❓</div>
+      <h3 class="modal-title">Confirmar Cancelación</h3>
+      <p class="modal-message">¿Está seguro de que desea cancelar? Los cambios no guardados se perderán.</p>
+      <div class="modal-botones">
+        <button class="btn-modal btn-modal-secundario" (click)="cerrarModalConfirmacionCancelar()">
+          CONTINUAR
+        </button>
+        <button class="btn-modal btn-modal-primario" (click)="confirmarCancelar()">
+          CONFIRMAR
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de deshabilitar trabajador -->
+<div class="modal-overlay" *ngIf="mostrarModalDeshabilitarFlag">
+  <div class="modal modal-deshabilitar">
+    <div class="modal-content">
+      <div class="modal-icon">⚠️</div>
+      <h3 class="modal-title">Deshabilitar Trabajador</h3>
+      <p class="modal-message">
+        ¿Ingrese el motivo de la desactivación
+      </p>
+      
+      <form [formGroup]="formDeshabilitar" class="form-deshabilitar">
+        <div class="form-group">
+          <label class="form-label">Justificación *</label>
+          <textarea 
+            class="form-textarea"
+            formControlName="justificacion"
+            placeholder="Ingrese la justificación para deshabilitar al trabajador..."
+            rows="4"
+          ></textarea>
+          <div class="error-message" *ngIf="justificacion?.invalid && justificacion?.touched">
+            <span *ngIf="justificacion?.errors?.['required']">La justificación es requerida</span>
+            <span *ngIf="justificacion?.errors?.['minlength']">Mínimo 10 caracteres</span>
+          </div>
+        </div>
+      </form>
+      
+      <div class="modal-botones">
+        <button class="btn-modal btn-modal-secundario" (click)="cerrarModalDeshabilitar()">
+          CANCELAR
+        </button>
+        <button 
+          class="btn-modal btn-modal-deshabilitar" 
+          (click)="confirmarDeshabilitar()"
+          [disabled]="formDeshabilitar.invalid || procesandoDeshabilitar"
+        >
+          {{ procesandoDeshabilitar ? 'PROCESANDO...' : 'CONFIRMAR DESHABILITACIÓN' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación deshabilitación -->
+<div class="modal-overlay" *ngIf="mostrarModalConfirmacionDeshabilitar">
+  <div class="modal">
+    <div class="modal-content modal-exito">
+      <div class="modal-icon">✅</div>
+      <h3 class="modal-title">¡Trabajador Deshabilitado!</h3>
+      <p class="modal-message">
+        El trabajador <strong>{{ obtenerNombreTrabajador(trabajador?.id_trabajador) }}</strong> ha sido deshabilitado exitosamente.
+      </p>
+      <button class="btn-modal btn-modal-exito" (click)="cerrarModalConfirmacionDeshabilitar()">
+        ACEPTAR
+      </button>
+    </div>
+  </div>
+</div>

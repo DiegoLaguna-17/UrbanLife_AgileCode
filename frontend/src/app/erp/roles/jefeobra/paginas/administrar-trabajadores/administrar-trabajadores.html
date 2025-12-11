@@ -1,0 +1,60 @@
+<div class="main-container">
+  <div class="administrar-container">
+    <!-- Mensaje cuando NO hay filtro de proyecto -->
+    <div *ngIf="!filtroProyectoActivo()" class="no-proyecto-message">
+      <div class="message-content">
+        <div class="message-icon">⚠️</div>
+        <h2>No se ha seleccionado un proyecto</h2>
+        <p>Para ver los trabajadores, primero debe seleccionar un proyecto desde la página de administración de proyectos.</p>
+        <button class="btn-volver-proyectos" (click)="limpiarFiltroProyecto()">
+          IR A PROYECTOS
+        </button>
+      </div>
+    </div>
+
+    <!-- Contenido cuando SÍ hay filtro de proyecto -->
+    <div *ngIf="filtroProyectoActivo()">
+      <h1 class="titulo-principal">Trabajadores del Proyecto</h1>
+
+      <div class="totalUsuarios">
+        <h2>Trabajadores activos del proyecto</h2>
+        <h1>{{ totalTrabajadores }}</h1>
+      </div>
+
+      <!-- Barra de búsqueda y botón registrar -->
+      <div class="search-section">
+        <div class="search-container">
+          <input 
+            class="search-input" 
+            type="search" 
+            placeholder="Buscar trabajador activo por puesto o contrato..." 
+            [value]="q()" 
+            (input)="q.set($any($event.target).value)" />
+        </div>
+      </div>
+
+      <div class="loading" *ngIf="loading()">
+        Cargando trabajadores del proyecto...
+      </div>
+
+      <div class="error" *ngIf="error()">
+        {{ error() }}
+      </div>
+
+      <!-- Grid de trabajadores - 3 cards por fila -->
+      <div class="proyectos-grid" *ngIf="!loading() && !error()">
+        <app-card-trabajador
+          *ngFor="let trabajador of trabajadoresFiltrados()"
+          [trabajador]="trabajador"
+          (ver)="verTrabajador(trabajador)">
+        </app-card-trabajador>
+      </div>
+
+      <div class="no-results" *ngIf="!loading() && !error() && trabajadoresFiltrados().length === 0">
+        <span>
+          No hay trabajadores activos asignados a este proyecto
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

@@ -19,67 +19,62 @@ export class VerProyecto implements OnInit {
   mostrarError = false;
   mensajeError = '';
 
-  // Datos de prueba (para desarrollo)
-  private proyectosEjemplo: Proyecto[] = [
-  ];
-
   ngOnInit(): void {
     this.cargarProyecto();
   }
 
-  // Cargar proyecto desde la ruta
+  // Cargar proyecto - VERSIÓN SIMPLIFICADA Y CONFiable
   private cargarProyecto(): void {
-    // Intentar obtener del estado de la navegación
-    const navigation = this.router.getCurrentNavigation();
-    const proyectoFromState = navigation?.extras?.state?.['proyecto'] as Proyecto;
+    console.log('=== VER-PROYECTO: Iniciando carga ===');
     
-    if (proyectoFromState) {
-      this.proyecto = proyectoFromState;
-      console.log('Proyecto cargado desde state:', this.proyecto);
+    // 1. LIMPIAR datos viejos de trabajadores (IMPORTANTE)
+    sessionStorage.removeItem('proyectoParaTrabajadores');
+    
+    // 2. Verificar si viene en el estado de la navegación (lo más directo)
+    const navigation = this.router.getCurrentNavigation();
+    console.log('Navigation state:', navigation?.extras?.state);
+    
+    if (navigation?.extras?.state?.['proyecto']) {
+      this.proyecto = navigation.extras.state['proyecto'];
+      console.log('✅ Proyecto cargado desde navigation state:', this.proyecto);
+      
+      // Guardar SOLO para referencia, no para trabajadores todavía
+      sessionStorage.setItem('proyectoActual', JSON.stringify(this.proyecto));
       return;
     }
-
-    // Si no viene en el state, intentar obtener de queryParams
+    
+    // 3. Si no, verificar history.state
+    console.log('History state:', window.history.state);
+    if (window.history.state && window.history.state.proyecto) {
+      this.proyecto = window.history.state.proyecto;
+      console.log('✅ Proyecto cargado desde history.state:', this.proyecto);
+      
+      sessionStorage.setItem('proyectoActual', JSON.stringify(this.proyecto));
+      return;
+    }
+    
+    // 4. Si no, verificar queryParams (último recurso)
     this.route.queryParams.subscribe(params => {
+      console.log('Query params:', params);
+      
       const proyectoParam = params['proyecto'];
       if (proyectoParam) {
         try {
           this.proyecto = JSON.parse(proyectoParam);
-          console.log('Proyecto cargado desde query params:', this.proyecto);
+          console.log('✅ Proyecto cargado desde query params:', this.proyecto);
+          
+          sessionStorage.setItem('proyectoActual', JSON.stringify(this.proyecto));
           return;
         } catch (e) {
-          console.error('Error parsing proyecto from query params:', e);
+          console.error('❌ Error parsing proyecto:', e);
         }
       }
 
-      // Si no se encuentra, intentar obtener por ID
-      const idParam = params['id'];
-      if (idParam) {
-        this.cargarProyectoPorId(Number(idParam));
-        return;
-      }
-
-      // Si no se encuentra de ninguna forma, mostrar error
+      // 5. Si no se encuentra, mostrar error
       this.mensajeError = 'No se encontró información del proyecto.';
       this.mostrarError = true;
-      console.warn('No se pudo cargar el proyecto, usando datos de ejemplo');
-      this.proyecto = this.proyectosEjemplo[0]; // Datos de ejemplo para desarrollo
+      console.error('❌ No se pudo cargar el proyecto de ninguna fuente');
     });
-  }
-
-  // Cargar proyecto por ID (simulado)
-  private cargarProyectoPorId(id: number): void {
-    // Aquí iría la llamada al backend
-    // Por ahora usamos datos de ejemplo
-    const proyectoEncontrado = this.proyectosEjemplo.find(p => p.id_proyecto === id);
-    
-    if (proyectoEncontrado) {
-      this.proyecto = proyectoEncontrado;
-    } else {
-      this.mensajeError = `No se encontró el proyecto con ID ${id}`;
-      this.mostrarError = true;
-      this.proyecto = this.proyectosEjemplo[0]; // Datos de ejemplo
-    }
   }
 
   // Calcular duración del proyecto
@@ -133,20 +128,59 @@ export class VerProyecto implements OnInit {
   }
 
   verDocumentacion(): void {
-  if (this.proyecto) {
-    console.log('documentacion ', this.proyecto)
-    this.router.navigate(['/administrador/ver-documentacion'], {
-      state: { proyecto: this.proyecto }
-    });
+    if (this.proyecto) {
+      console.log('📍 Navegando a documentación con proyecto:', this.proyecto);
+      sessionStorage.setItem('proyectoParaDocumentacion', JSON.stringify(this.proyecto));
+      this.router.navigate(['/administrador/ver-documentacion'], {
+        state: { proyecto: this.proyecto }
+      });
+    }
   }
-}
-
 
   verActividades(): void {
     if (this.proyecto) {
+      console.log('📍 Navegando a actividades con proyecto:', this.proyecto);
+      sessionStorage.setItem('proyectoParaActividades', JSON.stringify(this.proyecto));
       this.router.navigate(['./administrador/ver-actividades'], {
         state: { proyecto: this.proyecto }
       });
+    }
+  }
+
+  // Navegación a trabajadores - MÉTODO CORREGIDO
+  verTrabajadores(): void {
+    if (this.proyecto) {
+      console.log('📍 Navegando a trabajadores con proyecto:', this.proyecto);
+      
+      // 1. LIMPIAR cualquier proyecto viejo (CRÍTICO)
+      sessionStorage.removeItem('proyectoParaTrabajadores');
+      
+      // 2. Guardar el proyecto ACTUAL con timestamp para debug
+      const proyectoConTimestamp = {
+        ...this.proyecto,
+        _timestamp: new Date().toISOString(),
+        _source: 'ver-proyecto'
+      };
+      
+      sessionStorage.setItem('proyectoParaTrabajadores', JSON.stringify(proyectoConTimestamp));
+      
+      console.log('📦 Proyecto guardado en sessionStorage:', proyectoConTimestamp);
+      
+      // 3. Limpiar otros datos viejos
+      sessionStorage.removeItem('proyectoParaRegistro');
+      
+      // 4. Navegar con state Y queryParams para doble seguridad
+      this.router.navigate(['/administrador/administrar-trabajadores'], {
+        state: { proyecto: this.proyecto },
+        queryParams: { 
+          proyectoId: this.proyecto.id_proyecto,
+          timestamp: new Date().getTime()
+        }
+      });
+    } else {
+      console.error('❌ No hay proyecto para navegar a trabajadores');
+      this.mensajeError = 'No hay información del proyecto para ver trabajadores.';
+      this.mostrarError = true;
     }
   }
 

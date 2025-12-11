@@ -1,0 +1,258 @@
+<div class="main-container">
+  <div class="actividades-container">
+    <!-- Botón Volver -->
+    <button class="btn-volver" (click)="volver()">← Volver</button>
+
+    <h1 class="titulo-principal">Actividades del Proyecto</h1>
+
+    <!-- Botón para añadir documentos -->
+    <div class="add-document-section">
+      <button class="btn-add-document" (click)="anadirActividad()">
+        Añadir Actividad
+      </button>
+    </div>
+
+    <!-- Lista de actividades -->
+    <div class="actividades-list">
+      <!-- Actividades Completadas -->
+      <div class="activities-category" *ngIf="actividadesFiltradasPorEstado('Completada').length > 0">
+        <div class="category-header completed">
+          <h2 class="category-title">✅ COMPLETADAS</h2>
+          <span class="activities-count">{{ actividadesFiltradasPorEstado('Completada').length }} actividades</span>
+        </div>
+        <div class="activities-grid">
+          <div class="activity-card completed" 
+               *ngFor="let actividad of actividadesFiltradasPorEstado('Completada')"
+               (click)="seleccionarActividad(actividad)">
+            <div class="activity-icon">✅</div>
+            <div class="activity-content">
+              <div class="activity-header">
+                <h3 class="activity-name">{{ actividad.nombre_actividad }}</h3>
+                <span class="activity-date">{{ actividad.fecha | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <p class="activity-desc">{{ actividad.descripcion }}</p>
+              <div class="activity-footer">
+                <span class="activity-status completed">COMPLETADA</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actividades En Progreso -->
+      <div class="activities-category" *ngIf="actividadesFiltradasPorEstado('En progreso').length > 0">
+        <div class="category-header in-progress">
+          <h2 class="category-title">🔄 EN PROGRESO</h2>
+          <span class="activities-count">{{ actividadesFiltradasPorEstado('En progreso').length }} actividades</span>
+        </div>
+        <div class="activities-grid">
+          <div class="activity-card in-progress" 
+               *ngFor="let actividad of actividadesFiltradasPorEstado('En progreso')"
+               (click)="seleccionarActividad(actividad)">
+            <div class="activity-icon">🔄</div>
+            <div class="activity-content">
+              <div class="activity-header">
+                <h3 class="activity-name">{{ actividad.nombre_actividad }}</h3>
+                <span class="activity-date">{{ actividad.fecha | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <p class="activity-desc">{{ actividad.descripcion }}</p>
+              <div class="activity-footer">
+                <span class="activity-status in-progress">EN PROGRESO</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actividades Pendientes -->
+      <div class="activities-category" *ngIf="actividadesFiltradasPorEstado('Pendiente').length > 0">
+        <div class="category-header pending">
+          <h2 class="category-title">⏳ PENDIENTES</h2>
+          <span class="activities-count">{{ actividadesFiltradasPorEstado('Pendiente').length }} actividades</span>
+        </div>
+        <div class="activities-grid">
+          <div class="activity-card pending" 
+               *ngFor="let actividad of actividadesFiltradasPorEstado('Pendiente')"
+               (click)="seleccionarActividad(actividad)">
+            <div class="activity-icon">⏳</div>
+            <div class="activity-content">
+              <div class="activity-header">
+                <h3 class="activity-name">{{ actividad.nombre_actividad }}</h3>
+                <span class="activity-date">{{ actividad.fecha | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <p class="activity-desc">{{ actividad.descripcion }}</p>
+              <div class="activity-footer">
+                <span class="activity-status pending">PENDIENTE</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mensaje si no hay actividades -->
+      <div class="no-activities" *ngIf="actividadesFiltradas().length === 0">
+        <h3>No hay actividades registradas</h3>
+        <p *ngIf="filtroEstado === 'todas'">
+          Presiona "Añadir Actividad" para comenzar a registrar las actividades del proyecto.
+        </p>
+        <p *ngIf="filtroEstado !== 'todas'">
+          No hay actividades con el estado "{{ filtroEstado }}".
+        </p>
+      </div>
+    </div>
+
+    <!-- Resumen y progreso -->
+    <div class="progress-summary">
+      <h3>Progreso General del Proyecto</h3>
+      <div class="progress-bar-container">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="calcularProgresoGeneral()"></div>
+        </div>
+        <div class="progress-text">{{ calcularProgresoGeneral() }}% completado</div>
+      </div>
+      
+      <div class="summary-details">
+        <div class="detail-item">
+          <span class="detail-label">Actividades Completadas:</span>
+          <span class="detail-value">{{ contarPorEstado('Completada') }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Actividades en Progreso:</span>
+          <span class="detail-value">{{ contarPorEstado('En progreso') }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Actividades Pendientes:</span>
+          <span class="detail-value">{{ contarPorEstado('Pendiente') }}</span>
+        </div>
+        <div class="detail-item total">
+          <span class="detail-label">Total de Actividades:</span>
+          <span class="detail-value">{{ contarActividadesTotales() }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para actividades Pendientes -->
+<div class="modal-overlay" *ngIf="mostrarModalPendiente">
+  <div class="modal">
+    <div class="modal-content">
+      <div class="modal-icon">⏳</div>
+      <h3 class="modal-title">Cambiar el estado a En Progreso</h3>
+      <div class="modal-actions">
+        <button class="btn-modal btn-confirm" (click)="confirmarCambioAEnProgreso()">
+          Cambiar a En Progreso
+        </button>
+        <button class="btn-modal btn-cancel" (click)="cerrarModalPendiente()">
+          Cancelar la Acción
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para actividades En Progreso -->
+<div class="modal-overlay" *ngIf="mostrarModalEnProgreso">
+  <div class="modal">
+    <div class="modal-content">
+      <div class="modal-icon">🔄</div>
+      <h3 class="modal-title">Gestión de Actividad en Progreso</h3>
+      <p class="modal-message">
+      
+      <div class="opciones-container">
+        <!-- Opción 1: Cambiar a Finalizado -->
+        <div class="opcion-item">
+          <div class="opcion-icon">✅</div>
+          <div class="opcion-content">
+            <h4 class="opcion-title">Marcar como Completada</h4>
+            <button class="btn-opcion btn-completar" (click)="seleccionarOpcionCompletar()">
+              Completar Actividad
+            </button>
+          </div>
+        </div>
+        
+        <!-- Opción 2: Subir Imagen -->
+        <div class="opcion-item">
+          <div class="opcion-icon">📸</div>
+          <div class="opcion-content">
+            <h4 class="opcion-title">Subir Imagen de la Actividad</h4>
+            
+            <!-- Input de archivo oculto -->
+            <input 
+              type="file" 
+              #fileInput
+              (change)="onFileSelected($event)"
+              accept="image/*"
+              style="display: none"
+            >
+            
+            <button class="btn-opcion btn-subir" (click)="fileInput.click()">
+              Seleccionar Imagen
+            </button>
+            
+            <!-- Vista previa de imagen -->
+            <div class="image-preview-container" *ngIf="imagenPreview">
+              <h5>Vista Previa:</h5>
+              <img [src]="imagenPreview" alt="Vista previa" class="image-preview">
+              <button class="btn-submit-image" (click)="subirImagen()">
+                Subir Imagen
+              </button>
+              <button class="btn-cancel-image" (click)="cancelarImagen()">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="btn-modal btn-close" (click)="cerrarModalEnProgreso()">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación para Completar -->
+<div class="modal-overlay" *ngIf="mostrarModalConfirmarCompletar">
+  <div class="modal">
+    <div class="modal-content">
+      <div class="modal-icon">✅</div>
+      <h3 class="modal-title">Confirmar Completar Actividad</h3>
+      <p class="modal-message">
+      <div class="modal-actions">
+        <button class="btn-modal btn-confirm" (click)="confirmarCambioACompletada()">
+          Completar
+        </button>
+        <button class="btn-modal btn-cancel" (click)="cerrarModalConfirmarCompletar()">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de éxito -->
+<div class="modal-overlay" *ngIf="mostrarModalExito">
+  <div class="modal">
+    <div class="modal-content">
+      <h3 class="modal-title">¡Operación Exitosa!</h3>
+      <p class="modal-message">{{ mensajeExito }}</p>
+      <button class="btn-modal btn-ok" (click)="cerrarModalExito()">
+        Aceptar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Spinner de carga -->
+<div class="modal-overlay" *ngIf="loading">
+  <div class="modal">
+    <div class="modal-content">
+      <div class="spinner"></div>
+      <h3 class="modal-title">Procesando...</h3>
+      <p class="modal-message">Por favor espere un momento.</p>
+    </div>
+  </div>
+</div>

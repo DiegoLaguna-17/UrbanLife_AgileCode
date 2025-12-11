@@ -1,0 +1,287 @@
+<div class="main-container">
+  <div class="registro-container">
+    <!-- Contenedor izquierdo (30%) -->
+    <div class="left-panel">
+      <!-- Botón Volver-->
+      <button class="btn-volver" (click)="volver()">← Volver</button>
+      
+      <img src="../../../../../../assets/img/logos/logo-actividad.png" alt="logo UrbanLife" class="imagen">
+    </div>
+
+    <!-- Contenedor derecho (70%) -->
+    <div class="right-panel">
+      <div class="form-container">
+        <form class="registro-form" [formGroup]="registroForm" (ngSubmit)="onSubmit()">
+          
+          <!-- PRIMERA SECCIÓN: Datos básicos de la actividad -->
+          <div class="form-section" *ngIf="pasoActual === 1">
+            <h2 class="section-title">Registrar Actividad</h2>
+            
+            <!-- Campo Nombre de la Actividad -->
+            <div class="form-group">
+              <label class="form-label">Nombre de la Actividad *</label>
+              <input 
+                type="text" 
+                class="form-input"
+                formControlName="nombre_actividad"
+                placeholder="Ingrese el nombre de la actividad"
+              >
+              <div class="error-message" *ngIf="nombre_actividad?.invalid && nombre_actividad?.touched">
+                <span *ngIf="nombre_actividad?.errors?.['required']">El nombre de la actividad es requerido</span>
+                <span *ngIf="nombre_actividad?.errors?.['minlength']">Mínimo 3 caracteres</span>
+              </div>
+            </div>
+
+            <!-- Campo Descripción -->
+            <div class="form-group">
+              <label class="form-label">Descripción *</label>
+              <textarea 
+                class="form-textarea"
+                formControlName="descripcion"
+                placeholder="Describa la actividad a realizar"
+                rows="4"
+              ></textarea>
+              <div class="error-message" *ngIf="descripcion?.invalid && descripcion?.touched">
+                <span *ngIf="descripcion?.errors?.['required']">La descripción es requerida</span>
+                <span *ngIf="descripcion?.errors?.['minlength']">Mínimo 10 caracteres</span>
+              </div>
+            </div>
+
+            <!-- Campo Fecha de Realización -->
+            <div class="form-group">
+              <label class="form-label">Fecha de Realización *</label>
+              <input 
+                type="date" 
+                class="form-input"
+                formControlName="fecha_realizacion"
+              >
+              <div class="error-message" *ngIf="fecha_realizacion?.invalid && fecha_realizacion?.touched">
+                <span *ngIf="fecha_realizacion?.errors?.['required']">La fecha de realización es requerida</span>
+                <span *ngIf="fecha_realizacion?.errors?.['minDate']">La fecha debe ser posterior a hoy</span>
+              </div>
+            </div>
+
+            <!-- Botones para secciones adicionales -->
+            <div class="botones-adicionales">
+              <button 
+                type="button" 
+                class="btn-adicional"
+                (click)="irASeccionEmpleados()"
+                [disabled]="!esPaso1Valido()"
+              >
+                Requiere Empleados
+              </button>
+              
+              <button 
+                type="button" 
+                class="btn-adicional"
+                (click)="irASeccionMateriales()"
+                [disabled]="!esPaso1Valido()"
+              >
+                Requiere Materiales
+              </button>
+              
+              <button 
+                type="submit" 
+                class="btn-registrar"
+                [disabled]="!esPaso1Valido()"
+              >
+                Guardar Actividad
+              </button>
+            </div>
+          </div>
+
+          <!-- SEGUNDA SECCIÓN: Empleados -->
+          <div class="form-section" *ngIf="pasoActual === 2">
+            <h2 class="section-title">Asignar Empleados (Opcional)</h2>
+            
+            <div formArrayName="empleados">
+              <div *ngFor="let empleado of empleadosArray.controls; let i = index" [formGroupName]="i" class="empleado-item">
+                <div class="empleado-header">
+                  <h3>Empleado {{ i + 1 }}</h3>
+                  <button 
+                    type="button" 
+                    class="btn-eliminar"
+                    (click)="eliminarEmpleado(i)"
+                  >
+                    ✕
+                  </button>
+                </div>
+                
+                <!-- Campo Nombre del Empleado -->
+                <div class="form-group">
+                  <label class="form-label">Nombre del Empleado</label>
+                  <select 
+                    class="form-input"
+                    formControlName="id_empleado"
+                  >
+                    <option value="">Seleccione un empleado (Opcional)</option>
+                    <option *ngFor="let empleado of empleadosDisponibles" [value]="empleado.id_empleado">
+                      {{ empleado.nombre }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botón para agregar más empleados -->
+            <button 
+              type="button" 
+              class="btn-agregar"
+              (click)="agregarEmpleado()"
+            >
+              + Añadir Otro Empleado
+            </button>
+
+            <!-- Botones de navegación -->
+            <div class="botones-navegacion">
+              <button 
+                type="button" 
+                class="btn-anterior"
+                (click)="volverAPaso1()"
+              >
+                ← Volver a Datos Básicos
+              </button>
+              
+              <button 
+                type="submit" 
+                class="btn-registrar"
+                [disabled]="!esPaso1Valido()"
+              >
+                Guardar Actividad
+              </button>
+            </div>
+          </div>
+
+          <!-- TERCERA SECCIÓN: Materiales -->
+          <div class="form-section" *ngIf="pasoActual === 3">
+            <h2 class="section-title">Asignar Materiales (Opcional)</h2>
+            
+            <div formArrayName="materiales">
+              <div *ngFor="let material of materialesArray.controls; let i = index" [formGroupName]="i" class="material-item">
+                <div class="material-header">
+                  <h3>Material {{ i + 1 }}</h3>
+                  <button 
+                    type="button" 
+                    class="btn-eliminar"
+                    (click)="eliminarMaterial(i)"
+                  >
+                    ✕
+                  </button>
+                </div>
+                
+                <!-- Campo Nombre del Material -->
+                <div class="form-group">
+                  <label class="form-label">Material</label>
+                  <select 
+                    class="form-input"
+                    formControlName="id_material_almacen"
+                    (change)="onMaterialSeleccionado($event, i)"
+                  >
+                    <option value="">Seleccione un material (Opcional)</option>
+                    <option *ngFor="let material of materialesDisponibles" [value]="material.id_material_almacen">
+                      {{ material.nombre }} (Disponible: {{ material.cantidad }})
+                    </option>
+                  </select>
+                </div>
+
+                <!-- Campo Cantidad -->
+                <div class="form-group">
+                  <label class="form-label">Cantidad a Usar</label>
+                  <input 
+                    type="number" 
+                    class="form-input"
+                    formControlName="cantidad"
+                    min="1"
+                    [max]="obtenerMaxCantidad(i)"
+                    placeholder="Cantidad (solo si selecciona material)"
+                  >
+                  <div class="error-message" *ngIf="material.get('cantidad')?.invalid && material.get('cantidad')?.touched">
+                    <span *ngIf="material.get('cantidad')?.errors?.['min']">Mínimo 1 unidad</span>
+                    <span *ngIf="material.get('cantidad')?.errors?.['max']">No puede superar la cantidad disponible</span>
+                  </div>
+                  <div class="cantidad-disponible" *ngIf="material.get('id_material_almacen')?.value">
+                    Disponible: {{ obtenerCantidadDisponible(i) }} unidades
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botón para agregar más materiales -->
+            <button 
+              type="button" 
+              class="btn-agregar"
+              (click)="agregarMaterial()"
+            >
+              + Añadir Otro Material
+            </button>
+
+            <!-- Botones de navegación -->
+            <div class="botones-navegacion">
+              <button 
+                type="button" 
+                class="btn-anterior"
+                (click)="volverAPaso1()"
+              >
+                ← Volver a Datos Básicos
+              </button>
+              
+              <button 
+                type="submit" 
+                class="btn-registrar"
+                [disabled]="!esPaso1Valido()"
+              >
+                Guardar Actividad
+              </button>
+            </div>
+          </div>
+        </form>
+        
+        <!-- Barra de progreso -->
+        <div class="progress-bar-container">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="getPorcentajeProgreso()"></div>
+          </div>
+          <div class="progress-text">
+            Paso {{ pasoActual }} de 3 - {{ getPorcentajeProgreso() }}% completado
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de éxito -->
+<div class="modal-overlay" *ngIf="mostrarModalExito">
+  <div class="modal">
+    <div class="modal-content">
+      <div class="modal-icon">✅</div>
+      <h3 class="modal-title">¡Actividad Registrada!</h3>
+      <p class="modal-message">La actividad ha sido registrada correctamente en el sistema.</p>
+      <button class="btn-modal" (click)="cerrarModalExito()">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de error -->
+<div class="modal-overlay" *ngIf="mostrarModalError">
+  <div class="modal">
+    <div class="modal-content">
+      <div class="modal-icon">⚠️</div>
+      <h3 class="modal-title">Error en el Formulario</h3>
+      <p class="modal-message">{{ mensajeError }}</p>
+      <button class="btn-modal" (click)="cerrarModalError()">Entendido</button>
+    </div>
+  </div>
+</div>
+
+<!-- Spinner de carga -->
+<div class="modal-overlay" *ngIf="loading">
+  <div class="modal">
+    <div class="modal-content">
+      <div class="spinner"></div>
+      <h3 class="modal-title">Registrando Actividad...</h3>
+      <p class="modal-message">Por favor espere un momento.</p>
+    </div>
+  </div>
+</div>
