@@ -1,0 +1,200 @@
+<div class="main-container">
+  <div class="registro-container">
+    <!-- Contenedor izquierdo (30%) -->
+    <div class="left-panel">
+      <img src="../../../../../../assets/img/logos/logo-empleado.png" alt="logo UrbanLife" class="imagen">
+    </div>
+
+    <!-- Contenedor derecho (70%) -->
+    <div class="right-panel">
+      <div class="form-container">
+        <h1 class="titulo-principal">Designar Obra</h1>
+        <form class="registro-form" [formGroup]="registroForm" (ngSubmit)="onSubmit()">
+          
+          <!-- Campo Nombre del Trabajador (Select) -->
+          <div class="form-group">
+            <label class="form-label">Nombre del Trabajador</label>
+            <select 
+              class="form-input form-select"
+              formControlName="id_trabajador"
+            >
+              <option value="" disabled selected>Seleccione un trabajador</option>
+              <option *ngFor="let trabajador of trabajadores" [value]="trabajador.id_trabajador">
+                {{ trabajador.nombre }}
+              </option>
+            </select>
+            <div class="error-message" *ngIf="id_trabajador?.invalid && id_trabajador?.touched">
+              <span *ngIf="id_trabajador?.errors?.['required']">Debe seleccionar un trabajador</span>
+            </div>
+          </div>
+
+          <!-- Fecha Inicio -->
+          <div class="form-group">
+            <label class="form-label">Fecha de Inicio</label>
+            <input 
+              type="date" 
+              class="form-input"
+              formControlName="fecha_inicio"
+              (change)="validarFechas()"
+            >
+            <div class="error-message" *ngIf="fecha_inicio?.invalid && fecha_inicio?.touched">
+              <span *ngIf="fecha_inicio?.errors?.['required']">La fecha de inicio es requerida</span>
+            </div>
+          </div>
+
+          <!-- Fecha Fin -->
+          <div class="form-group">
+            <label class="form-label">Fecha de Fin</label>
+            <input 
+              type="date" 
+              class="form-input"
+              formControlName="fecha_fin"
+              (change)="validarFechas()"
+            >
+            <div class="error-message" *ngIf="fecha_fin?.invalid && fecha_fin?.touched">
+              <span *ngIf="fecha_fin?.errors?.['required']">La fecha de fin es requerida</span>
+              <span *ngIf="registroForm.hasError('fechaInvalida')">La fecha fin debe ser posterior a la fecha inicio</span>
+            </div>
+          </div>
+
+          <!-- Puesto de Trabajo -->
+          <div class="form-group">
+            <label class="form-label">Puesto de Trabajo</label>
+            <input 
+              type="text" 
+              class="form-input"
+              formControlName="puesto"
+              placeholder="Ingrese el puesto de trabajo"
+            >
+            <div class="error-message" *ngIf="puesto?.invalid && puesto?.touched">
+              <span *ngIf="puesto?.errors?.['required']">El puesto es requerido</span>
+              <span *ngIf="puesto?.errors?.['minlength']">Mínimo 3 caracteres</span>
+            </div>
+          </div>
+
+          <!-- Salario -->
+          <div class="form-group">
+            <label class="form-label">Salario</label>
+            <input 
+              type="number" 
+              class="form-input"
+              formControlName="salario"
+              placeholder="Ingrese el salario"
+              min="0"
+              step="0.01"
+            >
+            <div class="error-message" *ngIf="salario?.invalid && salario?.touched">
+              <span *ngIf="salario?.errors?.['required']">El salario es requerido</span>
+              <span *ngIf="salario?.errors?.['min']">El salario debe ser mayor a 0</span>
+            </div>
+          </div>
+
+          <!-- Campo Contrato (PDF) -->
+          <div class="form-group">
+            <label class="form-label">Contrato PDF</label>
+            <div class="file-upload-container">
+              <input 
+                type="file" 
+                class="file-input"
+                formControlName="contrato"
+                (change)="onFileSelected($event)"
+                accept=".pdf"
+                #fileInput
+              >
+              <div class="file-upload-area" (click)="fileInput.click()">
+                <span class="file-text" [class.has-file]="contratoArchivo">
+                  {{ contratoArchivo ? contratoArchivo.name : 'Seleccione contrato PDF' }}
+                </span>
+                <button type="button" class="btn-browse">Examinar</button>
+              </div>
+            </div>
+            <div class="error-message" *ngIf="contrato?.invalid && contrato?.touched">
+              <span *ngIf="contrato?.errors?.['required']">El contrato es requerido</span>
+            </div>
+          </div>
+
+          <!-- Línea divisoria -->
+          <div class="divider"></div>
+
+          <!-- Botones -->
+          <div class="botones-container">
+            <button 
+              type="button" 
+              class="btn-cancelar"
+              (click)="mostrarModalCancelar()"
+            >
+              CANCELAR
+            </button>
+            <button 
+              type="submit" 
+              class="btn-registrar"
+              [disabled]="registroForm.invalid || procesando"
+            >
+              {{ procesando ? 'PROCESANDO...' : 'REGISTRAR CONTRATO' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de éxito -->
+<div class="modal-overlay" *ngIf="mostrarModalExito">
+  <div class="modal">
+    <div class="modal-content modal-exito">
+      <div class="modal-icon">✅</div>
+      <h3 class="modal-title">¡Contrato Registrado!</h3>
+      <p class="modal-message">{{ mensajeExito }}</p>
+      <button class="btn-modal btn-modal-exito" (click)="cerrarModalExito()">
+        ACEPTAR
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de error -->
+<div class="modal-overlay" *ngIf="mostrarModalError">
+  <div class="modal">
+    <div class="modal-content modal-error">
+      <div class="modal-icon">⚠️</div>
+      <h3 class="modal-title">Error</h3>
+      <p class="modal-message">{{ mensajeError }}</p>
+      <button class="btn-modal btn-modal-error" (click)="cerrarModalError()">
+        INTENTAR NUEVAMENTE
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación cancelar -->
+<div class="modal-overlay" *ngIf="mostrarModalConfirmacionCancelar">
+  <div class="modal">
+    <div class="modal-content modal-confirmacion">
+      <div class="modal-icon">❓</div>
+      <h3 class="modal-title">Confirmar Cancelación</h3>
+      <p class="modal-message">¿Está seguro de que desea cancelar? Los datos no guardados se perderán.</p>
+      <div class="modal-botones">
+        <button class="btn-modal btn-modal-secundario" (click)="cerrarModalConfirmacionCancelar()">
+          CONTINUAR
+        </button>
+        <button class="btn-modal btn-modal-primario" (click)="confirmarCancelar()">
+          CONFIRMAR
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de validación archivo -->
+<div class="modal-overlay" *ngIf="mostrarModalValidacionArchivo">
+  <div class="modal">
+    <div class="modal-content modal-alerta">
+      <h3 class="modal-title">Archivo Inválido</h3>
+      <p class="modal-message">Por favor, seleccione un archivo PDF válido.</p>
+      <button class="btn-modal btn-modal-alerta" (click)="cerrarModalValidacionArchivo()">
+        ENTENDIDO
+      </button>
+    </div>
+  </div>
+</div>

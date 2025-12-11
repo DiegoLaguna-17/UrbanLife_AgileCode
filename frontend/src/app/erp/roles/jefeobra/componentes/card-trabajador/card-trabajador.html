@@ -1,0 +1,32 @@
+<article class="card">
+  <div class="card-content">
+
+    <div class="div-imagen">
+      <img src="../../../../../../assets/img/logos/logo-proyecto.png" alt="Proyecto" class="imagen">
+    </div>
+
+    <div class="info">
+
+      <!-- Puesto -->
+      <div class="tipo">{{ trabajador.puesto }}</div>
+
+      <!-- Bloque de información -->
+      <div class="datos">
+        <div class="dato">
+          <span class="label">Fecha inicio:</span>
+          <span class="valor">{{ trabajador.fecha_inicio }}</span>
+        </div>
+
+        <div class="dato">
+          <span class="label">Fecha fin:</span>
+          <span class="valor">{{ trabajador.fecha_fin }}</span>
+        </div>
+
+        <div class="dato salario">
+          <span class="label">Salario:</span>
+          <span class="valor">{{ trabajador.salario}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>

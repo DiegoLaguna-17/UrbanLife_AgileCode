@@ -47,12 +47,12 @@ export class AdministrarProyectos implements OnInit {
       documentos: [
         {
           nombre_documento: 'Plano de remodelación',
-          tipo: 'PDF',
+          tipo: 'plano',
           ruta: '/documentos/plano_plaza.pdf'
         },
         {
           nombre_documento: 'Presupuesto aprobado',
-          tipo: 'Excel',
+          tipo: 'estudio',
           ruta: '/documentos/presupuesto_plaza.xlsx'
         }
       ],
@@ -84,7 +84,7 @@ export class AdministrarProyectos implements OnInit {
       documentos: [
         {
           nombre_documento: 'Contrato de suministro',
-          tipo: 'PDF',
+          tipo: 'contrato',
           ruta: '/documentos/contrato_luces.pdf'
         }
       ],
@@ -110,12 +110,12 @@ export class AdministrarProyectos implements OnInit {
       documentos: [
         {
           nombre_documento: 'Informe final de reforestación',
-          tipo: 'PDF',
+          tipo: 'estudio',
           ruta: '/documentos/informe_reforestacion.pdf'
         },
         {
           nombre_documento: 'Lista de especies',
-          tipo: 'Word',
+          tipo: 'estudio',
           ruta: '/documentos/especies_arboles.docx'
         }
       ],
@@ -153,12 +153,12 @@ export class AdministrarProyectos implements OnInit {
       documentos: [
         {
           nombre_documento: 'Proyecto arquitectónico',
-          tipo: 'PDF',
+          tipo: 'plano',
           ruta: '/documentos/proyecto_deportivo.pdf'
         },
         {
           nombre_documento: 'Cronograma de obra',
-          tipo: 'Excel',
+          tipo: 'contrato',
           ruta: '/documentos/cronograma.xlsx'
         }
       ],
@@ -190,7 +190,7 @@ export class AdministrarProyectos implements OnInit {
       documentos: [
         {
           nombre_documento: 'Plan de implementación',
-          tipo: 'PDF',
+          tipo: 'contrato',
           ruta: '/documentos/plan_salud.pdf'
         }
       ],
@@ -216,12 +216,12 @@ export class AdministrarProyectos implements OnInit {
       documentos: [
         {
           nombre_documento: 'Acta de recepción de obra',
-          tipo: 'PDF',
+          tipo: 'permiso',
           ruta: '/documentos/recepcion_canchas.pdf'
         },
         {
           nombre_documento: 'Fotos del proyecto',
-          tipo: 'ZIP',
+          tipo: 'estudios',
           ruta: '/documentos/fotos_canchas.zip'
         }
       ],
@@ -281,15 +281,11 @@ export class AdministrarProyectos implements OnInit {
     console.log('Guardando proyecto en sessionStorage:', proyecto);
     
     // También pasar en state por si acaso
-    this.router.navigate(['./administrador/ver-proyecto'], { 
+    this.router.navigate(['./jefeobra/ver-proyectos'], { 
       state: { proyecto: proyecto }
     });
   }
 
-  // Navegar a la página de registrar proyecto
-  irARegistrar(): void {
-    this.router.navigate(['./administrador/crear-proyectos']);
-  }
 
   ngOnInit(): void {
     this.cargarProyectos();

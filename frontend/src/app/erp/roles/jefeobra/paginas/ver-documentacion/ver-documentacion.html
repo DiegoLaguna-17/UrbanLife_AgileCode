@@ -1,0 +1,122 @@
+<div class="main-container">
+  <div class="documentacion-container">
+    <!-- Botón Volver -->
+    <button class="btn-volver" (click)="volver()">← Volver</button>
+
+    <h1 class="titulo-principal">Documentación del Proyecto</h1>
+
+    <!-- Sección de CONTRATOS -->
+    <div class="document-category" *ngIf="contratos.length > 0">
+      <div class="category-header">
+        <h2 class="category-title">📄 CONTRATOS</h2>
+        <span class="document-count-badge">{{ contarPorTipo('contrato') }} documentos</span>
+      </div>
+      <div class="documents-grid">
+        <div class="document-card" *ngFor="let documento of contratos">
+          <div class="document-info">
+            <h3 class="document-name">{{ documento.nombre_documento }}</h3>
+            <div class="document-details">
+              <span class="document-actions">
+                <button class="btn-action btn-download" (click)="descargarDocumento(documento)">Descargar</button>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección de PERMISOS -->
+    <div class="document-category" *ngIf="permisos.length > 0">
+      <div class="category-header">
+        <h2 class="category-title">🏛️ PERMISOS</h2>
+        <span class="document-count-badge">{{ contarPorTipo('permiso') }} documentos</span>
+      </div>
+      <div class="documents-grid">
+        <div class="document-card" *ngFor="let documento of permisos">
+          <div class="document-info">
+            <h3 class="document-name">{{ documento.nombre_documento }}</h3>
+            <div class="document-details">
+              <span class="document-actions">
+                <button class="btn-action btn-download" (click)="descargarDocumento(documento)">Descargar</button>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección de PLANOS -->
+    <div class="document-category" *ngIf="planos.length > 0">
+      <div class="category-header">
+        <h2 class="category-title">📐 PLANOS</h2>
+        <span class="document-count-badge">{{ contarPorTipo('plano') }} documentos</span>
+      </div>
+      <div class="documents-grid">
+        <div class="document-card" *ngFor="let documento of planos">
+          <div class="document-info">
+            <h3 class="document-name">{{ documento.nombre_documento }}</h3>
+            <div class="document-details">
+              <span class="document-actions">
+                <button class="btn-action btn-download" (click)="descargarDocumento(documento)">Descargar</button>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección de ESTUDIOS -->
+    <div class="document-category" *ngIf="estudios.length > 0">
+      <div class="category-header">
+        <h2 class="category-title">📊 ESTUDIOS</h2>
+        <span class="document-count-badge">{{ contarPorTipo('estudio') }} documentos</span>
+      </div>
+      <div class="documents-grid">
+        <div class="document-card" *ngFor="let documento of estudios">
+          <div class="document-info">
+            <h3 class="document-name">{{ documento.nombre_documento }}</h3>
+            <div class="document-details">
+              <span class="document-actions">
+                <button class="btn-action btn-download" (click)="descargarDocumento(documento)">Descargar</button>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensaje si no hay documentos -->
+    <div class="no-documents" *ngIf="contratos.length === 0 && permisos.length === 0 && planos.length === 0 && estudios.length === 0">
+      <h3>No hay documentos registrados</h3>
+      <p>Presiona "Añadir Documento" para comenzar a agregar documentación al proyecto.</p>
+    </div>
+
+    <!-- Resumen de documentos -->
+    <div class="document-summary">
+      <h3>Resumen de la Documentación</h3>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <span class="summary-label">Contratos:</span>
+          <span class="summary-value">{{ contarPorTipo('contrato') }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Permisos:</span>
+          <span class="summary-value">{{ contarPorTipo('permiso') }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Planos:</span>
+          <span class="summary-value">{{ contarPorTipo('plano') }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Estudios:</span>
+          <span class="summary-value">{{ contarPorTipo('estudio') }}</span>
+        </div>
+        <div class="summary-item total">
+          <span class="summary-label">Total:</span>
+          <span class="summary-value">{{ contarDocumentosTotales() }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

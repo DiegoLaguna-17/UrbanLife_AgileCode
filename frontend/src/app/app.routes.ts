@@ -84,6 +84,15 @@ export const routes: Routes = [
       },
       {
         path:'registrar-documentos', loadComponent: ()=>import('./erp/roles/administrador/paginas/registrar-documentos/registrar-documentos').then(m=>m.RegistrarDocumentos)
+      },
+      {
+        path:'administrar-trabajadores', loadComponent: ()=>import('./erp/roles/administrador/paginas/administrar-trabajadores/administrar-trabajadores').then(m=>m.AdministrarTrabajadores)
+      },
+      {
+        path:'registrar-contratos-trabajadores', loadComponent: ()=>import('./erp/roles/administrador/paginas/registrar-contratos-trabajadores/registrar-contratos-trabajadores').then(m=>m.RegistrarContratosTrabajadores)
+      },
+      {
+        path:'ver-trabajador', loadComponent: ()=>import('./erp/roles/administrador/paginas/ver-trabajador/ver-trabajador').then(m=>m.VerTrabajador)
       }
     ]
   },
@@ -111,10 +120,25 @@ export const routes: Routes = [
     path:'jefeobra', loadComponent: ()=>import('./erp/roles/jefeobra/jefeobra-shell/jefeobra-shell'). then(m=>m.JefeobraShell),
     children:[
       {
-        path:'', pathMatch:'full', redirectTo:'ver-proyectos'
+        path:'', pathMatch:'full', redirectTo:'administrar-proyectos'
       },
       {
-        path:'ver-proyectos', loadComponent: ()=>import('./erp/roles/jefeobra/jefeobra-shell/jefeobra-shell').then(m=>m.JefeobraShell)
+        path:'administrar-proyectos', loadComponent:()=>import('./erp/roles/jefeobra/paginas/administrar-proyectos/administrar-proyectos').then(m=>m.AdministrarProyectos)
+      },
+      {
+        path:'ver-proyectos', loadComponent:()=>import('./erp/roles/jefeobra/paginas/ver-proyectos/ver-proyectos').then(m=>m.VerProyectos)
+      },
+      {
+        path:'ver-documentacion', loadComponent:()=>import('./erp/roles/jefeobra/paginas/ver-documentacion/ver-documentacion').then(m=>m.VerDocumentacion)
+      },
+      {
+        path:'ver-actividades', loadComponent:()=>import('./erp/roles/jefeobra/paginas/ver-actividades/ver-actividades').then(m=>m.VerActividades)
+      },
+      {
+        path:'administrar-trabajadores', loadComponent:()=>import('./erp/roles/jefeobra/paginas/administrar-trabajadores/administrar-trabajadores').then(m=>m.AdministrarTrabajadores)
+      },
+      {
+        path:'registrar-actividad', loadComponent:()=>import('./erp/roles/jefeobra/paginas/registrar-actividad/registrar-actividad').then(m=>m.RegistrarActividadComponent)
       }
     ]
   },

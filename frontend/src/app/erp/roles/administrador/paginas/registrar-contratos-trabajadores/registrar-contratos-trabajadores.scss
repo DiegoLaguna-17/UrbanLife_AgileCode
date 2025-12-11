@@ -1,0 +1,540 @@
+* {
+    --AzulOscuro: #094c6d;
+    --VerdeOscuro: #096d0a;
+    --Verde: #7ed957;
+    --VeredePastel: #8ceb8c;
+    --Celeste: #98ffe6;
+    --VerdeClaro: #b8ffb8;
+    --Blanco: #ffffff;
+    --Negro: #000000;
+    --RojoError: #e74c3c;
+    --VerdeExito: #2ecc71;
+    --AmarilloAlerta: #f39c12;
+}
+
+.main-container {
+    height: 100%;
+    padding: 30px;
+    background: linear-gradient(135deg, var(--Celeste) 0%, var(--Verde) 100%);
+}
+
+.registro-container {
+    display: flex;
+    height: 90%;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-left: 19%;
+}
+
+/* Panel izquierdo (30%) */
+.left-panel {
+    flex: 0 0 28%;
+    background: linear-gradient(135deg, var(--Verde) 0%, var(--VeredePastel) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.titulo-principal {
+    color: var(--Blanco);
+    font-size: 45px;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    line-height: 1.3;
+    margin-bottom: 30px;
+}
+
+.imagen {
+    width: 140%;
+    height: 70%;
+}
+
+/* Panel derecho (70%) */
+.right-panel {
+    flex: 0 0 61%;
+    background: var(--AzulOscuro);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    border-radius: 0 150px 150px 0;
+}
+
+.form-container {
+    border-radius: 15px;
+    padding: 40px;
+    width: 100%;
+    max-width: 500px;
+}
+
+.registro-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    color: var(--Blanco);
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.form-input {
+    padding: 12px 15px;
+    border: 2px solid var(--AzulOscuro);
+    border-radius: 30px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background-color: var(--Blanco);
+    width: 100%;
+    box-sizing: border-box;
+
+    &:focus {
+        outline: none;
+        border-color: var(--Verde);
+        box-shadow: 0 0 0 3px rgba(126, 217, 87, 0.2);
+    }
+
+    &::placeholder {
+        color: #999;
+    }
+}
+
+/* Estilo específico para select */
+.form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 16px;
+    padding-right: 40px;
+    cursor: pointer;
+
+    option {
+        padding: 10px;
+    }
+
+    &:disabled {
+        background-color: #f5f5f5;
+        cursor: not-allowed;
+    }
+}
+
+/* Estilos para subida de archivos */
+.file-upload-container {
+    position: relative;
+}
+
+.file-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.file-upload-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    border: 2px dashed var(--AzulOscuro);
+    border-radius: 20px;
+    background-color: var(--Blanco);
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+        border-color: var(--Verde);
+        background-color: rgba(126, 217, 87, 0.1);
+    }
+}
+
+.file-icon {
+    font-size: 20px;
+}
+
+.file-text {
+    flex: 1;
+    color: var(--AzulOscuro);
+    font-size: 14px;
+
+    &.has-file {
+        font-weight: 600;
+        color: var(--VerdeOscuro);
+    }
+}
+
+.btn-browse {
+    background: var(--AzulOscuro);
+    color: var(--Blanco);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+        background: var(--VerdeOscuro);
+    }
+}
+
+/* Línea divisoria */
+.divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--Verde) 50%, transparent 100%);
+    margin: 20px 0;
+}
+
+/* Contenedor de botones */
+.botones-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+/* Botón Cancelar */
+.btn-cancelar {
+    background: transparent;
+    color: var(--Blanco);
+    border: 2px solid var(--Blanco);
+    padding: 15px 30px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    flex: 1;
+
+    &:hover {
+        background: var(--Blanco);
+        color: var(--AzulOscuro);
+        transform: translateY(-2px);
+    }
+}
+
+/* Botón Registrar */
+.btn-registrar {
+    background: linear-gradient(135deg, var(--Verde) 0%, var(--Celeste) 100%);
+    color: var(--AzulOscuro);
+    border: none;
+    padding: 15px 30px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    flex: 1;
+
+    &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(9, 109, 10, 0.3);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    &:disabled {
+        background: #cccccc;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+}
+
+.error-message {
+    color: var(--RojoError);
+    font-size: 12px;
+    margin-top: 5px;
+    font-weight: 500;
+    min-height: 18px;
+}
+
+/* ============================================
+   ESTILOS DE MODALES
+   ============================================ */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal {
+    background: var(--Blanco);
+    border-radius: 20px;
+    padding: 40px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.4s ease;
+}
+
+.modal-content {
+    text-align: center;
+}
+
+.modal-icon {
+    font-size: 60px;
+    margin-bottom: 20px;
+    animation: bounceIn 0.5s ease;
+}
+
+.modal-title {
+    color: var(--AzulOscuro);
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.modal-message {
+    color: var(--Negro);
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 25px;
+}
+
+/* Estilos específicos para cada tipo de modal */
+.modal-exito {
+    .modal-icon {
+        color: var(--VerdeExito);
+    }
+    
+    .modal-title {
+        color: var(--VerdeExito);
+    }
+}
+
+.modal-error {
+    .modal-icon {
+        color: var(--RojoError);
+    }
+    
+    .modal-title {
+        color: var(--RojoError);
+    }
+}
+
+.modal-confirmacion {
+    .modal-icon {
+        color: var(--AmarilloAlerta);
+    }
+    
+    .modal-title {
+        color: var(--AmarilloAlerta);
+    }
+}
+
+.modal-alerta {
+    .modal-icon {
+        color: var(--AzulOscuro);
+    }
+}
+
+/* Botones de modales */
+.btn-modal {
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    min-width: 150px;
+}
+
+.btn-modal-exito {
+    background: linear-gradient(135deg, var(--Verde) 0%, var(--VerdeExito) 100%);
+    color: var(--Blanco);
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+    }
+}
+
+.btn-modal-error {
+    background: linear-gradient(135deg, #ff6b6b 0%, var(--RojoError) 100%);
+    color: var(--Blanco);
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+    }
+}
+
+.btn-modal-alerta {
+    background: linear-gradient(135deg, #ffd93d 0%, var(--AmarilloAlerta) 100%);
+    color: var(--Negro);
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);
+    }
+}
+
+/* Botones para modal de confirmación */
+.modal-botones {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.btn-modal-primario {
+    background: linear-gradient(135deg, var(--Verde) 0%, var(--Celeste) 100%);
+    color: var(--AzulOscuro);
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(9, 109, 10, 0.3);
+    }
+}
+
+.btn-modal-secundario {
+    background: transparent;
+    color: var(--AzulOscuro);
+    border: 2px solid var(--AzulOscuro);
+    
+    &:hover {
+        background: var(--AzulOscuro);
+        color: var(--Blanco);
+        transform: translateY(-2px);
+    }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-container {
+        padding: 15px;
+    }
+
+    .registro-container {
+        flex-direction: column;
+        height: auto;
+        margin-left: 0;
+    }
+
+    .left-panel,
+    .right-panel {
+        flex: none;
+        width: 100%;
+    }
+
+    .left-panel {
+        padding: 20px;
+    }
+
+    .titulo-principal {
+        font-size: 32px;
+    }
+
+    .form-container {
+        margin: 20px;
+        padding: 30px 20px;
+    }
+
+    .botones-container {
+        flex-direction: column;
+    }
+
+    .btn-cancelar,
+    .btn-registrar {
+        width: 100%;
+    }
+
+    /* Responsive para modales */
+    .modal {
+        padding: 30px 20px;
+        margin: 20px;
+        width: 95%;
+    }
+
+    .modal-botones {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn-modal {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .titulo-principal {
+        font-size: 24px;
+    }
+
+    .form-input {
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+
+    .modal-title {
+        font-size: 20px;
+    }
+
+    .modal-message {
+        font-size: 14px;
+    }
+
+    .modal-icon {
+        font-size: 50px;
+    }
+}
