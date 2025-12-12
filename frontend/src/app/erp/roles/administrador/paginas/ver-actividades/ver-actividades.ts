@@ -52,35 +52,51 @@ export class VerActividades implements OnInit {
 
   ngOnInit(): void {
     this.cargarProyecto();
+    console.log(this.proyecto)
   }
 
   // Cargar proyecto y actividades
   private cargarProyecto(): void {
-    this.route.queryParams.subscribe(params => {
-      const proyectoParam = params['proyecto'];
-      if (proyectoParam) {
-        try {
-          this.proyecto = JSON.parse(proyectoParam);
-          this.actividades = this.proyecto?.actividades || [];
-          console.log('Proyecto cargado:', this.proyecto);
-        } catch (e) {
-          console.error('Error parsing proyecto:', e);
-          this.cargarDatosEjemplo();
-        }
-      } else {
-        // Intentar obtener del state
-        const navigation = this.router.getCurrentNavigation();
-        const proyectoFromState = navigation?.extras?.state?.['proyecto'] as Proyecto;
-        
-        if (proyectoFromState) {
-          this.proyecto = proyectoFromState;
-          this.actividades = this.proyecto?.actividades || [];
-        } else {
-          this.cargarDatosEjemplo();
-        }
-      }
-    });
+
+  // 1️⃣ Intentar recibir desde state (solo funciona al navegar)
+  const navigation = this.router.getCurrentNavigation();
+  const proyectoFromState = navigation?.extras?.state?.['proyecto'] as Proyecto;
+
+  if (proyectoFromState) {
+    this.proyecto = proyectoFromState;
+    sessionStorage.setItem('proyectoParaActividades', JSON.stringify(this.proyecto));
+  } 
+  else {
+    // 2️⃣ Si no llegó por state, tomar del sessionStorage
+    const guardado = sessionStorage.getItem('proyectoParaActividades');
+    if (guardado) {
+      this.proyecto = JSON.parse(guardado);
+    }
   }
+
+  // 3️⃣ Si aún no hay proyecto, no seguir
+  if (!this.proyecto) {
+    console.warn('⚠ No se pudo cargar el proyecto');
+    return;
+  }
+
+  // 4️⃣ Cargar actividades
+  this.actividades = this.proyecto.actividades || [];
+
+  // 5️⃣ Normalizar estados
+  this.actividades = this.actividades.map(a => {
+    const estado = a.estado.toLowerCase();
+
+    if (estado === 'finalizado' || estado === 'completado') return { ...a, estado: 'Completada' };
+    if (estado === 'en progreso' || estado === 'progreso') return { ...a, estado: 'En progreso' };
+    if (estado === 'pendiente' || estado === 'sin iniciar') return { ...a, estado: 'Pendiente' };
+    
+    return a;
+  });
+
+  console.log('📌 Proyecto cargado correctamente:', this.proyecto);
+}
+
 
   // Filtrar actividades por estado específico
   actividadesFiltradasPorEstado(estado: string): Actividad[] {
@@ -134,7 +150,7 @@ export class VerActividades implements OnInit {
     switch(actividad.estado) {
       case 'Completada':
         return '✅';
-      case 'En progreso':
+      case 'en progreso':
         return '🔄';
       case 'Pendiente':
         return '⏳';
@@ -142,7 +158,7 @@ export class VerActividades implements OnInit {
         return '📋';
     }
   }
-
+/*
   // Cargar datos de ejemplo
   private cargarDatosEjemplo(): void {
     this.proyecto = {
@@ -234,7 +250,7 @@ export class VerActividades implements OnInit {
     
     this.actividades = this.proyecto.actividades;
   }
-
+*/
   // Navegación
   volver(): void {
     this.router.navigate(['./administrador/ver-proyecto'], {
@@ -280,7 +296,7 @@ export class VerActividades implements OnInit {
   // Iniciar actividad
   iniciarActividad(actividad: Actividad): void {
     console.log('Iniciar actividad:', actividad);
-    actividad.estado = 'En progreso';
+    actividad.estado = 'en progreso';
     alert(`Actividad "${actividad.nombre_actividad}" iniciada`);
   }
 }

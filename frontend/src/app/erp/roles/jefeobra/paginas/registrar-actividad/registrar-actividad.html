@@ -23,12 +23,12 @@
               <input 
                 type="text" 
                 class="form-input"
-                formControlName="nombre_actividad"
+                formControlName="nombre"
                 placeholder="Ingrese el nombre de la actividad"
               >
-              <div class="error-message" *ngIf="nombre_actividad?.invalid && nombre_actividad?.touched">
-                <span *ngIf="nombre_actividad?.errors?.['required']">El nombre de la actividad es requerido</span>
-                <span *ngIf="nombre_actividad?.errors?.['minlength']">Mínimo 3 caracteres</span>
+              <div class="error-message" *ngIf="nombre?.invalid && nombre?.touched">
+                <span *ngIf="nombre?.errors?.['required']">El nombre de la actividad es requerido</span>
+                <span *ngIf="nombre?.errors?.['minlength']">Mínimo 3 caracteres</span>
               </div>
             </div>
 
@@ -53,11 +53,11 @@
               <input 
                 type="date" 
                 class="form-input"
-                formControlName="fecha_realizacion"
+                formControlName="fecha"
               >
-              <div class="error-message" *ngIf="fecha_realizacion?.invalid && fecha_realizacion?.touched">
-                <span *ngIf="fecha_realizacion?.errors?.['required']">La fecha de realización es requerida</span>
-                <span *ngIf="fecha_realizacion?.errors?.['minDate']">La fecha debe ser posterior a hoy</span>
+              <div class="error-message" *ngIf="fecha?.invalid && fecha?.touched">
+                <span *ngIf="fecha?.errors?.['required']">La fecha de realización es requerida</span>
+                <span *ngIf="fecha?.errors?.['minDate']">La fecha debe ser posterior a hoy</span>
               </div>
             </div>
 
