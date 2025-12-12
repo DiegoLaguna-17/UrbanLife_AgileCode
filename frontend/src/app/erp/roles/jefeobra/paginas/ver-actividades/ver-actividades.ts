@@ -2,24 +2,26 @@ import { Component, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Proyecto, Actividad } from '../../componentes/card-proyecto/card-proyecto';
-
+import { HttpClient,HttpClientModule } from '@angular/common/http';
+import { UploadImagenService } from './upload-imagen.service';
 @Component({
   selector: 'app-ver-actividades',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,HttpClientModule],
   templateUrl: './ver-actividades.html',
   styleUrl: './ver-actividades.scss'
 })
 export class VerActividades implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
-
+  private uploadService = inject(UploadImagenService);
   // Variables del componente
   proyecto: Proyecto | null = null;
   actividades: Actividad[] = [];
   filtroEstado = 'todas';
   ordenPor = 'fecha';
   actividadSeleccionada: Actividad | null = null;
+  private http = inject(HttpClient);
   
   // Variables para los nuevos modales
   mostrarModalPendiente = false;
@@ -68,32 +70,41 @@ export class VerActividades implements OnInit {
   }
 
   // Cargar proyecto y actividades
-  private cargarProyecto(): void {
-    this.route.queryParams.subscribe(params => {
-      const proyectoParam = params['proyecto'];
-      if (proyectoParam) {
-        try {
-          this.proyecto = JSON.parse(proyectoParam);
-          this.actividades = this.proyecto?.actividades || [];
-          console.log('Proyecto cargado:', this.proyecto);
-        } catch (e) {
-          console.error('Error parsing proyecto:', e);
-          this.cargarDatosEjemplo();
-        }
-      } else {
-        // Intentar obtener del state
-        const navigation = this.router.getCurrentNavigation();
-        const proyectoFromState = navigation?.extras?.state?.['proyecto'] as Proyecto;
-        
-        if (proyectoFromState) {
-          this.proyecto = proyectoFromState;
-          this.actividades = this.proyecto?.actividades || [];
-        } else {
-          this.cargarDatosEjemplo();
-        }
-      }
-    });
+private cargarProyecto(): void {
+  // Intentamos primero con getCurrentNavigation (solo funciona durante la navegación)
+  const navState = this.router.getCurrentNavigation()?.extras?.state as { proyecto?: Proyecto } | undefined;
+  // Fallback a history.state (más confiable después de la navegación)
+  const proyectoFromState = navState?.proyecto ?? (history.state && (history.state as any).proyecto) as Proyecto | undefined;
+
+  if (proyectoFromState) {
+  this.proyecto = proyectoFromState;
+  this.actividades = this.proyecto?.actividades || [];
+
+  // 🔥 Normalizar estados
+  this.actividades = this.actividades.map(a => {
+    const estado = a.estado.toLowerCase();
+
+    if (estado === 'finalizado' || estado === 'completado') {
+      return { ...a, estado: 'Completada' };
+    }
+    if (estado === 'en progreso' || estado === 'progreso') {
+      return { ...a, estado: 'En progreso' };
+    }
+    if (estado === 'pendiente' || estado === 'sin iniciar') {
+      return { ...a, estado: 'Pendiente' };
+    }
+    return a;
+  });
+
+  console.log('Proyecto recibido desde state (normalizado):', this.proyecto);
+}
+ else {
+    console.warn('⚠ No se recibió ningún proyecto por state.');
   }
+  
+}
+
+
 
   // Filtrar actividades por estado específico
   actividadesFiltradasPorEstado(estado: string): Actividad[] {
@@ -127,7 +138,7 @@ export class VerActividades implements OnInit {
     const estado = this.proyecto?.estado?.toLowerCase() || '';
     
     switch(estado) {
-      case 'en progreso':
+      case 'En progreso':
         return 'estado-progreso';
       case 'planificación':
         return 'estado-planificacion';
@@ -157,6 +168,7 @@ export class VerActividades implements OnInit {
   }
 
   // Cargar datos de ejemplo
+  /*
   private cargarDatosEjemplo(): void {
     this.proyecto = {
       id_proyecto: 1,
@@ -246,7 +258,7 @@ export class VerActividades implements OnInit {
     };
     
     this.actividades = this.proyecto.actividades;
-  }
+  }*/
 
   // Navegación
   volver(): void {
@@ -297,16 +309,31 @@ export class VerActividades implements OnInit {
       this.loading = true;
       
       // Simular cambio de estado
-      setTimeout(() => {
-        this.actividadSeleccionada!.estado = 'En progreso';
-        this.mensajeExito = `La actividad "${this.actividadSeleccionada!.nombre_actividad}" ha sido cambiada a "En Progreso"`;
+        const payload={
+          id_actividad:this.actividadSeleccionada.id_actividad,
+          estado:"en progreso"
+        }
+        console.log(payload)
+        const url="http://127.0.0.1:8000/api/actividad_enprogreso";
+        this.http.put(url,payload).subscribe({
+          next:(response)=>{
+          this.actividadSeleccionada!.estado = 'En progreso';
+          this.mensajeExito = `La actividad "${this.actividadSeleccionada!.nombre_actividad}" ha sido cambiada a "En Progreso"`;
+          this.mostrarModalPendiente = false;
+          this.mostrarModalExito = true;
+          console.log('Actividad actualizada:', this.actividadSeleccionada);
+          },
+          error:(err)=>{
+            console.log("Error al cambiar actividad de estado a en progreso ",err)
+          }
+        });
+        
         this.loading = false;
-        this.mostrarModalPendiente = false;
-        this.mostrarModalExito = true;
+        
         
         // Aquí podrías agregar la lógica para actualizar en el backend
-        console.log('Actividad actualizada:', this.actividadSeleccionada);
-      }, 1000);
+        
+      
     }
   }
 
@@ -341,28 +368,53 @@ export class VerActividades implements OnInit {
     }
   }
 
-  subirImagen(): void {
-    if (this.imagenSeleccionada && this.actividadSeleccionada) {
-      this.loading = true;
-      
-      // Simular subida de imagen
-      setTimeout(() => {
-        console.log('Imagen subida para actividad:', this.actividadSeleccionada?.nombre_actividad);
-        console.log('Archivo:', this.imagenSeleccionada);
-        
-        this.mensajeExito = `Imagen subida correctamente para la actividad "${this.actividadSeleccionada!.nombre_actividad}"`;
-        this.loading = false;
+  async subirImagen(): Promise<void> {
+  if (!this.imagenSeleccionada || !this.actividadSeleccionada) return;
+
+  this.loading = true;
+
+  try {
+    // 1️⃣ Subir imagen a Supabase
+    const urlImagen = await this.uploadService.subirImagenActividad(this.imagenSeleccionada);
+
+    if (!urlImagen) {
+      alert('No se pudo subir la imagen. Intente nuevamente.');
+      this.loading = false;
+      return;
+    }
+
+    // 2️⃣ Enviar URL al backend asociado a la actividad
+    const payload = {
+      id_actividad: this.actividadSeleccionada.id_actividad,
+      nombre:this.actividadSeleccionada.nombre_actividad,
+      ruta: urlImagen
+    };
+    const url = "http://127.0.0.1:8000/api/subir_imagen";
+    this.http.post(url, payload).subscribe({
+      next: (res) => {
+        this.mensajeExito = `Imagen subida correctamente para "${this.actividadSeleccionada!.nombre_actividad}"`;
         this.mostrarModalEnProgreso = false;
         this.mostrarModalExito = true;
+        console.log('Imagen asociada a actividad:', res);
+      },
+      error: (err) => {
+        console.error('Error al asociar imagen:', err);
+        alert('Error al registrar la imagen en el backend.');
+      },
+      complete: () => {
         
-        // Limpiar datos de imagen
         this.cancelarImagen();
-        
-        // Aquí podrías agregar la lógica para subir la imagen al backend
-        // y asociarla a la actividad
-      }, 1500);
-    }
+      }
+    });
+    this.loading = false;
+
+  } catch (err) {
+    console.error('Error al subir la imagen:', err);
+    alert('Error inesperado al subir la imagen.');
+    this.loading = false;
   }
+}
+
 
   cancelarImagen(): void {
     this.imagenSeleccionada = null;
@@ -380,18 +432,30 @@ export class VerActividades implements OnInit {
   confirmarCambioACompletada(): void {
     if (this.actividadSeleccionada) {
       this.loading = true;
-      
+      const payload={
+          id_actividad:this.actividadSeleccionada.id_actividad,
+          estado:"finalizado"
+        }
+        const url="http://127.0.0.1:8000/api/actividad_finalizado"
       // Simular cambio de estado
-      setTimeout(() => {
-        this.actividadSeleccionada!.estado = 'Completada';
+      this.http.put(url,payload).subscribe({
+        next:(response)=>{
+          this.actividadSeleccionada!.estado = 'Completada';
         this.mensajeExito = `La actividad "${this.actividadSeleccionada!.nombre_actividad}" ha sido marcada como "Completada"`;
-        this.loading = false;
         this.mostrarModalConfirmarCompletar = false;
         this.mostrarModalExito = true;
+        },
+        error:(err)=>{
+          console.log("Error al actualizar estado finalizado ",err)
+        }
+      })
+        
+        this.loading = false;
+        
         
         // Aquí podrías agregar la lógica para actualizar en el backend
         console.log('Actividad completada:', this.actividadSeleccionada);
-      }, 1000);
+      
     }
   }
 

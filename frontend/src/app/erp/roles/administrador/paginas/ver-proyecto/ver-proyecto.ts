@@ -2,18 +2,18 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Proyecto } from '../../componentes/card-proyecto/card-proyecto';
-
+import { HttpClient,HttpClientModule } from '@angular/common/http';
 @Component({
   selector: 'app-ver-proyecto',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,HttpClientModule],
   templateUrl: './ver-proyecto.html',
   styleUrl: './ver-proyecto.scss'
 })
 export class VerProyecto implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
-
+  private http=inject(HttpClient)
   // Variables del componente
   proyecto: Proyecto | null = null;
   mostrarError = false;
@@ -146,7 +146,10 @@ export class VerProyecto implements OnInit {
       });
     }
   }
-
+  descargarReporte(){
+    const url="http://127.0.0.1:8000/reporte/"+this.proyecto?.id_proyecto;
+     window.open(url, "_blank");
+  }
   // Navegación a trabajadores - MÉTODO CORREGIDO
   verTrabajadores(): void {
     if (this.proyecto) {

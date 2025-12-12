@@ -7,7 +7,7 @@ import { Observable, of } from 'rxjs';
 
 // Interfaces
 export interface Trabajador {
-  id_trabajador: number;
+  trabajador_id_trabajador: number;
   fecha_inicio: string;
   fecha_fin: string;
   puesto: string;
@@ -17,6 +17,8 @@ export interface Trabajador {
   id_proyecto: number;
   justificacion_deshabilitado?: string;
   fecha_deshabilitado?: string;
+  nombre:string;
+  id_contratacion_trabajador:number;
 }
 
 export interface TrabajadorSelect {
@@ -109,28 +111,26 @@ export class VerTrabajador implements OnInit {
   ngOnInit(): void {
     this.cargarTrabajadoresLista();
     this.cargarTrabajador();
+    console.log("llego a verse ",this.trabajador)
   }
 
   // Cargar lista de trabajadores para el select
   cargarTrabajadoresLista(): void {
-    this.obtenerTrabajadoresLista().subscribe({
-      next: (trabajadores) => {
-        this.trabajadoresLista = trabajadores;
-      },
-      error: (err) => {
-        console.error('Error al cargar lista de trabajadores:', err);
-        // Datos de prueba
-        this.trabajadoresLista = [
-          { id_trabajador: 1, nombre: 'Juan Pérez' },
-          { id_trabajador: 2, nombre: 'María González' },
-          { id_trabajador: 3, nombre: 'Carlos Rodríguez' },
-          { id_trabajador: 4, nombre: 'Ana López' },
-          { id_trabajador: 5, nombre: 'Luis Martínez' },
-          { id_trabajador: 6, nombre: 'Laura Sánchez' }
-        ];
-      }
-    });
-  }
+  const url="http://127.0.0.1:8000/api/index_trabajadores";
+  this.http.get<TrabajadorSelect[]>(url).subscribe({
+    next: (trabajadores) => {
+      this.trabajadoresLista = trabajadores;
+      
+      // Actualizar nombre del trabajador después de cargar la lista
+      
+    },
+    error: (err) => {
+      console.error('Error al cargar lista de trabajadores:', err);
+      this.trabajadoresLista = [];
+    }
+  });
+}
+
 
   // Cargar información del trabajador
   cargarTrabajador(): void {
@@ -181,7 +181,7 @@ export class VerTrabajador implements OnInit {
   cargarFormulario(): void {
     if (this.trabajador) {
       this.formulario.patchValue({
-        id_trabajador: this.trabajador.id_trabajador,
+        id_trabajador: this.trabajador.trabajador_id_trabajador,  
         fecha_inicio: this.formatFechaForInput(this.trabajador.fecha_inicio),
         fecha_fin: this.formatFechaForInput(this.trabajador.fecha_fin),
         puesto: this.trabajador.puesto,
@@ -326,7 +326,7 @@ export class VerTrabajador implements OnInit {
   activarModoEdicion(): void {
     this.modoEdicion = true;
     // Habilitar campos editables
-    ['fecha_inicio', 'fecha_fin', 'puesto', 'salario', 'contrato'].forEach(campo => {
+    [ 'fecha_fin', 'puesto', 'salario', 'contrato'].forEach(campo => {
       this.formulario.get(campo)?.enable();
     });
   }
@@ -354,32 +354,52 @@ export class VerTrabajador implements OnInit {
       this.marcarCamposComoTouched();
       return;
     }
-
+    if(this.formulario.dirty){
     this.procesando = true;
     
     // Simular actualización en API
-    setTimeout(() => {
+    
       // Aquí iría la llamada real a tu API
-      const datosActualizados = this.formulario.getRawValue();
-      console.log('Datos a actualizar:', datosActualizados);
+      const datosActualizados = {
+        id_contratacion_trabajador: this.trabajador?.id_contratacion_trabajador,
+        trabajador_id_trabajador: this.trabajador?.trabajador_id_trabajador,
+        fecha_fin: this.formulario.get('fecha_fin')?.value,
+        puesto: this.formulario.get('puesto')?.value,
+        salario: this.formulario.get('salario')?.value,
+        contrato: "/ruta_nueva",
+      }
       
-      this.procesando = false;
-      this.mostrarExitoModal('Los cambios se guardaron exitosamente');
-      this.guardarDatosOriginales();
+      console.log('Datos a actualizar:', datosActualizados);
+      const url="http://127.0.0.1:8000/api/actualizar_contratacion"
+      this.http.put(url,datosActualizados).subscribe({
+        next:(response)=>{
+          this.procesando = false;
+          this.mostrarExitoModal('Los cambios se guardaron exitosamente');
+          this.guardarDatosOriginales();
+          if (this.trabajador) {
+            this.trabajador = {
+              ...this.trabajador,
+              //fecha_inicio: datosActualizados.fecha_inicio,
+              fecha_fin: datosActualizados.fecha_fin,
+              puesto: datosActualizados.puesto,
+              salario: datosActualizados.salario,
+              contrato: datosActualizados.contrato
+            };
+          }
+        },
+        error:(err)=>{
+          console.log("Error al actualizar trbajador ",err)
+        }
+      });
       this.desactivarModoEdicion();
       
+      
       // Actualizar trabajador localmente
-      if (this.trabajador) {
-        this.trabajador = {
-          ...this.trabajador,
-          fecha_inicio: datosActualizados.fecha_inicio,
-          fecha_fin: datosActualizados.fecha_fin,
-          puesto: datosActualizados.puesto,
-          salario: datosActualizados.salario,
-          contrato: datosActualizados.contrato
-        };
-      }
-    }, 1500);
+      
+    }else{
+      this.desactivarModoEdicion();
+      
+    }
   }
 
   volver(): void {
@@ -413,17 +433,19 @@ export class VerTrabajador implements OnInit {
     const justificacion = this.formDeshabilitar.value.justificacion;
     
     // Simular llamada a API para deshabilitar trabajador
-    setTimeout(() => {
+    
       this.procesandoDeshabilitar = false;
       
       // Aquí iría la llamada real a tu API
-      // this.http.post('http://127.0.0.1:8000/api/deshabilitar_trabajador', {
-      //   id_trabajador: this.trabajador?.id_trabajador,
-      //   justificacion: justificacion
-      // }).subscribe(...)
-      
-      // Actualizar estado localmente
-      if (this.trabajador) {
+      const dataPut={
+        id_contratacion_trabajador:this.trabajador?.id_contratacion_trabajador,
+        activo:false,
+        observacion:justificacion
+      }
+      const url="http://127.0.0.1:8000/api/despedir_contratacion";
+      this.http.put(url,dataPut).subscribe({
+        next:(response)=>{
+          if (this.trabajador) {
         this.trabajador = {
           ...this.trabajador,
           activo: false,
@@ -436,7 +458,15 @@ export class VerTrabajador implements OnInit {
       this.fechaDeshabilitacion = new Date();
       this.mostrarModalDeshabilitarFlag = false;
       this.mostrarModalConfirmacionDeshabilitar = true;
-    }, 2000);
+        },
+        error:(err)=>{
+          console.log("Error al deshabiliar contrato ",err )
+        }
+      });
+      
+      // Actualizar estado localmente
+      
+    
   }
 
   cerrarModalConfirmacionDeshabilitar(): void {

@@ -49,7 +49,7 @@
               formControlName="id_trabajador"
               [disabled]="true"
             >
-              <option [value]="trabajador.id_trabajador">{{ obtenerNombreTrabajador(trabajador.id_trabajador) }}</option>
+              <option [value]="trabajador.trabajador_id_trabajador">{{ trabajador?.nombre }}</option>
             </select>
           </div>
 
@@ -255,7 +255,7 @@
       <div class="modal-icon">✅</div>
       <h3 class="modal-title">¡Trabajador Deshabilitado!</h3>
       <p class="modal-message">
-        El trabajador <strong>{{ obtenerNombreTrabajador(trabajador?.id_trabajador) }}</strong> ha sido deshabilitado exitosamente.
+        El trabajador <strong>{{ obtenerNombreTrabajador(trabajador?.trabajador_id_trabajador) }}</strong> ha sido deshabilitado exitosamente.
       </p>
       <button class="btn-modal btn-modal-exito" (click)="cerrarModalConfirmacionDeshabilitar()">
         ACEPTAR

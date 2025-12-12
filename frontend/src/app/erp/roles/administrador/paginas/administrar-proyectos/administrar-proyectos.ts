@@ -265,12 +265,13 @@ export class AdministrarProyectos implements OnInit {
 
   obtenerProyectos(): Observable<Proyecto[]> {
     // Simulamos una llamada HTTP con delay de 1 segundo
+    /*
     return of(this.proyectosSimulados).pipe(
       delay(1000) // Simula tiempo de carga
-    );
+    );*/
     
     // Para usar con backend real, descomenta esto:
-    // return this.http.get<Proyecto[]>("http://127.0.0.1:8000/api/get_all_proyectos_data");
+    return this.http.get<Proyecto[]>("http://127.0.0.1:8000/api/get_all_proyectos_data");
   }
 
     // Ver proyecto
