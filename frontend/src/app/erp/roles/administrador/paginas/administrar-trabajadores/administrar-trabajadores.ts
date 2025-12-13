@@ -159,7 +159,7 @@ export class AdministrarTrabajadores implements OnInit {
     
     // 2. Filtrar por proyecto específico
     const trabajadoresDelProyecto = todosTrabajadores.filter(
-      t => t.id_proyecto === idProyecto
+      t => t.proyecto_id_proyecto === idProyecto
     );
     
     console.log(`📊 Trabajadores del proyecto ${idProyecto}:`, trabajadoresDelProyecto.length);
@@ -167,10 +167,10 @@ export class AdministrarTrabajadores implements OnInit {
     // DEBUG: Mostrar qué trabajadores encontramos
     if (trabajadoresDelProyecto.length > 0) {
       console.log('👥 Trabajadores encontrados:', trabajadoresDelProyecto.map(t => ({
-        id: t.id_trabajador,
+        id: t.trabajador_id_trabajador,
         puesto: t.puesto,
         activo: t.activo,
-        proyecto: t.id_proyecto
+        proyecto: t.proyecto_id_proyecto
       })));
     }
     
@@ -202,7 +202,7 @@ export class AdministrarTrabajadores implements OnInit {
     if (this.filtroProyectoActivo() && this.idProyectoFiltro()) {
       const idProyecto = this.idProyectoFiltro()!;
       const inactivos = this.trabajadores().filter(t => 
-        t.id_proyecto === idProyecto && !t.activo
+        t.proyecto_id_proyecto === idProyecto && !t.activo
       ).length;
       console.log(`📊 Trabajadores inactivos en proyecto ${idProyecto}: ${inactivos}`);
       return inactivos;
@@ -219,7 +219,8 @@ export class AdministrarTrabajadores implements OnInit {
 
   // Cargar trabajadores
   cargarTrabajadores(): void {
-    this.obtenerTrabajadores().subscribe({
+    const url="http://127.0.0.1:8000/api/get_all_contrataciones";
+    this.http.get<Trabajador[]>(url).subscribe({
       next: (trabajadores) => {
         this.trabajadores.set(trabajadores);
         console.log(`✅ ${trabajadores.length} trabajadores cargados`);
@@ -227,7 +228,7 @@ export class AdministrarTrabajadores implements OnInit {
         // Calcular estadísticas si hay filtro activo
         if (this.filtroProyectoActivo() && this.idProyectoFiltro()) {
           const idProyecto = this.idProyectoFiltro()!;
-          const trabajadoresProyecto = trabajadores.filter(t => t.id_proyecto === idProyecto);
+          const trabajadoresProyecto = trabajadores.filter(t => t.proyecto_id_proyecto === idProyecto);
           const trabajadoresActivosProyecto = trabajadoresProyecto.filter(t => t.activo);
           
           this.totalTrabajadores = trabajadoresActivosProyecto.length;
@@ -255,7 +256,7 @@ export class AdministrarTrabajadores implements OnInit {
         
         if (this.filtroProyectoActivo() && this.idProyectoFiltro()) {
           const idProyecto = this.idProyectoFiltro()!;
-          const trabajadoresProyecto = this.trabajadoresSimulados.filter(t => t.id_proyecto === idProyecto);
+          const trabajadoresProyecto = this.trabajadoresSimulados.filter(t => t.proyecto_id_proyecto === idProyecto);
           const trabajadoresActivosProyecto = trabajadoresProyecto.filter(t => t.activo);
           
           this.totalTrabajadores = trabajadoresActivosProyecto.length;
@@ -294,7 +295,7 @@ export class AdministrarTrabajadores implements OnInit {
 
   // Ver detalle de trabajador
   verTrabajador(trabajador: Trabajador): void {
-    console.log('👁️ Ver trabajador:', trabajador.id_trabajador, trabajador.puesto);
+    console.log('👁️ Ver trabajador:', trabajador.trabajador_id_trabajador, trabajador.puesto);
     
     // Guardar trabajador y mantener contexto del proyecto
     sessionStorage.setItem('trabajadorActual', JSON.stringify(trabajador));
@@ -336,7 +337,7 @@ export class AdministrarTrabajadores implements OnInit {
   }
 
   // Datos de prueba simulados
-  private trabajadoresSimulados: Trabajador[] = [
+  private trabajadoresSimulados: Trabajador[] = [/*
     {
       id_trabajador: 1,
       fecha_inicio: '2023-03-15',
@@ -456,6 +457,6 @@ export class AdministrarTrabajadores implements OnInit {
       contrato: 'Por proyecto',
       activo: false,
       id_proyecto: 3
-    }
+    }*/
   ];
 }

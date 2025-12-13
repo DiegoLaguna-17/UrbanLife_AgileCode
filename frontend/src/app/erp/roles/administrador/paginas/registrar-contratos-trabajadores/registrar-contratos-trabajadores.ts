@@ -4,7 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractContro
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
-
+import { UploadContratoService } from './upload-contrato.service';
 // Interfaces
 export interface TrabajadorSelect {
   id_trabajador: number;
@@ -40,7 +40,7 @@ export class RegistrarContratosTrabajadores implements OnInit {
   trabajadores: TrabajadorSelect[] = [];
   loading = true;
   procesando = false;
-  
+    private uploadService = inject(UploadContratoService);
   // Estados de modales
   mostrarModalExito = false;
   mostrarModalError = false;
@@ -54,7 +54,7 @@ export class RegistrarContratosTrabajadores implements OnInit {
   private fb = inject(FormBuilder);
   private http = inject(HttpClient);
   private router = inject(Router);
-
+  proyecto:any;
   constructor() {
     this.registroForm = this.fb.group({
       id_trabajador: ['', Validators.required],
@@ -67,12 +67,15 @@ export class RegistrarContratosTrabajadores implements OnInit {
   }
 
   ngOnInit(): void {
+    this.proyecto = history.state?.proyecto;
+  console.log('Proyecto recibido:', this.proyecto);
     this.cargarTrabajadores();
   }
 
   // Cargar trabajadores desde el endpoint
   cargarTrabajadores(): void {
-    this.obtenerTrabajadores().subscribe({
+    const url="http://127.0.0.1:8000/api/index_trabajadores";
+    this.http.get<TrabajadorSelect[]>(url).subscribe({
       next: (trabajadores) => {
         this.trabajadores = trabajadores;
         this.loading = false;
@@ -80,13 +83,13 @@ export class RegistrarContratosTrabajadores implements OnInit {
       error: (err) => {
         console.error('Error al cargar trabajadores:', err);
         // Datos de prueba si falla la API
-        this.trabajadores = [
+        this.trabajadores = [/*
           { id_trabajador: 1, nombre: 'Juan Pérez' },
           { id_trabajador: 2, nombre: 'María González' },
           { id_trabajador: 3, nombre: 'Carlos Rodríguez' },
           { id_trabajador: 4, nombre: 'Ana López' },
           { id_trabajador: 5, nombre: 'Luis Martínez' },
-          { id_trabajador: 6, nombre: 'Laura Sánchez' }
+          { id_trabajador: 6, nombre: 'Laura Sánchez' }*/
         ];
         this.loading = false;
         this.mostrarErrorModal('No se pudieron cargar los trabajadores. Usando datos de prueba.');
@@ -132,35 +135,52 @@ export class RegistrarContratosTrabajadores implements OnInit {
   }
 
   async onSubmit(): Promise<void> {
-    if (this.registroForm.invalid || !this.contratoArchivo) {
-      this.marcarCamposComoTouched();
-      if (!this.contratoArchivo) {
-        this.mostrarErrorModal('Debe seleccionar un archivo PDF para el contrato.');
-      }
+  if (this.registroForm.invalid || !this.contratoArchivo) {
+    this.marcarCamposComoTouched();
+    if (!this.contratoArchivo) {
+      this.mostrarErrorModal('Debe seleccionar un archivo PDF para el contrato.');
+    }
+    return;
+  }
+
+  this.procesando = true;
+  const formValue = this.registroForm.value;
+
+  try {
+    // 🔹 Subir PDF a Supabase
+    const urlContrato = await this.uploadService.subirContratoTrabajador(this.contratoArchivo!);
+    if (!urlContrato) {
+      this.mostrarErrorModal('No se pudo subir el archivo PDF. Intente nuevamente.');
+      this.procesando = false;
       return;
     }
 
-    this.procesando = true;
-
-    // Formatear las fechas si es necesario
-    const formValue = this.registroForm.value;
+    // 🔹 Crear FormData con URL en lugar de archivo
     
-    // Crear FormData para enviar archivo
-    const formData = new FormData();
-    formData.append('id_trabajador', formValue.id_trabajador.toString());
-    formData.append('fecha_inicio', formValue.fecha_inicio);
-    formData.append('fecha_fin', formValue.fecha_fin);
-    formData.append('puesto', formValue.puesto);
-    formData.append('salario', formValue.salario.toString());
-    formData.append('contrato', this.contratoArchivo);
+    const payload = {
+  id_trabajador: formValue.id_trabajador,
+  fecha_inicio: formValue.fecha_inicio,
+  fecha_fin: formValue.fecha_fin,
+  puesto: formValue.puesto,
+  salario: formValue.salario,
+  contrato: urlContrato, // URL del PDF
+  activo: true, // boolean real
+  id_proyecto:this.proyecto.id_proyecto
+};
+    // 🔹 Enviar al backend
+    this.registrarContrato(payload);
 
-    // Aquí iría la llamada a tu API
-    this.registrarContrato(formData);
+  } catch (err) {
+    console.error('Error al subir el contrato:', err);
+    this.mostrarErrorModal('Error al subir el archivo PDF.');
+    this.procesando = false;
   }
+}
 
-  registrarContrato(formData: FormData): void {
+
+  registrarContrato(formData: any): void {
     // Endpoint para registrar el contrato
-    const url = 'http://127.0.0.1:8000/api/registrar_contrato_trabajador';
+    const url = 'http://127.0.0.1:8000/api/registrar_contratacion';
     
     this.http.post(url, formData).subscribe({
       next: (respuesta: any) => {

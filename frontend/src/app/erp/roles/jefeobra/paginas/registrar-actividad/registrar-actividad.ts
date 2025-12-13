@@ -1,9 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject,OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-
+import { forkJoin, of } from 'rxjs';
 @Component({
   selector: 'app-registrar-actividad',
   standalone: true,
@@ -22,28 +22,23 @@ export class RegistrarActividadComponent {
   mostrarModalError: boolean = false;
   mensajeError: string = '';
   loading: boolean = false;
+  proyecto:any= this.router.getCurrentNavigation()?.extras?.state?.['proyecto'];
   
   // Datos para los selects
   empleadosDisponibles: any[] = [
-    { id_empleado: 1, nombre: "Juan" },
-    { id_empleado: 2, nombre: "María" },
-    { id_empleado: 3, nombre: "Carlos" },
-    { id_empleado: 4, nombre: "Ana" }
+  
   ];
   
   materialesDisponibles: any[] = [
-    { id_material_almacen: 1, nombre: "Ladrillo", cantidad: 100 },
-    { id_material_almacen: 2, nombre: "Cemento", cantidad: 50 },
-    { id_material_almacen: 3, nombre: "Arena", cantidad: 200 },
-    { id_material_almacen: 4, nombre: "Pintura", cantidad: 30 }
+   
   ];
 
   constructor(private fb: FormBuilder) {
     this.registroForm = this.fb.group({
       // Paso 1: Datos básicos (OBLIGATORIOS)
-      nombre_actividad: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
+      nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       descripcion: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
-      fecha_realizacion: ['', [Validators.required, this.fechaFuturaValidator]],
+      fecha: ['', [Validators.required, this.fechaFuturaValidator]],
       
       // Paso 2: Empleados (OPCIONAL) - Inicialmente vacío
       empleados: this.fb.array([]),
@@ -52,6 +47,7 @@ export class RegistrarActividadComponent {
       materiales: this.fb.array([])
     });
   }
+
 
   // Getters para los FormArrays
   get empleadosArray(): FormArray {
@@ -63,9 +59,40 @@ export class RegistrarActividadComponent {
   }
 
   // Getters para fácil acceso a los controles
-  get nombre_actividad() { return this.registroForm.get('nombre_actividad'); }
+  get nombre() { return this.registroForm.get('nombre'); }
   get descripcion() { return this.registroForm.get('descripcion'); }
-  get fecha_realizacion() { return this.registroForm.get('fecha_realizacion'); }
+  get fecha() { return this.registroForm.get('fecha'); }
+
+
+  ngOnInit(){
+    this.cargarEmpleados();
+    this.cargarMateriales();
+  }
+
+ 
+  cargarEmpleados(){
+    const url="http://127.0.0.1:8000/api/sacar_empleados"
+    this.http.get<any[]>(url).subscribe({
+      next:(response)=>{
+        this.empleadosDisponibles=response;
+      },
+      error:(err)=>{
+        console.log("error al cargar empleados")
+      }
+    })
+  }
+
+  cargarMateriales(){
+    const url="http://127.0.0.1:8000/api/sacar_materiales"
+    this.http.get<any[]>(url).subscribe({
+      next:(response)=>{
+        this.materialesDisponibles=response;
+      },
+      error:(err)=>{
+        console.log("error al cargar empleados")
+      }
+    })
+  }
 
   // Método para crear un grupo de formulario para empleado (OPCIONAL)
   crearFormGroupEmpleado(): FormGroup {
@@ -100,9 +127,9 @@ export class RegistrarActividadComponent {
 
   // Validar solo el paso 1 (campos obligatorios)
   esPaso1Valido(): boolean {
-    return !!this.nombre_actividad?.valid && 
+    return !!this.nombre?.valid && 
           !!this.descripcion?.valid && 
-          !!this.fecha_realizacion?.valid;
+          !!this.fecha?.valid;
   }
 
   // Navegación entre secciones
@@ -205,74 +232,83 @@ export class RegistrarActividadComponent {
     this.router.navigate(['/jefeobra/ver-actividades']);
   }
 
-  // Envío del formulario
-  onSubmit(): void {
-    // Solo validamos el paso 1 (campos obligatorios)
-    if (!this.esPaso1Valido()) {
-      this.marcarCamposPaso1ComoTouched();
-      this.mostrarModalError = true;
-      this.mensajeError = 'Por favor, complete los campos obligatorios (Nombre, Descripción y Fecha)';
-      return;
-    }
 
-    this.loading = true;
-    
-    // Preparar datos para enviar - Filtrar solo los que tienen valores
-    const actividadData = {
-      nombre_actividad: this.registroForm.value.nombre_actividad,
-      descripcion: this.registroForm.value.descripcion,
-      fecha_realizacion: this.registroForm.value.fecha_realizacion,
-      // Empleados: solo los que tienen id_empleado
-      empleados: this.empleadosArray.controls
-        .filter(empleado => empleado.get('id_empleado')?.value)
-        .map(empleado => ({ 
-          id_empleado: empleado.get('id_empleado')?.value 
-        })),
-      // Materiales: solo los que tienen id_material_almacen Y cantidad válida
-      materiales: this.materialesArray.controls
-        .filter(material => material.get('id_material_almacen')?.value && 
-                           material.get('cantidad')?.value && 
-                           material.get('cantidad')?.valid)
-        .map(material => ({
-          id_material_almacen: material.get('id_material_almacen')?.value,
-          cantidad: Number(material.get('cantidad')?.value)
-        }))
-    };
+// ...
 
-    // Simular envío a API (reemplazar con tu endpoint real)
-    setTimeout(() => {
-      console.log('Datos de actividad a enviar:', actividadData);
-      
-      // Aquí iría la llamada real a la API:
-      /*
-      this.http.post('http://tu-api/registrar-actividad', actividadData)
-        .subscribe({
-          next: (response) => {
-            console.log('Actividad registrada:', response);
-            this.loading = false;
-            this.mostrarModalExito = true;
-          },
-          error: (error) => {
-            console.error('Error al registrar actividad:', error);
-            this.loading = false;
-            this.mostrarModalError = true;
-            this.mensajeError = 'Error al registrar la actividad. Por favor, intente nuevamente.';
-          }
-        });
-      */
-      
-      // Simulación exitosa
+onSubmit(): void {
+  if (!this.esPaso1Valido()) {
+    this.marcarCamposPaso1ComoTouched();
+    this.mostrarModalError = true;
+    this.mensajeError = 'Por favor, complete los campos obligatorios';
+    return;
+  }
+
+  this.loading = true;
+
+  const actividadData = {
+    nombre: this.registroForm.value.nombre,
+    descripcion: this.registroForm.value.descripcion,
+    fecha: this.registroForm.value.fecha,
+    estado: "pendiente",
+    proyecto_id_proyecto: this.proyecto.id_proyecto,
+    empleados: this.empleadosArray.controls
+      .filter(e => e.get('id_empleado')?.value)
+      .map(e => ({ id_empleado: e.get('id_empleado')?.value }))
+  };
+
+  const materiales = this.materialesArray.controls
+    .filter(m => m.get('id_material_almacen')?.value && m.get('cantidad')?.valid)
+    .map(m => ({
+      id_material_almacen: m.get('id_material_almacen')?.value,
+      cantidad: Number(m.get('cantidad')?.value)
+    }));
+
+  const urlAct = "http://127.0.0.1:8000/api/registrar_actividad";
+  const urlMat = "http://127.0.0.1:8000/api/registrar_material_proyecto";
+
+  // Crear array de peticiones
+  const requests = [];
+
+  // 1️⃣ Actividad
+  requests.push(this.http.post(urlAct, actividadData));
+
+  // 2️⃣ Materiales (si existen)
+  if (materiales.length > 0) {
+    materiales.forEach(m => {
+      const payload = {
+        id_material_almacen: m.id_material_almacen,
+        id_proyecto: this.proyecto.id_proyecto,
+        fecha_entrega: actividadData.fecha,
+        cantidad: m.cantidad
+      };
+      requests.push(this.http.post(urlMat, payload));
+    });
+  }
+
+  // Ejecutar TODO al mismo tiempo
+  forkJoin(requests).subscribe({
+    next: (responses) => {
+      console.log("Todo registrado exitosamente:", responses);
+
       this.loading = false;
       this.mostrarModalExito = true;
-      
-    }, 1500);
-  }
+    },
+    error: (err) => {
+      console.error("Error en alguna petición:", err);
+
+      this.loading = false;
+      this.mostrarModalError = true;
+      this.mensajeError = 'Error al registrar la actividad o materiales.';
+    }
+  });
+}
+
 
   // Métodos auxiliares
   private marcarCamposPaso1ComoTouched(): void {
-    this.nombre_actividad?.markAsTouched();
+    this.nombre?.markAsTouched();
     this.descripcion?.markAsTouched();
-    this.fecha_realizacion?.markAsTouched();
+    this.fecha?.markAsTouched();
   }
 
   // Métodos para modales
