@@ -66,19 +66,22 @@ export class Registrar {
   this.registroForm.reset();
   this.contratoArchivo = null;
 }
-
+registroExitoso:boolean=false;
 guardarEmpleado(empleadoData:any){
   const url = 'http://127.0.0.1:8000/api/registrar_empleado';
   this.http.post(url,empleadoData).subscribe({
     next:(respuesta)=>{
-      alert('Empleado registrado');
+      this.registroExitoso=true;
+      //alert('Empleado registrado');
     }, error:(err)=>{
       alert('Error al registrar empleado');
       console.log(err);
     }
   })
 }
-
+cerrarModalExito(){
+this.registroExitoso=false;
+}
 
   private marcarCamposComoTouched(): void {
     Object.keys(this.registroForm.controls).forEach(key => {

@@ -7,7 +7,6 @@
       <!-- Botones en panel izquierdo -->
       <div class="botones-izquierda" *ngIf="!modoEdicion">
         <button class="btn-accion btn-editar" (click)="activarModoEdicion()">
-          <span class="btn-icon">✏️</span>
           EDITAR
         </button>
         <button 
@@ -15,7 +14,6 @@
           (click)="mostrarModalDeshabilitar()"
           [disabled]="!trabajador?.activo"
         >
-          <span class="btn-icon">🚫</span>
           {{ trabajador?.activo ? 'DESHABILITAR' : 'DESHABILITADO' }}
         </button>
       </div>
@@ -23,11 +21,9 @@
       <!-- Botones cuando está en modo edición -->
       <div class="botones-izquierda" *ngIf="modoEdicion">
         <button class="btn-accion btn-guardar" (click)="guardarCambios()" [disabled]="formulario.invalid || procesando">
-          <span class="btn-icon">💾</span>
           {{ procesando ? 'GUARDANDO...' : 'GUARDAR' }}
         </button>
         <button class="btn-accion btn-cancelar" (click)="cancelarEdicion()" [disabled]="procesando">
-          <span class="btn-icon">✖️</span>
           CANCELAR
         </button>
       </div>

@@ -174,8 +174,8 @@ export class VerDocumentacion implements OnInit {
   descargarDocumento(documento: Documento): void {
     console.log('Descargando documento:', documento);
     // Simular descarga
-    alert(`Descargando: ${documento.nombre_documento}\nTipo: ${documento.tipo}\nRuta: ${documento.ruta}`);
-    
+    //alert(`Descargando: ${documento.nombre_documento}\nTipo: ${documento.tipo}\nRuta: ${documento.ruta}`);
+    window.open(documento.ruta, '_blank');
     // En una implementación real, aquí iría la lógica de descarga
     // window.open(documento.ruta, '_blank');
   }

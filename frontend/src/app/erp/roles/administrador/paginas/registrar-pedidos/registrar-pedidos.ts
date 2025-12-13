@@ -295,7 +295,7 @@ export class RegistrarPedidos implements OnInit {
     this.pasoActual = 1;
     this.productoActualIndex = 0;
     this.materialesDisponibles = [...this.materialesProveedor];
-    this.router.navigate(['./administrar_pedidos']);
+    this.router.navigate(['./administrador/administrar-pedidos']);
   }
 
   // Manejo de productos adicionales

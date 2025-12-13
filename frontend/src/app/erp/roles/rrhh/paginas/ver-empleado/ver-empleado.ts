@@ -155,6 +155,7 @@ this.datosOriginales = this.registroForm.getRawValue();
   onDarUsuario(): void {
     this.mostrarFormularioUsuario = true;
   }
+ registroExitoso:boolean=false;
 
   onRegistrarUsuario(): void {
     if (this.usuarioForm.valid && this.empleadoData) {
@@ -166,13 +167,17 @@ this.datosOriginales = this.registroForm.getRawValue();
       const url=`http://127.0.0.1:8000/api/asignar_usuario`;
       this.http.post(url,usuarioData).subscribe({
           next:(respuesta)=>{
-            alert("Usuario creado correctamente para "+this.empleadoData?.nombre)
+            this.registroExitoso=true;
           },error:(err)=>{
             alert("Error al asignar usuario a " + this.empleadoData?.nombre)
           }
       });
       
     }
+  }
+
+  cerrarModalExito(){
+    this.registroExitoso=false;
   }
 
   onEliminar(): void {

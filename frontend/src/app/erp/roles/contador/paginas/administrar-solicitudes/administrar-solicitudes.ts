@@ -66,7 +66,7 @@ export class AdministrarSolicitudes implements OnInit {
   cargarSolicitudes() {
     this.loading.set(true);
     this.error.set('');
-    
+    /*
     setTimeout(() => {
       try {
         this.solicitudes.set(this.datosDePrueba);
@@ -77,7 +77,7 @@ export class AdministrarSolicitudes implements OnInit {
         this.error.set('Error al cargar las solicitudes. Por favor, intenta nuevamente.');
         this.loading.set(false);
       }
-    }, 1000);
+    }, 1000);*/
 
     // CÓDIGO PARA EL ENDPOINT
     const url = `http://127.0.0.1:8000/api/get_material_pedidos`;

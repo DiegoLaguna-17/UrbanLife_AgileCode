@@ -45,6 +45,7 @@ export class AdministrarPagosTrabajadores implements OnInit {
     this.error.set('');
     
     // Simulamos una llamada HTTP con setTimeout
+    /*
     setTimeout(() => {
       try {
         this.trabajadores.set(this.datosDePrueba);
@@ -55,7 +56,7 @@ export class AdministrarPagosTrabajadores implements OnInit {
         this.error.set('Error al cargar los trabajadores. Por favor, intenta nuevamente.');
         this.loading.set(false);
       }
-    }, 1000);
+    }, 1000);*/
 
     // ⚠️ CÓDIGO PARA CUANDO TENGAS EL ENDPOINT REAL
     const url=`http://127.0.0.1:8000/api/get_detalles_trabajadores`;
